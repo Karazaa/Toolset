@@ -5,7 +5,7 @@
 /// <typeparam name="T">The class that is being made a singleton</typeparam>
 public class Singleton<T> where T : new()
 {
-    private static T k_instance;
+    private static T s_instance;
 
     /// <summary>
     /// Returns an instance of the singleton if it exists already. If not, it creates one via a default constructor
@@ -15,9 +15,9 @@ public class Singleton<T> where T : new()
     {
         get
         {
-            if (k_instance == null)
-                k_instance = new T();
-            return k_instance;
+            if (s_instance == null)
+                s_instance = new T();
+            return s_instance;
         }
     }
 }

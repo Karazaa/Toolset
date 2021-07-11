@@ -3,7 +3,7 @@ using NUnit.Framework;
 /// <summary>
 /// Class of unit tests used to validate the Singleton class.
 /// </summary>
-public class TestSingleton
+public class TestsSingleton
 {
     [Test]
     public void TestNotNull()

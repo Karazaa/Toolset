@@ -7,7 +7,7 @@ using UnityEngine;
 /// <typeparam name="T">The monobehavior that is being made a singleton.</typeparam>
 public class MonobehaviorSingleton<T> : MonoBehaviour where T : MonoBehaviour
 {
-    private static T k_instance;
+    private static T s_instance;
 
     /// <summary>
     /// Returns an instance of the monobehavior singleton if it exists already. If not, it creates a new game object flagged DontDestroyOnLoad,
@@ -17,13 +17,13 @@ public class MonobehaviorSingleton<T> : MonoBehaviour where T : MonoBehaviour
     {
         get
         {
-            if (k_instance == null)
+            if (s_instance == null)
             {
                 GameObject gameObject = new GameObject(nameof(T));
-                k_instance = gameObject.AddComponent<T>();
+                s_instance = gameObject.AddComponent<T>();
                 DontDestroyOnLoad(gameObject);
             }
-            return k_instance;
+            return s_instance;
         }
     }
 }
