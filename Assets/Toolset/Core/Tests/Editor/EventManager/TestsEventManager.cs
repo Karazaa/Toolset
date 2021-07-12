@@ -11,18 +11,18 @@ public class TestsEventManager
         int dummyValue1 = 10;
         int dummyValue2 = 20;
 
-        ExampleEventHandler1 eventHandler1 = new ExampleEventHandler1();
-        eventHandler1.Subscribe();
+        ExampleEventHandler1 eventHandler = new ExampleEventHandler1();
+        eventHandler.Subscribe();
 
         (new ExampleEvent1() { m_passedIntValue = dummyValue1 }).Fire();
 
-        Assert.AreEqual(dummyValue1, eventHandler1.ExampleValue);
+        Assert.AreEqual(dummyValue1, eventHandler.ExampleValue);
 
-        eventHandler1.Unsubscribe();
+        eventHandler.Unsubscribe();
 
         (new ExampleEvent1() { m_passedIntValue = dummyValue2 }).Fire();
 
-        Assert.AreNotEqual(dummyValue2, eventHandler1.ExampleValue);
+        Assert.AreNotEqual(dummyValue2, eventHandler.ExampleValue);
     }
 
     [Test]
@@ -75,5 +75,20 @@ public class TestsEventManager
         Assert.AreEqual(dummyValue2, eventHandler2.ExampleValue);
 
         eventHandler2.Unsubscribe();
+    }
+
+    [Test]
+    public void TestDuplicateSubscriptionsToEvent()
+    {
+        int dummyValue1 = 10;
+        ExampleEventHandler3 eventHandler = new ExampleEventHandler3();
+        eventHandler.Subscribe();
+        eventHandler.Subscribe();
+
+        (new ExampleEvent1() { m_passedIntValue = dummyValue1 }).Fire();
+
+        Assert.AreEqual(dummyValue1, eventHandler.ExampleValue);
+
+        eventHandler.Unsubscribe();
     }
 }
