@@ -24,7 +24,7 @@ public static class EventManager
         }
             
         if (s_eventDictionary[eventType] == null)
-            throw new InvalidOperationException(string.Format("[Toolset.EventManager] An entry exists in the event dictionary for type {0}, but the associated hash set is null.", eventType));
+            throw new InvalidOperationException("[Toolset.EventManager] An entry exists in the event dictionary for type {0}, but the associated hash set is null.".StringBuilderFormat(eventType));
 
         if (s_eventDictionary[eventType].Contains(handler))
             return;
@@ -78,7 +78,7 @@ public static class EventManager
             return false;
 
         if (s_eventDictionary[eventType] == null)
-            throw new InvalidOperationException(string.Format("[Toolset.EventManager] An entry exists in the event dictionary for type {0}, but the associated hash set is null.", eventType));
+            throw new InvalidOperationException("[Toolset.EventManager] An entry exists in the event dictionary for type {0}, but the associated hash set is null.".StringBuilderFormat(eventType));
 
         return true;
     }
