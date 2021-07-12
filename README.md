@@ -2,5 +2,5 @@
 A set of useful tools for Unity.
 
 # TODO
- - Create EventManager as a generic singleton that can handle Subscribing to, Unsubscribing to, and Firing events.
- - Create an Event object to demonstrate event dispatch.
+ - Create a networking directory with basic http request infrastructure.
+ - Create a mock rest api that can be used for validation via unit or integration test.
