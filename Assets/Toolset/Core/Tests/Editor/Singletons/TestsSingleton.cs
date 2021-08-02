@@ -5,6 +5,12 @@ using NUnit.Framework;
 /// </summary>
 public class TestsSingleton
 {
+    [SetUp]
+    public void SetUp()
+    {
+        ExampleSingleton.I.ExampleValue = 0;
+    }
+
     [Test]
     public void TestNotNull()
     {

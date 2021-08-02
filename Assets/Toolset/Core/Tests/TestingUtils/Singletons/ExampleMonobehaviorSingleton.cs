@@ -1,10 +1,10 @@
 /// <summary>
-/// Example class used by integration tests for validation of the MonobehaviorSingleton class.
+/// Example class used by integration tests for validation of the MonoBehaviourSingleton class.
 /// </summary>
-public class ExampleMonobehaviorSingleton : MonobehaviorSingleton<ExampleMonobehaviorSingleton>
+public class ExampleMonoBehaviorSingleton : MonoBehaviorSingleton<ExampleMonoBehaviorSingleton>
 {
     /// <summary>
-    /// An example value modified by integration tests for validation of the MonobehaviorSingleton class.
+    /// An example value modified by integration tests for validation of the MonoBehaviourSingleton class.
     /// </summary>
     public int ExampleValue { get; set; }
 }
