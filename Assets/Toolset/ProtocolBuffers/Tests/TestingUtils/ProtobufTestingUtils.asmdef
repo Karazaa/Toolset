@@ -1,0 +1,16 @@
+{
+    "name": "ProtobufTestingUtils",
+    "rootNamespace": "",
+    "references": [
+        "GUID:7c346a50f859b834cb499c8009f0f597"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
