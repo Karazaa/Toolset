@@ -3,7 +3,6 @@ A set of useful tools for Unity.
 
 # TODO
 Protocol Buffers:
- - Import Proto3 into project https://developers.google.com/protocol-buffers/docs/csharptutorial
  - Create a save manager that serializes data in protobuf blobs for saving/loading locally from device.
 
 Networking:
