@@ -1,10 +1,14 @@
 using NUnit.Framework;
 using ProtoBuf;
 using System.IO;
+using System.Collections.Generic;
 
+/// <summary>
+/// Class of unit tests used to validate the protobuf-net dll.
+/// </summary>
 public class TestsProtobufNet
 {
-    private static string c_testFilePath = "Assets/Toolset/ProtocolBuffers/Tests/Editor/TestsProtobufNet.bin";
+    private static string c_testFilePath = "Assets/Toolset/ProtocolBuffers/Tests/Editor/ProtobufNet/TestsProtobufNet.bin";
 
     [Test]
     public void TestSerializeAndDeserialize()
@@ -20,7 +24,8 @@ public class TestsProtobufNet
                 ExampleString1 = "This is the first internal string.",
                 ExampleString2 = "This is the second internal string.",
                 ExampleString3 = "This is the third internal string.",
-            }
+            },
+            ExampleIntList = new List<int>() { 1, 2, 3, 4, 5, 6, 7, 8, 9 }
         };
 
         Serializer.Serialize(fileStream, modelToSerialize);
@@ -46,6 +51,7 @@ public class TestsProtobufNet
     [TearDown]
     public void TearDown()
     {
-        File.Delete(c_testFilePath);
+        if (File.Exists(c_testFilePath))
+            File.Delete(c_testFilePath);
     }
 }

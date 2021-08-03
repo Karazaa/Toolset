@@ -3,7 +3,7 @@ using NUnit.Framework;
 /// <summary>
 /// Class of integration tests used to validate the MonoBehaviourSingleton class.
 /// </summary>
-public class TestsMoneBehaviorSingleton
+public class TestsMonoBehaviorSingleton
 {
     [Test]
     public void TestNotNull()
