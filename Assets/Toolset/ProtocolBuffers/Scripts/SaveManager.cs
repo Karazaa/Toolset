@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Collections.Generic;
 using UnityEngine;
 using ProtoBuf;
 
@@ -8,44 +9,46 @@ using ProtoBuf;
 /// </summary>
 public static class SaveManager
 {
-    private const string c_filePathSuffix = "/{0}.bin";
+    private const string c_directoryFormat = "{0}/{1}";
+    private const string c_fileFormat = "{0}/{1}.bin";
+    private const string c_searchPattern = "*.bin";
 
     /// <summary>
-    /// Saves the given Protobuf model instance. Note that only one file can be generated per Protobuf Model. 
-    /// If repeated instances of data are needed, the pattern should be to make a parent model with a list of internal models to be serialized.
+    /// Saves the instance of a class to a specific filename.
+    /// Does not support directories within the filename yet. 
+    /// Class must have the ProtoContract Attribute.
     /// </summary>
-    /// <typeparam name="T">The type of Protobuf model to save.</typeparam>
-    /// <param name="modelToSave">The instance of the Protobuf model to save.</param>
-    public static void SaveModel<T>(T modelToSave) where T : class
+    /// <typeparam name="T">The class type to save. Files are saved in subdirectories grouped by type.</typeparam>
+    /// <param name="fileName">The name of the file.</param>
+    /// <param name="modelToSave">The instance of the class to save.</param>
+    public static void SaveModel<T>(string fileName, T modelToSave) where T : class
     {
-        if (!typeof(T).IsDefined(typeof(ProtoContractAttribute), true))
-            throw new InvalidOperationException("[Toolset.SaveManager] Attempting to save data model {0} that does not have the ProtoContract Attribute."
-                                                    .StringBuilderFormat(typeof(T).Name));
+        ValidateAttribute<T>("save");
 
-        string filePath = GetDataFilePathForType<T>();
-        FileStream fileStream;
+        string filePath = GetDataFilePathForType<T>(fileName);
+        Directory.CreateDirectory(GetDataDirectoryPathForType<T>());
 
         if (File.Exists(filePath))
-            fileStream = File.OpenWrite(filePath);
-        else
-            fileStream = File.Create(filePath);
+            File.Delete(filePath);
+
+        FileStream fileStream = File.Create(filePath);
 
         Serializer.Serialize(fileStream, modelToSave);
         fileStream.Close();
     }
 
     /// <summary>
-    /// Loads the Protobuf model from a file in local save data if it exists. Otherwise returns null.
+    /// Loads the filename into an instance of class T.
+    /// Returns null if no file can be found or if deserialization failed.
     /// </summary>
-    /// <typeparam name="T">The type of Protobuf model to load.</typeparam>
-    /// <returns>An instance of the Protobuf model or null.</returns>
-    public static T LoadModelIfSaved<T>() where T : class
+    /// <typeparam name="T">The class type to load. Files are saved in subdirectories grouped by type.</typeparam>
+    /// <param name="fileName">The name of the file.</param>
+    /// <returns>An instance of the class that has been loaded.</returns>
+    public static T LoadModel<T>(string fileName) where T : class
     {
-        if (!typeof(T).IsDefined(typeof(ProtoContractAttribute), true))
-            throw new InvalidOperationException("[Toolset.SaveManager] Attempting to load data model {0} that does not have the ProtoContract Attribute."
-                                                    .StringBuilderFormat(typeof(T).Name));
+        ValidateAttribute<T>("load");
 
-        string filePath = GetDataFilePathForType<T>();
+        string filePath = GetDataFilePathForType<T>(fileName);
 
         if (!File.Exists(filePath))
             return null;
@@ -58,12 +61,57 @@ public static class SaveManager
     }
 
     /// <summary>
-    /// Gets the path in local storage to a save file for a given Protobuf model type. 
+    /// Returns a dictionary of filepath to loaded instance of the class. Used
+    /// for loading all files of a type at once.
     /// </summary>
-    /// <typeparam name="T">The type of Protobuf model to get a path for.</typeparam>
-    /// <returns>The path to the save file in local storage.</returns>
-    public static string GetDataFilePathForType<T>()
+    /// <typeparam name="T">The class type to load. Files are saved in subdirectories grouped by type.</typeparam>
+    /// <returns>A dictionary of filepath to loaded instance of the class.</returns>
+    public static Dictionary<string, T> LoadModelsByType<T>()
     {
-        return Application.dataPath + (c_filePathSuffix.StringBuilderFormat(typeof(T).Name));
+        ValidateAttribute<T>("load all");
+
+        string directoryPath = GetDataDirectoryPathForType<T>();
+
+        Dictionary<string, T> output = new Dictionary<string, T>();
+        if (!Directory.Exists(directoryPath))
+            return output;
+
+        IEnumerable<string> filePaths = Directory.EnumerateFiles(directoryPath, c_searchPattern);
+        foreach (string filePath in filePaths)
+        {
+            FileStream fileStream = File.OpenRead(filePath);
+            output.Add(filePath, Serializer.Deserialize<T>(fileStream));
+            fileStream.Close();
+        }
+
+        return output;
+    }
+    
+    /// <summary>
+    /// Gets the path to the subdirectory for the given type of class.
+    /// </summary>
+    /// <typeparam name="T">The type of class to find a subdirectory for.</typeparam>
+    /// <returns>A path to the subdirectory for the given type of class.</returns>
+    public static string GetDataDirectoryPathForType<T>()
+    {
+        return c_directoryFormat.StringBuilderFormat(Application.dataPath, typeof(T).Name);
+    }
+
+    /// <summary>
+    /// Gets the full file path to the given file.
+    /// </summary>
+    /// <typeparam name="T">The type of class to find a path for.</typeparam>
+    /// <param name="fileName">The filename to find a path for.</param>
+    /// <returns>The full file path to the given file.</returns>
+    public static string GetDataFilePathForType<T>(string fileName)
+    {
+        return c_fileFormat.StringBuilderFormat(GetDataDirectoryPathForType<T>(), fileName);
+    }
+
+    private static void ValidateAttribute<T>(string operation)
+    {
+        if (!typeof(T).IsDefined(typeof(ProtoContractAttribute), true))
+            throw new InvalidOperationException("[Toolset.SaveManager] Attempting to {0} data model type {1} which does not have the ProtoContract Attribute."
+                                                    .StringBuilderFormat(operation, typeof(T).Name));
     }
 }
