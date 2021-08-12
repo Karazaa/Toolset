@@ -9,9 +9,10 @@ using ProtoBuf;
 /// </summary>
 public static class SaveManager
 {
+    // Note: Toolset saves all protobuf serialized files as .tso which stands for Toolset Serialized Object
+    private const string c_fileFormat = "{0}/{1}.tso";
+    private const string c_searchPattern = "*.tso";
     private const string c_directoryFormat = "{0}/{1}";
-    private const string c_fileFormat = "{0}/{1}.bin";
-    private const string c_searchPattern = "*.bin";
 
     /// <summary>
     /// Saves the instance of a class to a specific filename.
@@ -66,7 +67,7 @@ public static class SaveManager
     /// </summary>
     /// <typeparam name="T">The class type to load. Files are saved in subdirectories grouped by type.</typeparam>
     /// <returns>A dictionary of filepath to loaded instance of the class.</returns>
-    public static Dictionary<string, T> LoadModelsByType<T>()
+    public static Dictionary<string, T> LoadModelsByType<T>() where T : class
     {
         ValidateAttribute<T>("load all");
 
@@ -86,13 +87,50 @@ public static class SaveManager
 
         return output;
     }
-    
+
+    public static void DeleteModel<T>(string fileName) where T : class
+    {
+        ValidateAttribute<T>("delete");
+
+        string filePath = GetDataFilePathForType<T>(fileName);
+
+        if (!File.Exists(filePath))
+            return;
+
+        File.Delete(filePath);
+    }
+
+    public static void DeleteModelsByType<T>() where T : class
+    {
+        ValidateAttribute<T>("delete all");
+
+        string directoryPath = GetDataDirectoryPathForType<T>();
+
+        Directory.Delete(directoryPath, true);
+    }
+
+    public static void DeleteAllSaveData()
+    {
+        IEnumerable<string> filePaths = Directory.EnumerateFiles(Application.dataPath, c_searchPattern);
+        IEnumerable<string> directoryPaths = Directory.EnumerateDirectories(Application.dataPath);
+
+        foreach(string filePath in filePaths)
+        {
+            File.Delete(filePath);
+        }
+
+        foreach(string directoryPath in directoryPaths)
+        {
+            Directory.Delete(directoryPath, true);
+        }
+    }
+
     /// <summary>
     /// Gets the path to the subdirectory for the given type of class.
     /// </summary>
     /// <typeparam name="T">The type of class to find a subdirectory for.</typeparam>
     /// <returns>A path to the subdirectory for the given type of class.</returns>
-    public static string GetDataDirectoryPathForType<T>()
+    public static string GetDataDirectoryPathForType<T>() where T : class
     {
         return c_directoryFormat.StringBuilderFormat(Application.dataPath, typeof(T).Name);
     }
@@ -103,7 +141,7 @@ public static class SaveManager
     /// <typeparam name="T">The type of class to find a path for.</typeparam>
     /// <param name="fileName">The filename to find a path for.</param>
     /// <returns>The full file path to the given file.</returns>
-    public static string GetDataFilePathForType<T>(string fileName)
+    public static string GetDataFilePathForType<T>(string fileName) where T : class
     {
         return c_fileFormat.StringBuilderFormat(GetDataDirectoryPathForType<T>(), fileName);
     }

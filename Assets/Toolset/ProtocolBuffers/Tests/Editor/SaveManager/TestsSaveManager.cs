@@ -135,6 +135,26 @@ public class TestsSaveManager
         }
     }
 
+    [Test]
+    public void TestDelete()
+    {
+        //SaveManager.SaveModel(m_batchModelNames[0], GenerateRandomValidProtobuf());
+
+        //Assert.IsTrue(File.Exists(SaveManager.GetDataFilePathForType<ExampleProtobufModel>(m_batchModelNames[0])));
+    }
+
+    [Test]
+    public void TestDeleteAllByType()
+    {
+
+    }
+
+    [Test]
+    public void TestDeleteAllSaveData()
+    {
+
+    }
+
     [TearDown]
     public void TearDown()
     {
