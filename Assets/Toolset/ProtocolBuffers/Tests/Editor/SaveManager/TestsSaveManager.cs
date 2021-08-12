@@ -28,7 +28,7 @@ public class TestsSaveManager
     [Test]
     public void TestSaveFaultyProtobufModel()
     {
-        Assert.Throws<InvalidOperationException>(() =>
+        ToolsetAssert.Throws<InvalidOperationException>(() =>
         {
             SaveManager.SaveModel("Faulty", new ExampleFaultyProtobufModel());
         });
@@ -37,9 +37,63 @@ public class TestsSaveManager
     [Test]
     public void TestLoadFaultyProtobufModel()
     {
-        Assert.Throws<InvalidOperationException>(() =>
+        ToolsetAssert.Throws<InvalidOperationException>(() =>
         {
             SaveManager.LoadModel<ExampleFaultyProtobufModel>("Faulty");
+        });
+    }
+
+    [Test]
+    public void TestLoadByTypeFaultyProtobufModel()
+    {
+        ToolsetAssert.Throws<InvalidOperationException>(() =>
+        {
+            SaveManager.LoadModelsByType<ExampleFaultyProtobufModel>();
+        });
+    }
+
+    [Test]
+    public void TestDeleteFaultyProtobufModel()
+    {
+        ToolsetAssert.Throws<InvalidOperationException>(() =>
+        {
+            SaveManager.DeleteModel<ExampleFaultyProtobufModel>("Faulty");
+        });
+    }
+
+    [Test]
+    public void TestDeleteByTypeFaultyProtobufModel()
+    {
+        ToolsetAssert.Throws<InvalidOperationException>(() =>
+        {
+            SaveManager.DeleteModelsByType<ExampleFaultyProtobufModel>();
+        });
+    }
+
+    [Test]
+    public void TestSaveInvalidFileName()
+    {
+        AssertExceptionsOnInvalidFileNames((callbackParameter) => 
+        {
+            SaveManager.SaveModel(callbackParameter, new ExampleProtobufModel());
+        });
+    }
+
+    [Test]
+    public void TestLoadInvalidFileName()
+    {
+        AssertExceptionsOnInvalidFileNames((callbackParameter) =>
+        {
+            SaveManager.LoadModel<ExampleProtobufModel>(callbackParameter);
+        });
+    }
+
+    [Test]
+    public void TestDeleteInvalidFileName()
+    {
+        AssertExceptionsOnInvalidFileNames((callbackParameter) =>
+        {
+            SaveManager.DeleteModel<ExampleProtobufModel>(callbackParameter);
         });
     }
 
@@ -164,7 +218,6 @@ public class TestsSaveManager
         }
     }
 
-
     [TearDown]
     public void TearDown()
     {
@@ -219,5 +272,33 @@ public class TestsSaveManager
         }
 
         return output;
+    }
+
+    private void AssertExceptionsOnInvalidFileNames(Action<string> callbackToTest)
+    {
+        char[] invalidFileNameChars = Path.GetInvalidFileNameChars();
+
+        ToolsetAssert.Throws<InvalidOperationException>(() =>
+        {
+            callbackToTest(null);
+        });
+
+        ToolsetAssert.Throws<InvalidOperationException>(() =>
+        {
+            callbackToTest(string.Empty);
+        });
+
+        ToolsetAssert.Throws<InvalidOperationException>(() =>
+        {
+            callbackToTest("    ");
+        });
+
+        for (int i = 0; i < invalidFileNameChars.Length; ++i)
+        {
+            ToolsetAssert.Throws<InvalidOperationException>(() =>
+            {
+                callbackToTest(invalidFileNameChars[i].ToString());
+            });
+        }
     }
 }

@@ -6,7 +6,8 @@
         "UnityEditor.TestRunner",
         "ProtobufTestingUtils",
         "Core",
-        "ProtobufScripts"
+        "ProtobufScripts",
+        "TestingUtils"
     ],
     "includePlatforms": [
         "Editor"

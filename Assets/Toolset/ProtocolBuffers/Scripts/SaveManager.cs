@@ -14,6 +14,8 @@ public static class SaveManager
     private const string c_searchPattern = "*.tso";
     private const string c_directoryFormat = "{0}/{1}";
 
+    private static readonly List<char> s_invalidPathCharacters = new List<char>();
+
     /// <summary>
     /// Saves the instance of a class to a specific filename.
     /// Does not support directories within the filename yet. 
@@ -24,7 +26,8 @@ public static class SaveManager
     /// <param name="modelToSave">The instance of the class to save.</param>
     public static void SaveModel<T>(string fileName, T modelToSave) where T : class
     {
-        ValidateAttribute<T>("save");
+        ValidateAttribute<T>(nameof(SaveModel));
+        ValidateFileName(nameof(SaveModel), fileName);
 
         string filePath = GetDataFilePathForType<T>(fileName);
         Directory.CreateDirectory(GetDataDirectoryPathForType<T>());
@@ -47,7 +50,8 @@ public static class SaveManager
     /// <returns>An instance of the class that has been loaded.</returns>
     public static T LoadModel<T>(string fileName) where T : class
     {
-        ValidateAttribute<T>("load");
+        ValidateAttribute<T>(nameof(LoadModel));
+        ValidateFileName(nameof(LoadModel), fileName);
 
         string filePath = GetDataFilePathForType<T>(fileName);
 
@@ -69,7 +73,7 @@ public static class SaveManager
     /// <returns>A dictionary of filepath to loaded instance of the class.</returns>
     public static Dictionary<string, T> LoadModelsByType<T>() where T : class
     {
-        ValidateAttribute<T>("load all");
+        ValidateAttribute<T>(nameof(LoadModelsByType));
 
         string directoryPath = GetDataDirectoryPathForType<T>();
 
@@ -95,7 +99,8 @@ public static class SaveManager
     /// <param name="fileName">The name of the file to delete.</param>
     public static void DeleteModel<T>(string fileName) where T : class
     {
-        ValidateAttribute<T>("delete");
+        ValidateAttribute<T>(nameof(DeleteModel));
+        ValidateFileName(nameof(DeleteModel), fileName);
 
         string filePath = GetDataFilePathForType<T>(fileName);
 
@@ -111,7 +116,7 @@ public static class SaveManager
     /// <typeparam name="T">The type of class having all saved models deleted.</typeparam>
     public static void DeleteModelsByType<T>() where T : class
     {
-        ValidateAttribute<T>("delete all");
+        ValidateAttribute<T>(nameof(DeleteModelsByType));
 
         string directoryPath = GetDataDirectoryPathForType<T>();
 
@@ -142,7 +147,14 @@ public static class SaveManager
     private static void ValidateAttribute<T>(string operation)
     {
         if (!typeof(T).IsDefined(typeof(ProtoContractAttribute), true))
-            throw new InvalidOperationException("[Toolset.SaveManager] Attempting to {0} data model type {1} which does not have the ProtoContract Attribute."
+            throw new InvalidOperationException("[Toolset.SaveManager] Attempting {0} operation for model type {1} which does not have the ProtoContract Attribute."
                                                     .StringBuilderFormat(operation, typeof(T).Name));
+    }
+
+    private static void ValidateFileName(string operation, string fileName)
+    {
+        if (fileName.IsNullOrWhiteSpace() || fileName.IndexOfAny(Path.GetInvalidFileNameChars()) != -1)
+            throw new InvalidOperationException("[Toolset.SaveManager] File Name {0} passed in {1} operation is not a valid file name."
+                                        .StringBuilderFormat(fileName, operation));
     }
 }
