@@ -138,22 +138,32 @@ public class TestsSaveManager
     [Test]
     public void TestDelete()
     {
-        //SaveManager.SaveModel(m_batchModelNames[0], GenerateRandomValidProtobuf());
+        SaveManager.SaveModel(m_batchModelNames[0], GenerateRandomValidProtobuf());
 
-        //Assert.IsTrue(File.Exists(SaveManager.GetDataFilePathForType<ExampleProtobufModel>(m_batchModelNames[0])));
+        string filePath = SaveManager.GetDataFilePathForType<ExampleProtobufModel>(m_batchModelNames[0]);
+        Assert.IsTrue(File.Exists(filePath));
+
+        SaveManager.DeleteModel<ExampleProtobufModel>(m_batchModelNames[0]);
+        Assert.IsFalse(File.Exists(filePath));
     }
 
     [Test]
     public void TestDeleteAllByType()
     {
+        for (int i = 0; i < m_batchModelNames.Count; ++i)
+        {
+            SaveManager.SaveModel(m_batchModelNames[i], GenerateRandomValidProtobuf());
+            Assert.IsTrue(File.Exists(SaveManager.GetDataFilePathForType<ExampleProtobufModel>(m_batchModelNames[i])));
+        }
 
+        SaveManager.DeleteModelsByType<ExampleProtobufModel>();
+
+        for (int i = 0; i < m_batchModelNames.Count; ++i)
+        {
+            Assert.IsFalse(File.Exists(SaveManager.GetDataFilePathForType<ExampleProtobufModel>(m_batchModelNames[i])));
+        }
     }
 
-    [Test]
-    public void TestDeleteAllSaveData()
-    {
-
-    }
 
     [TearDown]
     public void TearDown()

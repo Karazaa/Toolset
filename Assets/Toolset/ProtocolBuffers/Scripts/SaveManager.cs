@@ -88,6 +88,11 @@ public static class SaveManager
         return output;
     }
 
+    /// <summary>
+    /// Deletes the model saved at the given location.
+    /// </summary>
+    /// <typeparam name="T">The type of class that has an instance serialized save file being deleted.</typeparam>
+    /// <param name="fileName">The name of the file to delete.</param>
     public static void DeleteModel<T>(string fileName) where T : class
     {
         ValidateAttribute<T>("delete");
@@ -100,6 +105,10 @@ public static class SaveManager
         File.Delete(filePath);
     }
 
+    /// <summary>
+    /// Deletes all models of the given class type.
+    /// </summary>
+    /// <typeparam name="T">The type of class having all saved models deleted.</typeparam>
     public static void DeleteModelsByType<T>() where T : class
     {
         ValidateAttribute<T>("delete all");
@@ -107,22 +116,6 @@ public static class SaveManager
         string directoryPath = GetDataDirectoryPathForType<T>();
 
         Directory.Delete(directoryPath, true);
-    }
-
-    public static void DeleteAllSaveData()
-    {
-        IEnumerable<string> filePaths = Directory.EnumerateFiles(Application.dataPath, c_searchPattern);
-        IEnumerable<string> directoryPaths = Directory.EnumerateDirectories(Application.dataPath);
-
-        foreach(string filePath in filePaths)
-        {
-            File.Delete(filePath);
-        }
-
-        foreach(string directoryPath in directoryPaths)
-        {
-            Directory.Delete(directoryPath, true);
-        }
     }
 
     /// <summary>
