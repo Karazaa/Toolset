@@ -60,12 +60,12 @@ public class TestsStateMachine
     [Test]
     public void TestMultipleCallbacksException()
     {
-        Assert.Throws<InvalidOperationException>(() => 
+        ToolsetAssert.Throws<InvalidOperationException>(() => 
         {
             m_stateMachine.ExecuteOnEnter(States.A, EnterB);
         });
 
-        Assert.Throws<InvalidOperationException>(() =>
+        ToolsetAssert.Throws<InvalidOperationException>(() =>
         {
             m_stateMachine.ExecuteOnExit(States.A, ExitB);
         });
@@ -74,7 +74,7 @@ public class TestsStateMachine
     [Test]
     public void TestMultipleTransitionsException()
     {
-        Assert.Throws<InvalidOperationException>(() =>
+        ToolsetAssert.Throws<InvalidOperationException>(() =>
         {
             m_stateMachine.OnEventGoto(States.A, Events.AToB, States.C);
         });

@@ -89,12 +89,12 @@ public class TestsGameObjectPools
     {
         ExampleFaultyPoolable instance = null;
 
-        Assert.Throws<InvalidOperationException>(() => 
+        ToolsetAssert.Throws<InvalidOperationException>(() => 
         {
             instance = GameObjectPool<ExampleFaultyPoolable>.I.Take();
         });
 
-        Assert.Throws<InvalidOperationException>(() =>
+        ToolsetAssert.Throws<InvalidOperationException>(() =>
         {
             GameObjectPool<ExampleFaultyPoolable>.I.Return(instance);
         });
