@@ -35,10 +35,10 @@ public static class SaveManager
         if (File.Exists(filePath))
             File.Delete(filePath);
 
-        FileStream fileStream = File.Create(filePath);
-
-        Serializer.Serialize(fileStream, modelToSave);
-        fileStream.Close();
+        using (FileStream fileStream = File.Create(filePath))
+        {
+            Serializer.Serialize(fileStream, modelToSave);
+        }
     }
 
     /// <summary>
@@ -58,11 +58,11 @@ public static class SaveManager
         if (!File.Exists(filePath))
             return null;
 
-        FileStream fileStream = File.OpenRead(filePath);
-        T output = Serializer.Deserialize<T>(fileStream);
-        fileStream.Close();
-
-        return output;
+        using (FileStream fileStream = File.OpenRead(filePath))
+        {
+            T output = Serializer.Deserialize<T>(fileStream);
+            return output;
+        }        
     }
 
     /// <summary>
@@ -84,9 +84,10 @@ public static class SaveManager
         IEnumerable<string> filePaths = Directory.EnumerateFiles(directoryPath, c_searchPattern);
         foreach (string filePath in filePaths)
         {
-            FileStream fileStream = File.OpenRead(filePath);
-            output.Add(filePath, Serializer.Deserialize<T>(fileStream));
-            fileStream.Close();
+            using (FileStream fileStream = File.OpenRead(filePath))
+            {
+                output.Add(filePath, Serializer.Deserialize<T>(fileStream));
+            }
         }
 
         return output;
