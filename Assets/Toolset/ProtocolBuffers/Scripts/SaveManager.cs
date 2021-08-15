@@ -11,9 +11,10 @@ using ProtoBuf.Reflection;
 public static class SaveManager
 {
     // Note: Toolset saves all protobuf serialized files as .tso which stands for Toolset Serialized Object
-    private const string c_fileFormat = "{0}/{1}.tso";
-    private const string c_searchPattern = "*.tso";
-    private const string c_directoryFormat = "{0}/{1}";
+    private const string c_tsoFileFormat = "{0}/{1}.tso";
+    private const string c_tsoSearchPattern = "*.tso";
+    private const string c_protoFileFormat = "{0}/{1}.proto";
+    private const string c_protoSearchPattern = "*.proto";
 
     private static readonly List<char> s_invalidPathCharacters = new List<char>();
 
@@ -63,7 +64,7 @@ public static class SaveManager
         {
             T output = Serializer.Deserialize<T>(fileStream);
             return output;
-        }        
+        }
     }
 
     /// <summary>
@@ -82,7 +83,7 @@ public static class SaveManager
         if (!Directory.Exists(directoryPath))
             return output;
 
-        IEnumerable<string> filePaths = Directory.EnumerateFiles(directoryPath, c_searchPattern);
+        IEnumerable<string> filePaths = Directory.EnumerateFiles(directoryPath, c_tsoSearchPattern);
         foreach (string filePath in filePaths)
         {
             using (FileStream fileStream = File.OpenRead(filePath))
@@ -143,19 +144,52 @@ public static class SaveManager
     /// <returns>The full file path to the given file.</returns>
     public static string GetDataFilePathForType<T>(string fileName) where T : class
     {
-        return c_fileFormat.StringBuilderFormat(GetDataDirectoryPathForType<T>(), fileName);
+        return c_tsoFileFormat.StringBuilderFormat(GetDataDirectoryPathForType<T>(), fileName);
     }
 
 #if UNITY_EDITOR
-    public static void GenerateSingleCSharpFromProto(string protoDirectoryPath, string generatedDirectoryPath, string protoFileName, bool refreshAndRecompile = false)
+    /// <summary>
+    /// Compiles the specified .proto file within a directory into a C# script. Can only be used in Unity Editor. 
+    /// </summary>
+    /// <param name="protoDirectoryPath">Path to the directory that contains the .proto file to generate.</param>
+    /// <param name="generatedDirectoryPath">Path to the directory that will contain the generated .cs file.</param>
+    /// <param name="protoFileName">The proto file to generate.</param>
+    /// <param name="refreshAndRecompile">Whether or not the Unity Editor should immediately force an AssetDatabase refresh and recompilation.</param>
+    public static void GenerateSingleCSharpFromProto(string protoDirectoryPath, string generatedDirectoryPath, string protoFileName, bool refreshAndRecompile = true)
     {
-        string protoContents = File.ReadAllText(Path.Combine(protoDirectoryPath, protoFileName));
-        CompilerResult compilerResult = CSharpCodeGenerator.Default.Compile(new CodeFile(protoFileName, protoContents));
-
         Directory.CreateDirectory(generatedDirectoryPath);
+
+        string protoContents = File.ReadAllText(c_protoFileFormat.StringBuilderFormat(protoDirectoryPath, protoFileName));
+        CompilerResult compilerResult = CSharpCodeGenerator.Default.Compile(new CodeFile(protoFileName, protoContents));
         File.WriteAllText(Path.Combine(generatedDirectoryPath, compilerResult.Files[0].Name), compilerResult.Files[0].Text);
 
-        if (refreshAndRecompile)
+        RefreshAndRecompileIfAllowed(refreshAndRecompile);
+    }
+
+    /// <summary>
+    /// Compiles all .proto files in the specified directory into C# scripts. Can only be used in Unity Editor
+    /// </summary>
+    /// <param name="protoDirectoryPath">Path to the directory that contains the .proto files to generate.</param>
+    /// <param name="generatedDirectoryPath">Path to the directory that will contain the generated .cs files.</param>
+    /// <param name="refreshAndRecompile">Whether or not the Unity Editor should immediately force an AssetDatabase refresh and recompilation.</param>
+    public static void GenerateCSharpFromProto(string protoDirectoryPath, string generatedDirectoryPath, bool refreshAndRecompile = true)
+    {
+        Directory.CreateDirectory(generatedDirectoryPath);
+
+        string[] files = Directory.GetFiles(protoDirectoryPath, c_protoSearchPattern);
+        for (int i = 0; i < files.Length; ++i)
+        {
+            string protoContents = File.ReadAllText(c_protoFileFormat.StringBuilderFormat(protoDirectoryPath, Path.GetFileNameWithoutExtension(files[i])));
+            CompilerResult compilerResult = CSharpCodeGenerator.Default.Compile(new CodeFile(Path.GetFileName(files[i]), protoContents));
+            File.WriteAllText(Path.Combine(generatedDirectoryPath, compilerResult.Files[0].Name), compilerResult.Files[0].Text);
+        }
+
+        RefreshAndRecompileIfAllowed(refreshAndRecompile);
+    }
+
+    private static void RefreshAndRecompileIfAllowed(bool isAllowed)
+    {
+        if (isAllowed)
         {
             UnityEditor.AssetDatabase.Refresh();
             UnityEditor.Compilation.CompilationPipeline.RequestScriptCompilation();

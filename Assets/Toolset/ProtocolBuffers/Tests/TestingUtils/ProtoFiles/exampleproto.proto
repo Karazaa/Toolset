@@ -1,0 +1,10 @@
+syntax = "proto3";
+package tutorial;
+
+import "google/protobuf/timestamp.proto";
+
+message ExampleProto{
+  string exampleString = 1;
+  int32 exampleInt = 2;
+  google.protobuf.Timestamp last_updated = 3;
+}

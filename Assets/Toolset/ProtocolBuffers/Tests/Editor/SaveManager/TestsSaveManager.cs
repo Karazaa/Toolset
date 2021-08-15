@@ -13,8 +13,9 @@ public class TestsSaveManager
     private readonly string m_pathToProtoSourceDirectory = UnityEngine.Application.dataPath + "/Toolset/ProtocolBuffers/Tests/TestingUtils/ProtoFiles";
     private readonly string m_pathToProtoGeneratedDirectory = UnityEngine.Application.dataPath + "/Toolset/ProtocolBuffers/Tests/TestingUtils/Generated";
 
-    private const string c_exampleProtoFileName = "addressbook.proto";
+    private const string c_exampleProtoFileName = "addressbook";
     private const string c_expectedGeneratedCSharpFileName = "addressbook.cs";
+    private const string c_secondExpectedGeneratedCSharpFileName = "exampleproto.cs";
 
     [SetUp]
     public void SetUp()
@@ -226,8 +227,16 @@ public class TestsSaveManager
     [Test]
     public void TestGenerateSingleCSharpFromProto()
     {
-        SaveManager.GenerateSingleCSharpFromProto(m_pathToProtoSourceDirectory, m_pathToProtoGeneratedDirectory, c_exampleProtoFileName);
+        SaveManager.GenerateSingleCSharpFromProto(m_pathToProtoSourceDirectory, m_pathToProtoGeneratedDirectory, c_exampleProtoFileName, false);
         Assert.IsTrue(File.Exists(Path.Combine(m_pathToProtoGeneratedDirectory, c_expectedGeneratedCSharpFileName)));
+    }
+
+    [Test]
+    public void TestGenerateCSharpFromProto()
+    {
+        SaveManager.GenerateCSharpFromProto(m_pathToProtoSourceDirectory, m_pathToProtoGeneratedDirectory, false);
+        Assert.IsTrue(File.Exists(Path.Combine(m_pathToProtoGeneratedDirectory, c_expectedGeneratedCSharpFileName)));
+        Assert.IsTrue(File.Exists(Path.Combine(m_pathToProtoGeneratedDirectory, c_secondExpectedGeneratedCSharpFileName)));
     }
 
     [TearDown]
@@ -236,19 +245,45 @@ public class TestsSaveManager
         for (int i = 0; i < m_batchModelNames.Count; ++i)
         {
             string filePath = SaveManager.GetDataFilePathForType<ExampleProtobufModel>(m_batchModelNames[i]);
-            if (File.Exists(filePath))
-                File.Delete(filePath);
+            DeleteFileAndMetaIfExists(filePath);
         }
 
         string directoryPath = SaveManager.GetDataDirectoryPathForType<ExampleProtobufModel>();
-        if (Directory.Exists(directoryPath))
-            Directory.Delete(directoryPath);
+        DeleteDirectoryAndMetaIfExists(directoryPath);
 
         if (Directory.Exists(m_pathToProtoGeneratedDirectory))
         {
-            string filePath = Path.Combine(m_pathToProtoGeneratedDirectory, c_expectedGeneratedCSharpFileName);
+            DeleteFileAndMetaIfExists(Path.Combine(m_pathToProtoGeneratedDirectory, c_expectedGeneratedCSharpFileName));
+            DeleteFileAndMetaIfExists(Path.Combine(m_pathToProtoGeneratedDirectory, c_secondExpectedGeneratedCSharpFileName));
+            DeleteDirectoryAndMetaIfExists(m_pathToProtoGeneratedDirectory);
+        }
+    }
+
+    [OneTimeTearDown]
+    public void OneTimeTearDown()
+    {
+        UnityEditor.AssetDatabase.Refresh();
+    }
+
+    private void DeleteFileAndMetaIfExists(string filePath)
+    {
+        if (File.Exists(filePath))
+        {
+            File.Delete(filePath);
+            filePath += ".meta";
             if (File.Exists(filePath))
                 File.Delete(filePath);
+        }
+    }
+
+    private void DeleteDirectoryAndMetaIfExists(string directoryPath)
+    {
+        if (Directory.Exists(directoryPath))
+        {
+            Directory.Delete(directoryPath);
+            directoryPath += ".meta";
+            if (File.Exists(directoryPath))
+                File.Delete(directoryPath);
         }
     }
 
