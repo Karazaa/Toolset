@@ -10,6 +10,11 @@ public class TestsSaveManager
 {
     private Random m_random;
     private readonly List<string> m_batchModelNames = new List<string>() { "example1", "example2", "example3" , "example4" , "example5" };
+    private readonly string m_pathToProtoSourceDirectory = UnityEngine.Application.dataPath + "/Toolset/ProtocolBuffers/Tests/TestingUtils/ProtoFiles";
+    private readonly string m_pathToProtoGeneratedDirectory = UnityEngine.Application.dataPath + "/Toolset/ProtocolBuffers/Tests/TestingUtils/Generated";
+
+    private const string c_exampleProtoFileName = "addressbook.proto";
+    private const string c_expectedGeneratedCSharpFileName = "addressbook.cs";
 
     [SetUp]
     public void SetUp()
@@ -218,6 +223,13 @@ public class TestsSaveManager
         }
     }
 
+    [Test]
+    public void TestGenerateSingleCSharpFromProto()
+    {
+        SaveManager.GenerateSingleCSharpFromProto(m_pathToProtoSourceDirectory, m_pathToProtoGeneratedDirectory, c_exampleProtoFileName);
+        Assert.IsTrue(File.Exists(Path.Combine(m_pathToProtoGeneratedDirectory, c_expectedGeneratedCSharpFileName)));
+    }
+
     [TearDown]
     public void TearDown()
     {
@@ -231,6 +243,13 @@ public class TestsSaveManager
         string directoryPath = SaveManager.GetDataDirectoryPathForType<ExampleProtobufModel>();
         if (Directory.Exists(directoryPath))
             Directory.Delete(directoryPath);
+
+        if (Directory.Exists(m_pathToProtoGeneratedDirectory))
+        {
+            string filePath = Path.Combine(m_pathToProtoGeneratedDirectory, c_expectedGeneratedCSharpFileName);
+            if (File.Exists(filePath))
+                File.Delete(filePath);
+        }
     }
 
     private void AssertModelsAreEqual(ExampleProtobufModel expected, ExampleProtobufModel actual)

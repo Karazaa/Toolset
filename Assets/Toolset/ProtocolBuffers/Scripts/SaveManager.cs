@@ -3,6 +3,7 @@ using System.IO;
 using System.Collections.Generic;
 using UnityEngine;
 using ProtoBuf;
+using ProtoBuf.Reflection;
 
 /// <summary>
 /// Static class that provides utility methods for saving/loading protobuf binaries to local storage.
@@ -131,7 +132,7 @@ public static class SaveManager
     /// <returns>A path to the subdirectory for the given type of class.</returns>
     public static string GetDataDirectoryPathForType<T>() where T : class
     {
-        return c_directoryFormat.StringBuilderFormat(Application.dataPath, typeof(T).Name);
+        return Path.Combine(Application.dataPath, typeof(T).Name);
     }
 
     /// <summary>
@@ -144,6 +145,23 @@ public static class SaveManager
     {
         return c_fileFormat.StringBuilderFormat(GetDataDirectoryPathForType<T>(), fileName);
     }
+
+#if UNITY_EDITOR
+    public static void GenerateSingleCSharpFromProto(string protoDirectoryPath, string generatedDirectoryPath, string protoFileName, bool refreshAndRecompile = false)
+    {
+        string protoContents = File.ReadAllText(Path.Combine(protoDirectoryPath, protoFileName));
+        CompilerResult compilerResult = CSharpCodeGenerator.Default.Compile(new CodeFile(protoFileName, protoContents));
+
+        Directory.CreateDirectory(generatedDirectoryPath);
+        File.WriteAllText(Path.Combine(generatedDirectoryPath, compilerResult.Files[0].Name), compilerResult.Files[0].Text);
+
+        if (refreshAndRecompile)
+        {
+            UnityEditor.AssetDatabase.Refresh();
+            UnityEditor.Compilation.CompilationPipeline.RequestScriptCompilation();
+        }
+    }
+#endif
 
     private static void ValidateAttribute<T>(string operation)
     {
