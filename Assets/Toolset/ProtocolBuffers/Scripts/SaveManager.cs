@@ -28,8 +28,11 @@ public static class SaveManager
     /// <param name="modelToSave">The instance of the class to save.</param>
     public static void SaveModel<T>(string fileName, T modelToSave) where T : class
     {
-        ValidateAttribute<T>(nameof(SaveModel));
         ValidateFileName(nameof(SaveModel), fileName);
+
+        bool isProtoGeneratedCSharp = typeof(T) is IExtensible;
+        if (!isProtoGeneratedCSharp)
+            ValidateAttribute<T>(nameof(SaveModel));
 
         string filePath = GetDataFilePathForType<T>(fileName);
         Directory.CreateDirectory(GetDataDirectoryPathForType<T>());
@@ -39,9 +42,18 @@ public static class SaveManager
 
         using (FileStream fileStream = File.Create(filePath))
         {
-            Serializer.Serialize(fileStream, modelToSave);
+            if (isProtoGeneratedCSharp)
+            {
+                // TODO: Serialize the google way.
+            }
+            else
+            {
+                // Serialize the protobuf-net way.
+                Serializer.Serialize(fileStream, modelToSave);
+            } 
         }
     }
+
 
     /// <summary>
     /// Loads the filename into an instance of class T.
@@ -52,8 +64,11 @@ public static class SaveManager
     /// <returns>An instance of the class that has been loaded.</returns>
     public static T LoadModel<T>(string fileName) where T : class
     {
-        ValidateAttribute<T>(nameof(LoadModel));
         ValidateFileName(nameof(LoadModel), fileName);
+
+        bool isProtoGeneratedCSharp = typeof(T) is IExtensible;
+        if (!isProtoGeneratedCSharp)
+            ValidateAttribute<T>(nameof(LoadModel));
 
         string filePath = GetDataFilePathForType<T>(fileName);
 
@@ -62,8 +77,17 @@ public static class SaveManager
 
         using (FileStream fileStream = File.OpenRead(filePath))
         {
-            T output = Serializer.Deserialize<T>(fileStream);
-            return output;
+            if (isProtoGeneratedCSharp)
+            {
+                // TODO: Deserialize the google way.
+                return null;
+            }
+            else
+            {
+                // Deserialize the protobuf-net way.
+                T output = Serializer.Deserialize<T>(fileStream);
+                return output;
+            }
         }
     }
 
@@ -75,7 +99,9 @@ public static class SaveManager
     /// <returns>A dictionary of filepath to loaded instance of the class.</returns>
     public static Dictionary<string, T> LoadModelsByType<T>() where T : class
     {
-        ValidateAttribute<T>(nameof(LoadModelsByType));
+        bool isProtoGeneratedCSharp = typeof(T) is IExtensible;
+        if (!isProtoGeneratedCSharp)
+            ValidateAttribute<T>(nameof(LoadModelsByType));
 
         string directoryPath = GetDataDirectoryPathForType<T>();
 
@@ -88,7 +114,16 @@ public static class SaveManager
         {
             using (FileStream fileStream = File.OpenRead(filePath))
             {
-                output.Add(filePath, Serializer.Deserialize<T>(fileStream));
+                if (isProtoGeneratedCSharp)
+                {
+                    // TODO: Deserialize the google way.
+                    return null;
+                }
+                else
+                {
+                    // Deserialize the protobuf-net way.
+                    output.Add(filePath, Serializer.Deserialize<T>(fileStream));
+                }
             }
         }
 
