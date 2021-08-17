@@ -10,7 +10,7 @@ namespace Toolset.ProtocolBuffers.Tests
     /// </summary>
     public class TestsProtobufNet
     {
-        private static string c_testFilePath = "Assets/Toolset/ProtocolBuffers/Tests/Editor/ProtobufNet/TestsProtobufNet.bin";
+        private static string c_testFilePath = "Assets/Toolset/ProtocolBuffers/Tests/Editor/ProtobufNet/TestsProtobufNet.tso";
 
         [Test]
         public void TestSerializeAndDeserialize()
