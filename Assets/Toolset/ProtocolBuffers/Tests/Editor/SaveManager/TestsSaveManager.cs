@@ -2,6 +2,8 @@ using NUnit.Framework;
 using System;
 using System.IO;
 using System.Collections.Generic;
+using Toolset.ProtocolBuffers.Tests;
+using UnityEditor;
 
 /// <summary>
 /// Class of unit tests used to validate the SaveManager class.
@@ -115,7 +117,7 @@ public class TestsSaveManager
             ExampleInt = 456,
             ExampleString = "Some random words.",
             ExampleInternalModel = new ExampleInternalProtobufModel()
-            { 
+            {
                 ExampleString1 = "string 1",
                 ExampleString2 = "string 2",
                 ExampleString3 = "string 3"
@@ -130,6 +132,21 @@ public class TestsSaveManager
         ExampleProtobufModel modelToLoad = SaveManager.LoadModel<ExampleProtobufModel>(m_batchModelNames[0]);
 
         AssertModelsAreEqual(modelToSave, modelToLoad);
+
+        ExamplePersistentProto exampleGeneratedProto = new ExamplePersistentProto()
+        {
+            ExampleString = "Hello",
+            ExampleInt = 2,
+            LastUpdated = DateTime.Now,
+        };
+
+        SaveManager.SaveModel(m_batchModelNames[1], exampleGeneratedProto);
+
+        Assert.IsTrue(File.Exists(SaveManager.GetDataFilePathForType<ExamplePersistentProto>(m_batchModelNames[1])));
+
+        ExamplePersistentProto generatedModelToLoad = SaveManager.LoadModel<ExamplePersistentProto>(m_batchModelNames[1]);
+
+        AssertGeneratedModelsAreEqual(exampleGeneratedProto, generatedModelToLoad);
     }
 
     [Test]
@@ -138,6 +155,7 @@ public class TestsSaveManager
         TestSaveAndLoad();
 
         ExampleProtobufModel preSaveLoadedModel = SaveManager.LoadModel<ExampleProtobufModel>(m_batchModelNames[0]);
+        ExamplePersistentProto preSaveGeneratedLoadedModel = SaveManager.LoadModel<ExamplePersistentProto>(m_batchModelNames[1]);
 
         // Note: We can't lean on GenerateRandomValidProtobuf for generation here, because we need to guarantee that 
         // this saved model has different values from the ones in TestSaveAndLoad. Although generating these models
@@ -165,6 +183,23 @@ public class TestsSaveManager
         ExampleProtobufModel modelToLoad = SaveManager.LoadModel<ExampleProtobufModel>(m_batchModelNames[0]);
 
         AssertModelsAreEqual(modelToSave, modelToLoad);
+
+        ExamplePersistentProto generatedModelToSave = new ExamplePersistentProto()
+        {
+            ExampleString = "Goodbye",
+            ExampleInt = 999,
+            LastUpdated = DateTime.Now.AddDays(10),
+        };
+
+        AssertGeneratedModelsAreNotEqual(generatedModelToSave, preSaveGeneratedLoadedModel);
+
+        SaveManager.SaveModel(m_batchModelNames[1], generatedModelToSave);
+
+        Assert.IsTrue(File.Exists(SaveManager.GetDataFilePathForType<ExamplePersistentProto>(m_batchModelNames[1])));
+
+        ExamplePersistentProto generatedModelToLoad = SaveManager.LoadModel<ExamplePersistentProto>(m_batchModelNames[1]);
+
+        AssertGeneratedModelsAreEqual(generatedModelToSave, generatedModelToLoad);
     }
 
     [Test]
@@ -172,7 +207,7 @@ public class TestsSaveManager
     {
         Dictionary<string, ExampleProtobufModel> modelsToSave = new Dictionary<string, ExampleProtobufModel>();
 
-        for (int i = 0; i < m_batchModelNames.Count; ++i)
+        for (int i = 0; i < 3; ++i)
         {
             modelsToSave.Add(m_batchModelNames[i], GenerateRandomValidProtobuf());
         }
@@ -192,6 +227,30 @@ public class TestsSaveManager
         foreach (KeyValuePair<string, ExampleProtobufModel> pair in loadedModels)
         {
             AssertModelsAreEqual(modelsToSave[Path.GetFileNameWithoutExtension(pair.Key)], pair.Value);
+        }
+
+        Dictionary<string, ExamplePersistentProto> generatedModelsToSave = new Dictionary<string, ExamplePersistentProto>();
+
+        for (int i = 3; i < m_batchModelNames.Count; ++i)
+        {
+            generatedModelsToSave.Add(m_batchModelNames[i], GenerateRandomPersistentProto());
+        }
+
+        foreach (KeyValuePair<string, ExamplePersistentProto> pair in generatedModelsToSave)
+        {
+            SaveManager.SaveModel(pair.Key, pair.Value);
+        }
+
+        foreach (KeyValuePair<string, ExamplePersistentProto> pair in generatedModelsToSave)
+        {
+            Assert.IsTrue(File.Exists(SaveManager.GetDataFilePathForType<ExamplePersistentProto>(pair.Key)));
+        }
+
+        Dictionary<string, ExamplePersistentProto> generatedLoadedModels = SaveManager.LoadModelsByType<ExamplePersistentProto>();
+
+        foreach (KeyValuePair<string, ExamplePersistentProto> pair in generatedLoadedModels)
+        {
+            AssertGeneratedModelsAreEqual(generatedModelsToSave[Path.GetFileNameWithoutExtension(pair.Key)], pair.Value);
         }
     }
 
@@ -244,12 +303,12 @@ public class TestsSaveManager
     {
         for (int i = 0; i < m_batchModelNames.Count; ++i)
         {
-            string filePath = SaveManager.GetDataFilePathForType<ExampleProtobufModel>(m_batchModelNames[i]);
-            DeleteFileAndMetaIfExists(filePath);
+            DeleteFileAndMetaIfExists(SaveManager.GetDataFilePathForType<ExampleProtobufModel>(m_batchModelNames[i]));
+            DeleteFileAndMetaIfExists(SaveManager.GetDataFilePathForType<ExamplePersistentProto>(m_batchModelNames[i]));
         }
 
-        string directoryPath = SaveManager.GetDataDirectoryPathForType<ExampleProtobufModel>();
-        DeleteDirectoryAndMetaIfExists(directoryPath);
+        DeleteDirectoryAndMetaIfExists(SaveManager.GetDataDirectoryPathForType<ExampleProtobufModel>());
+        DeleteDirectoryAndMetaIfExists(SaveManager.GetDataDirectoryPathForType<ExamplePersistentProto>());
 
         if (Directory.Exists(m_pathToProtoGeneratedDirectory))
         {
@@ -262,7 +321,15 @@ public class TestsSaveManager
     [OneTimeTearDown]
     public void OneTimeTearDown()
     {
-        UnityEditor.AssetDatabase.Refresh();
+        AssetDatabase.Refresh();
+    }
+
+    [MenuItem("Toolset/Testing/Generate Persistent Proto")]
+    public static void GeneratePersistentProto()
+    {
+        string pathToPersistentProtoSourceDirectory = UnityEngine.Application.dataPath + "/Toolset/ProtocolBuffers/Tests/TestingUtils/PersistentTesting/ProtoFiles";
+        string pathToPersistentProtoGeneratedDirectory = UnityEngine.Application.dataPath + "/Toolset/ProtocolBuffers/Tests/TestingUtils/PersistentTesting/Generated";
+        SaveManager.GenerateCSharpFromProto(pathToPersistentProtoSourceDirectory, pathToPersistentProtoGeneratedDirectory);
     }
 
     private void DeleteFileAndMetaIfExists(string filePath)
@@ -296,6 +363,13 @@ public class TestsSaveManager
         Assert.AreEqual(expected.ExampleInternalModel.ExampleString3, actual.ExampleInternalModel.ExampleString3);
     }
 
+    private void AssertGeneratedModelsAreEqual(ExamplePersistentProto expected, ExamplePersistentProto actual)
+    {
+        Assert.AreEqual(expected.ExampleInt, actual.ExampleInt);
+        Assert.AreEqual(expected.ExampleString, actual.ExampleString);
+        Assert.AreEqual(expected.LastUpdated, actual.LastUpdated);
+    }
+
     private void AssertModelsAreNotEqual(ExampleProtobufModel expected, ExampleProtobufModel actual)
     {
         Assert.AreNotEqual(expected.ExampleInt, actual.ExampleInt);
@@ -303,6 +377,13 @@ public class TestsSaveManager
         Assert.AreNotEqual(expected.ExampleInternalModel.ExampleString1, actual.ExampleInternalModel.ExampleString1);
         Assert.AreNotEqual(expected.ExampleInternalModel.ExampleString2, actual.ExampleInternalModel.ExampleString2);
         Assert.AreNotEqual(expected.ExampleInternalModel.ExampleString3, actual.ExampleInternalModel.ExampleString3);
+    }
+
+    private void AssertGeneratedModelsAreNotEqual(ExamplePersistentProto expected, ExamplePersistentProto actual)
+    {
+        Assert.AreNotEqual(expected.ExampleInt, actual.ExampleInt);
+        Assert.AreNotEqual(expected.ExampleString, actual.ExampleString);
+        Assert.AreNotEqual(expected.LastUpdated, actual.LastUpdated);
     }
 
     private ExampleProtobufModel GenerateRandomValidProtobuf()
@@ -324,6 +405,18 @@ public class TestsSaveManager
         {
             output.ExampleIntList.Add(m_random.Next());
         }
+
+        return output;
+    }
+
+    private ExamplePersistentProto GenerateRandomPersistentProto()
+    {
+        ExamplePersistentProto output = new ExamplePersistentProto()
+        {
+            ExampleInt = m_random.Next(),
+            ExampleString = m_random.Next().ToString(),
+            LastUpdated = DateTime.Now.AddSeconds(m_random.Next(1, 10000))
+        };
 
         return output;
     }

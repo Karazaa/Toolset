@@ -3,7 +3,7 @@ package Toolset.ProtocolBuffers.Tests;
 
 import "google/protobuf/timestamp.proto";
 
-message ExampleProto{
+message ExamplePersistentProto{
   string ExampleString = 1;
   int32 ExampleInt = 2;
   google.protobuf.Timestamp LastUpdated = 3;
