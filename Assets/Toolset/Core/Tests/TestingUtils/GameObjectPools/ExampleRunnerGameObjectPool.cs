@@ -1,16 +1,19 @@
 using UnityEngine;
 
-/// <summary>
-/// MonoBehavior used in the ExampleSceneGameObjectPools scene to set
-/// a prefab schema for a GameObjectPool used in IntegrationTests/
-/// </summary>
-public class ExampleRunnerGameObjectPool : MonoBehaviour
+namespace Toolset.Core.Tests
 {
-    [SerializeField]
-    private ExamplePoolable m_poolablePrefab;
-
-    private void Start()
+    /// <summary>
+    /// MonoBehavior used in the ExampleSceneGameObjectPools scene to set
+    /// a prefab schema for a GameObjectPool used in IntegrationTests/
+    /// </summary>
+    public class ExampleRunnerGameObjectPool : MonoBehaviour
     {
-        GameObjectPool<ExamplePoolable>.I.SetSchema(m_poolablePrefab);
+        [SerializeField]
+        private ExamplePoolable m_poolablePrefab = null;
+
+        private void Start()
+        {
+            GameObjectPool<ExamplePoolable>.I.SetSchema(m_poolablePrefab);
+        }
     }
 }

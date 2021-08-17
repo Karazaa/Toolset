@@ -1,6 +1,6 @@
 {
     "name": "UnitTests",
-    "rootNamespace": "",
+    "rootNamespace": "Toolset.Core.Tests",
     "references": [
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",

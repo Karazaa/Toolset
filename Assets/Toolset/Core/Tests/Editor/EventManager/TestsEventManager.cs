@@ -1,94 +1,97 @@
 using NUnit.Framework;
 
-/// <summary>
-/// Class of unit tests used to validate the EventManager class.
-/// </summary>
-public class TestsEventManager
+namespace Toolset.Core.Tests
 {
-    [Test]
-    public void TestSingleSubscribeUnsubscribe()
+    /// <summary>
+    /// Class of unit tests used to validate the EventManager class.
+    /// </summary>
+    public class TestsEventManager
     {
-        int dummyValue1 = 10;
-        int dummyValue2 = 20;
+        [Test]
+        public void TestSingleSubscribeUnsubscribe()
+        {
+            int dummyValue1 = 10;
+            int dummyValue2 = 20;
 
-        ExampleEventHandler1 eventHandler = new ExampleEventHandler1();
-        eventHandler.Subscribe();
+            ExampleEventHandler1 eventHandler = new ExampleEventHandler1();
+            eventHandler.Subscribe();
 
-        (new ExampleEvent1() { m_passedIntValue = dummyValue1 }).Fire();
+            (new ExampleEvent1() { m_passedIntValue = dummyValue1 }).Fire();
 
-        Assert.AreEqual(dummyValue1, eventHandler.ExampleValue);
+            Assert.AreEqual(dummyValue1, eventHandler.ExampleValue);
 
-        eventHandler.Unsubscribe();
+            eventHandler.Unsubscribe();
 
-        (new ExampleEvent1() { m_passedIntValue = dummyValue2 }).Fire();
+            (new ExampleEvent1() { m_passedIntValue = dummyValue2 }).Fire();
 
-        Assert.AreNotEqual(dummyValue2, eventHandler.ExampleValue);
-    }
+            Assert.AreNotEqual(dummyValue2, eventHandler.ExampleValue);
+        }
 
-    [Test]
-    public void TestMultipleSubscribeUnsubscribeToSingleEvent()
-    {
-        int dummyValue1 = 10;
-        int dummyValue2 = 20;
+        [Test]
+        public void TestMultipleSubscribeUnsubscribeToSingleEvent()
+        {
+            int dummyValue1 = 10;
+            int dummyValue2 = 20;
 
-        ExampleEventHandler1 eventHandler1 = new ExampleEventHandler1();
-        ExampleEventHandler1 eventHandler2 = new ExampleEventHandler1();
-        eventHandler1.Subscribe();
-        eventHandler2.Subscribe();
+            ExampleEventHandler1 eventHandler1 = new ExampleEventHandler1();
+            ExampleEventHandler1 eventHandler2 = new ExampleEventHandler1();
+            eventHandler1.Subscribe();
+            eventHandler2.Subscribe();
 
-        (new ExampleEvent1() { m_passedIntValue = dummyValue1 }).Fire();
+            (new ExampleEvent1() { m_passedIntValue = dummyValue1 }).Fire();
 
-        Assert.AreEqual(dummyValue1, eventHandler1.ExampleValue);
-        Assert.AreEqual(dummyValue1, eventHandler2.ExampleValue);
+            Assert.AreEqual(dummyValue1, eventHandler1.ExampleValue);
+            Assert.AreEqual(dummyValue1, eventHandler2.ExampleValue);
 
-        eventHandler1.Unsubscribe();
+            eventHandler1.Unsubscribe();
 
-        (new ExampleEvent1() { m_passedIntValue = dummyValue2 }).Fire();
+            (new ExampleEvent1() { m_passedIntValue = dummyValue2 }).Fire();
 
-        Assert.AreNotEqual(dummyValue2, eventHandler1.ExampleValue);
-        Assert.AreEqual(dummyValue2, eventHandler2.ExampleValue);
+            Assert.AreNotEqual(dummyValue2, eventHandler1.ExampleValue);
+            Assert.AreEqual(dummyValue2, eventHandler2.ExampleValue);
 
-        eventHandler2.Unsubscribe();
-    }
+            eventHandler2.Unsubscribe();
+        }
 
-    [Test]
-    public void TestMultipleSubscribeUnsubscribeToMultipleEvents()
-    {
-        int dummyValue1 = 10;
-        int dummyValue2 = 20;
+        [Test]
+        public void TestMultipleSubscribeUnsubscribeToMultipleEvents()
+        {
+            int dummyValue1 = 10;
+            int dummyValue2 = 20;
 
-        ExampleEventHandler1 eventHandler1 = new ExampleEventHandler1();
-        ExampleEventHandler2 eventHandler2 = new ExampleEventHandler2();
-        eventHandler1.Subscribe();
-        eventHandler2.Subscribe();
+            ExampleEventHandler1 eventHandler1 = new ExampleEventHandler1();
+            ExampleEventHandler2 eventHandler2 = new ExampleEventHandler2();
+            eventHandler1.Subscribe();
+            eventHandler2.Subscribe();
 
-        (new ExampleEvent1() { m_passedIntValue = dummyValue1 }).Fire();
+            (new ExampleEvent1() { m_passedIntValue = dummyValue1 }).Fire();
 
-        Assert.AreEqual(dummyValue1, eventHandler1.ExampleValue);
-        Assert.AreNotEqual(dummyValue1, eventHandler2.ExampleValue);
+            Assert.AreEqual(dummyValue1, eventHandler1.ExampleValue);
+            Assert.AreNotEqual(dummyValue1, eventHandler2.ExampleValue);
 
-        eventHandler1.Unsubscribe();
+            eventHandler1.Unsubscribe();
 
-        (new ExampleEvent2() { m_passedIntValue = dummyValue2 }).Fire();
+            (new ExampleEvent2() { m_passedIntValue = dummyValue2 }).Fire();
 
-        Assert.AreNotEqual(dummyValue2, eventHandler1.ExampleValue);
-        Assert.AreEqual(dummyValue2, eventHandler2.ExampleValue);
+            Assert.AreNotEqual(dummyValue2, eventHandler1.ExampleValue);
+            Assert.AreEqual(dummyValue2, eventHandler2.ExampleValue);
 
-        eventHandler2.Unsubscribe();
-    }
+            eventHandler2.Unsubscribe();
+        }
 
-    [Test]
-    public void TestDuplicateSubscriptionsToEvent()
-    {
-        int dummyValue1 = 10;
-        ExampleEventHandler3 eventHandler = new ExampleEventHandler3();
-        eventHandler.Subscribe();
-        eventHandler.Subscribe();
+        [Test]
+        public void TestDuplicateSubscriptionsToEvent()
+        {
+            int dummyValue1 = 10;
+            ExampleEventHandler3 eventHandler = new ExampleEventHandler3();
+            eventHandler.Subscribe();
+            eventHandler.Subscribe();
 
-        (new ExampleEvent1() { m_passedIntValue = dummyValue1 }).Fire();
+            (new ExampleEvent1() { m_passedIntValue = dummyValue1 }).Fire();
 
-        Assert.AreEqual(dummyValue1, eventHandler.ExampleValue);
+            Assert.AreEqual(dummyValue1, eventHandler.ExampleValue);
 
-        eventHandler.Unsubscribe();
+            eventHandler.Unsubscribe();
+        }
     }
 }

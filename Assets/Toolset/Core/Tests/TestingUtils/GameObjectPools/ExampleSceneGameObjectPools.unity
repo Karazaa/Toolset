@@ -123,7 +123,7 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &830757644
+--- !u!1 &1279826457
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -131,35 +131,35 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 830757646}
-  - component: {fileID: 830757645}
+  - component: {fileID: 1279826459}
+  - component: {fileID: 1279826458}
   m_Layer: 0
-  m_Name: ExampleRunnerGameObjectPools
+  m_Name: ExampleRunner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &830757645
+--- !u!114 &1279826458
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 830757644}
+  m_GameObject: {fileID: 1279826457}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f2bf267a955c40d4a9f5e9481dc590dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_poolablePrefab: {fileID: 8153633821747511933, guid: db7e8c94ee203c54e865aa4d550f2004, type: 3}
---- !u!4 &830757646
+  m_poolablePrefab: {fileID: 8262012901783392466, guid: db7e8c94ee203c54e865aa4d550f2004, type: 3}
+--- !u!4 &1279826459
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 830757644}
+  m_GameObject: {fileID: 1279826457}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}

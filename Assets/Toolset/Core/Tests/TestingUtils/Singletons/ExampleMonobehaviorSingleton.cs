@@ -1,10 +1,13 @@
-/// <summary>
-/// Example class used by integration tests for validation of the MonoBehaviourSingleton class.
-/// </summary>
-public class ExampleMonoBehaviorSingleton : MonoBehaviorSingleton<ExampleMonoBehaviorSingleton>
+namespace Toolset.Core.Tests
 {
     /// <summary>
-    /// An example value modified by integration tests for validation of the MonoBehaviourSingleton class.
+    /// Example class used by integration tests for validation of the MonoBehaviourSingleton class.
     /// </summary>
-    public int ExampleValue { get; set; }
+    public class ExampleMonoBehaviorSingleton : MonoBehaviorSingleton<ExampleMonoBehaviorSingleton>
+    {
+        /// <summary>
+        /// An example value modified by integration tests for validation of the MonoBehaviourSingleton class.
+        /// </summary>
+        public int ExampleValue { get; set; }
+    }
 }

@@ -1,6 +1,6 @@
 {
     "name": "ProtobufUnitTests",
-    "rootNamespace": "",
+    "rootNamespace": "Toolset.ProtocolBuffers.Tests",
     "references": [
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",

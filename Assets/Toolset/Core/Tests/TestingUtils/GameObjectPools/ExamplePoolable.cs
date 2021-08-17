@@ -1,22 +1,25 @@
 using UnityEngine;
 
-/// <summary>
-/// Example poolable MonoBehaviour class used to validate GameObjectPool in Integration tests.
-/// </summary>
-public class ExamplePoolable : MonoBehaviour
+namespace Toolset.Core.Tests
 {
-    public static int InstanceCount { get; set; }
-
-    private void Start()
+    /// <summary>
+    /// Example poolable MonoBehaviour class used to validate GameObjectPool in Integration tests.
+    /// </summary>
+    public class ExamplePoolable : MonoBehaviour
     {
-        InstanceCount = InstanceCount + 1;
+        public static int InstanceCount { get; set; }
+
+        private void Start()
+        {
+            InstanceCount = InstanceCount + 1;
+        }
     }
-}
 
-/// <summary>
-/// Example poolable MonoBehaviour class used to validate GameObjectPool in Integration tests.
-/// </summary>
-public class ExampleFaultyPoolable : MonoBehaviour
-{
+    /// <summary>
+    /// Example poolable MonoBehaviour class used to validate GameObjectPool in Integration tests.
+    /// </summary>
+    public class ExampleFaultyPoolable : MonoBehaviour
+    {
 
+    }
 }
