@@ -326,22 +326,22 @@ namespace Toolset.ProtocolBuffers.Tests
         {
             for (int i = 0; i < m_batchModelNames.Count; ++i)
             {
-                DeleteFileAndMetaIfExists(SaveManager.GetDataFilePathForType<ExampleProtobufModel>(m_batchModelNames[i]));
+                SaveManager.DeleteFileAndMeta(SaveManager.GetDataFilePathForType<ExampleProtobufModel>(m_batchModelNames[i]));
             }
 
             for (int i = 0; i < m_batchModelNamesWithSubdirectory.Count; ++i)
             {
-                DeleteFileAndMetaIfExists(SaveManager.GetDataFilePathForType<ExamplePersistentProto>(m_batchModelNamesWithSubdirectory[i]));
+                SaveManager.DeleteFileAndMeta(SaveManager.GetDataFilePathForType<ExamplePersistentProto>(m_batchModelNamesWithSubdirectory[i]));
             }
 
-            DeleteDirectoryAndMetaIfExists(SaveManager.GetDataDirectoryPathForType<ExampleProtobufModel>());
-            DeleteDirectoryAndMetaIfExists(SaveManager.GetDataDirectoryPathForType<ExamplePersistentProto>());
+            SaveManager.DeleteDirectoryAndMetaRecursively(SaveManager.GetDataDirectoryPathForType<ExampleProtobufModel>());
+            SaveManager.DeleteDirectoryAndMetaRecursively(SaveManager.GetDataDirectoryPathForType<ExamplePersistentProto>());
 
             if (Directory.Exists(m_pathToProtoGeneratedDirectory))
             {
-                DeleteFileAndMetaIfExists(Path.Combine(m_pathToProtoGeneratedDirectory, c_expectedGeneratedCSharpFileName));
-                DeleteFileAndMetaIfExists(Path.Combine(m_pathToProtoGeneratedDirectory, c_secondExpectedGeneratedCSharpFileName));
-                DeleteDirectoryAndMetaIfExists(m_pathToProtoGeneratedDirectory);
+                SaveManager.DeleteFileAndMeta(Path.Combine(m_pathToProtoGeneratedDirectory, c_expectedGeneratedCSharpFileName));
+                SaveManager.DeleteFileAndMeta(Path.Combine(m_pathToProtoGeneratedDirectory, c_secondExpectedGeneratedCSharpFileName));
+                SaveManager.DeleteDirectoryAndMetaRecursively(m_pathToProtoGeneratedDirectory);
             }
         }
 
@@ -357,28 +357,6 @@ namespace Toolset.ProtocolBuffers.Tests
             string pathToPersistentProtoSourceDirectory = UnityEngine.Application.dataPath + "/Toolset/ProtocolBuffers/Tests/TestingUtils/PersistentTesting/ProtoFiles";
             string pathToPersistentProtoGeneratedDirectory = UnityEngine.Application.dataPath + "/Toolset/ProtocolBuffers/Tests/TestingUtils/PersistentTesting/Generated";
             SaveManager.GenerateCSharpFromProto(pathToPersistentProtoSourceDirectory, pathToPersistentProtoGeneratedDirectory);
-        }
-
-        private void DeleteFileAndMetaIfExists(string filePath)
-        {
-            if (File.Exists(filePath))
-            {
-                File.Delete(filePath);
-                filePath += ".meta";
-                if (File.Exists(filePath))
-                    File.Delete(filePath);
-            }
-        }
-
-        private void DeleteDirectoryAndMetaIfExists(string directoryPath)
-        {
-            if (Directory.Exists(directoryPath))
-            {
-                Directory.Delete(directoryPath, true);
-                directoryPath += ".meta";
-                if (File.Exists(directoryPath))
-                    File.Delete(directoryPath);
-            }
         }
 
         private void AssertModelsAreEqual(ExampleProtobufModel expected, ExampleProtobufModel actual)

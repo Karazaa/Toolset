@@ -37,9 +37,6 @@ namespace Toolset.ProtocolBuffers
             string filePath = GetDataFilePathForType<T>(fileName);
             Directory.CreateDirectory(Path.Combine(GetDataDirectoryPathForType<T>(), Path.GetDirectoryName(fileName)));
 
-            if (File.Exists(filePath))
-                File.Delete(filePath);
-
             using (FileStream fileStream = File.Create(filePath))
             {
                 Serializer.Serialize(fileStream, modelToSave);
@@ -149,6 +146,36 @@ namespace Toolset.ProtocolBuffers
         public static string GetDataFilePathForType<T>(string fileName) where T : class
         {
             return c_tsoFileFormat.StringBuilderFormat(GetDataDirectoryPathForType<T>(), fileName);
+        }
+
+        /// <summary>
+        /// Deletes the file specified by the path and any associated metafile.
+        /// </summary>
+        /// <param name="filePath">Path to the file to delete.</param>
+        public static void DeleteFileAndMeta(string filePath)
+        {
+            if (File.Exists(filePath))
+            {
+                File.Delete(filePath);
+                filePath += ".meta";
+                if (File.Exists(filePath))
+                    File.Delete(filePath);
+            }
+        }
+
+        /// <summary>
+        /// Recursively deletes the directory specified by the path and any associated metafile.
+        /// </summary>
+        /// <param name="directoryPath">Path to the directory to delete.</param>
+        public static void DeleteDirectoryAndMetaRecursively(string directoryPath)
+        {
+            if (Directory.Exists(directoryPath))
+            {
+                Directory.Delete(directoryPath, true);
+                directoryPath += ".meta";
+                if (File.Exists(directoryPath))
+                    File.Delete(directoryPath);
+            }
         }
 
 #if UNITY_EDITOR
