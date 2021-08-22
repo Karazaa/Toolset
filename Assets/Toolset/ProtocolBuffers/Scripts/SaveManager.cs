@@ -35,7 +35,7 @@ namespace Toolset.ProtocolBuffers
             ValidateAttribute<T>(nameof(SaveModel));
 
             string filePath = GetDataFilePathForType<T>(fileName);
-            Directory.CreateDirectory(GetDataDirectoryPathForType<T>());
+            Directory.CreateDirectory(Path.Combine(GetDataDirectoryPathForType<T>(), Path.GetDirectoryName(fileName)));
 
             if (File.Exists(filePath))
                 File.Delete(filePath);
@@ -213,7 +213,7 @@ namespace Toolset.ProtocolBuffers
 
         private static void ValidateFileName(string operation, string fileName)
         {
-            if (fileName.IsNullOrWhiteSpace() || fileName.IndexOfAny(Path.GetInvalidFileNameChars()) != -1)
+            if (fileName.IsNullOrWhiteSpace() || fileName.IndexOfAny(Path.GetInvalidPathChars()) != -1)
                 throw new InvalidOperationException("[Toolset.SaveManager] File Name {0} passed in {1} operation is not a valid file name."
                                             .StringBuilderFormat(fileName, operation));
         }

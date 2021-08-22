@@ -13,6 +13,7 @@ namespace Toolset.ProtocolBuffers.Tests
     {
         private Random m_random;
         private readonly List<string> m_batchModelNames = new List<string>() { "example1", "example2", "example3", "example4", "example5" };
+        private readonly List<string> m_batchModelNamesWithSubdirectory = new List<string>() { "sub_directory/example1", "sub_directory/example2", "sub_directory/example3", "sub_directory/example4", "sub_directory/example5" };
         private readonly string m_pathToProtoSourceDirectory = UnityEngine.Application.dataPath + "/Toolset/ProtocolBuffers/Tests/TestingUtils/ProtoFiles";
         private readonly string m_pathToProtoGeneratedDirectory = UnityEngine.Application.dataPath + "/Toolset/ProtocolBuffers/Tests/TestingUtils/Generated";
 
@@ -141,11 +142,11 @@ namespace Toolset.ProtocolBuffers.Tests
                 LastUpdated = DateTime.Now,
             };
 
-            SaveManager.SaveModel(m_batchModelNames[1], exampleGeneratedProto);
+            SaveManager.SaveModel(m_batchModelNamesWithSubdirectory[0], exampleGeneratedProto);
 
-            Assert.IsTrue(File.Exists(SaveManager.GetDataFilePathForType<ExamplePersistentProto>(m_batchModelNames[1])));
+            Assert.IsTrue(File.Exists(SaveManager.GetDataFilePathForType<ExamplePersistentProto>(m_batchModelNamesWithSubdirectory[0])));
 
-            ExamplePersistentProto generatedModelToLoad = SaveManager.LoadModel<ExamplePersistentProto>(m_batchModelNames[1]);
+            ExamplePersistentProto generatedModelToLoad = SaveManager.LoadModel<ExamplePersistentProto>(m_batchModelNamesWithSubdirectory[0]);
 
             AssertGeneratedModelsAreEqual(exampleGeneratedProto, generatedModelToLoad);
         }
@@ -156,7 +157,7 @@ namespace Toolset.ProtocolBuffers.Tests
             TestSaveAndLoad();
 
             ExampleProtobufModel preSaveLoadedModel = SaveManager.LoadModel<ExampleProtobufModel>(m_batchModelNames[0]);
-            ExamplePersistentProto preSaveGeneratedLoadedModel = SaveManager.LoadModel<ExamplePersistentProto>(m_batchModelNames[1]);
+            ExamplePersistentProto preSaveGeneratedLoadedModel = SaveManager.LoadModel<ExamplePersistentProto>(m_batchModelNamesWithSubdirectory[0]);
 
             // Note: We can't lean on GenerateRandomValidProtobuf for generation here, because we need to guarantee that 
             // this saved model has different values from the ones in TestSaveAndLoad. Although generating these models
@@ -194,11 +195,11 @@ namespace Toolset.ProtocolBuffers.Tests
 
             AssertGeneratedModelsAreNotEqual(generatedModelToSave, preSaveGeneratedLoadedModel);
 
-            SaveManager.SaveModel(m_batchModelNames[1], generatedModelToSave);
+            SaveManager.SaveModel(m_batchModelNamesWithSubdirectory[0], generatedModelToSave);
 
-            Assert.IsTrue(File.Exists(SaveManager.GetDataFilePathForType<ExamplePersistentProto>(m_batchModelNames[1])));
+            Assert.IsTrue(File.Exists(SaveManager.GetDataFilePathForType<ExamplePersistentProto>(m_batchModelNamesWithSubdirectory[0])));
 
-            ExamplePersistentProto generatedModelToLoad = SaveManager.LoadModel<ExamplePersistentProto>(m_batchModelNames[1]);
+            ExamplePersistentProto generatedModelToLoad = SaveManager.LoadModel<ExamplePersistentProto>(m_batchModelNamesWithSubdirectory[0]);
 
             AssertGeneratedModelsAreEqual(generatedModelToSave, generatedModelToLoad);
         }
@@ -208,7 +209,7 @@ namespace Toolset.ProtocolBuffers.Tests
         {
             Dictionary<string, ExampleProtobufModel> modelsToSave = new Dictionary<string, ExampleProtobufModel>();
 
-            for (int i = 0; i < 3; ++i)
+            for (int i = 0; i < m_batchModelNames.Count; ++i)
             {
                 modelsToSave.Add(m_batchModelNames[i], GenerateRandomValidProtobuf());
             }
@@ -232,9 +233,9 @@ namespace Toolset.ProtocolBuffers.Tests
 
             Dictionary<string, ExamplePersistentProto> generatedModelsToSave = new Dictionary<string, ExamplePersistentProto>();
 
-            for (int i = 3; i < m_batchModelNames.Count; ++i)
+            for (int i = 0; i < m_batchModelNamesWithSubdirectory.Count; ++i)
             {
-                generatedModelsToSave.Add(m_batchModelNames[i], GenerateRandomPersistentProto());
+                generatedModelsToSave.Add(m_batchModelNamesWithSubdirectory[i], GenerateRandomPersistentProto());
             }
 
             foreach (KeyValuePair<string, ExamplePersistentProto> pair in generatedModelsToSave)
@@ -265,6 +266,14 @@ namespace Toolset.ProtocolBuffers.Tests
 
             SaveManager.DeleteModel<ExampleProtobufModel>(m_batchModelNames[0]);
             Assert.IsFalse(File.Exists(filePath));
+
+            SaveManager.SaveModel(m_batchModelNamesWithSubdirectory[0], GenerateRandomPersistentProto());
+
+            string persistentFilePath = SaveManager.GetDataFilePathForType<ExamplePersistentProto>(m_batchModelNamesWithSubdirectory[0]);
+            Assert.IsTrue(File.Exists(persistentFilePath));
+
+            SaveManager.DeleteModel<ExamplePersistentProto>(m_batchModelNamesWithSubdirectory[0]);
+            Assert.IsFalse(File.Exists(persistentFilePath));
         }
 
         [Test]
@@ -281,6 +290,19 @@ namespace Toolset.ProtocolBuffers.Tests
             for (int i = 0; i < m_batchModelNames.Count; ++i)
             {
                 Assert.IsFalse(File.Exists(SaveManager.GetDataFilePathForType<ExampleProtobufModel>(m_batchModelNames[i])));
+            }
+
+            for (int i = 0; i < m_batchModelNamesWithSubdirectory.Count; ++i)
+            {
+                SaveManager.SaveModel(m_batchModelNamesWithSubdirectory[i], GenerateRandomPersistentProto());
+                Assert.IsTrue(File.Exists(SaveManager.GetDataFilePathForType<ExamplePersistentProto>(m_batchModelNamesWithSubdirectory[i])));
+            }
+
+            SaveManager.DeleteModelsByType<ExamplePersistentProto>();
+
+            for (int i = 0; i < m_batchModelNamesWithSubdirectory.Count; ++i)
+            {
+                Assert.IsFalse(File.Exists(SaveManager.GetDataFilePathForType<ExamplePersistentProto>(m_batchModelNamesWithSubdirectory[i])));
             }
         }
 
@@ -305,7 +327,11 @@ namespace Toolset.ProtocolBuffers.Tests
             for (int i = 0; i < m_batchModelNames.Count; ++i)
             {
                 DeleteFileAndMetaIfExists(SaveManager.GetDataFilePathForType<ExampleProtobufModel>(m_batchModelNames[i]));
-                DeleteFileAndMetaIfExists(SaveManager.GetDataFilePathForType<ExamplePersistentProto>(m_batchModelNames[i]));
+            }
+
+            for (int i = 0; i < m_batchModelNamesWithSubdirectory.Count; ++i)
+            {
+                DeleteFileAndMetaIfExists(SaveManager.GetDataFilePathForType<ExamplePersistentProto>(m_batchModelNamesWithSubdirectory[i]));
             }
 
             DeleteDirectoryAndMetaIfExists(SaveManager.GetDataDirectoryPathForType<ExampleProtobufModel>());
@@ -348,7 +374,7 @@ namespace Toolset.ProtocolBuffers.Tests
         {
             if (Directory.Exists(directoryPath))
             {
-                Directory.Delete(directoryPath);
+                Directory.Delete(directoryPath, true);
                 directoryPath += ".meta";
                 if (File.Exists(directoryPath))
                     File.Delete(directoryPath);
@@ -424,7 +450,7 @@ namespace Toolset.ProtocolBuffers.Tests
 
         private void AssertExceptionsOnInvalidFileNames(Action<string> callbackToTest)
         {
-            char[] invalidFileNameChars = Path.GetInvalidFileNameChars();
+            char[] invalidPathChars = Path.GetInvalidPathChars();
 
             ToolsetAssert.Throws<InvalidOperationException>(() =>
             {
@@ -441,11 +467,11 @@ namespace Toolset.ProtocolBuffers.Tests
                 callbackToTest("    ");
             });
 
-            for (int i = 0; i < invalidFileNameChars.Length; ++i)
+            for (int i = 0; i < invalidPathChars.Length; ++i)
             {
                 ToolsetAssert.Throws<InvalidOperationException>(() =>
                 {
-                    callbackToTest(invalidFileNameChars[i].ToString());
+                    callbackToTest(invalidPathChars[i].ToString());
                 });
             }
         }
