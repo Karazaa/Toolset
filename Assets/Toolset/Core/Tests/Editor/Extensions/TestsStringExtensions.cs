@@ -32,7 +32,7 @@ namespace Toolset.Core.Tests
             Assert.AreEqual(exampleString, exampleString.StringBuilderFormat(1, 2, 3, 4));
 
             exampleString = "{0}{1}{2}";
-            string expectedString1 = "a b c";
+            string expectedString = "a b c";
 
             ToolsetAssert.Throws<ArgumentNullException>(() =>
             {
@@ -44,8 +44,26 @@ namespace Toolset.Core.Tests
                 exampleString.StringBuilderFormat("a", " b ");
             });
 
-            Assert.AreEqual(expectedString1, exampleString.StringBuilderFormat("a", " b ", "c"));
-            Assert.AreEqual(expectedString1, exampleString.StringBuilderFormat("a", " b ", "c", "d", "e", "f"));
+            Assert.AreEqual(expectedString, exampleString.StringBuilderFormat("a", " b ", "c"));
+            Assert.AreEqual(expectedString, exampleString.StringBuilderFormat("a", " b ", "c", "d", "e", "f"));
+        }
+
+        [Test]
+        public void TestStringBuilderAppend()
+        {
+            string exampleString = null;
+
+            Assert.AreEqual(exampleString, exampleString.StringBuilderAppend(1, 2, 3, 4));
+
+            exampleString = "hello";
+            string expectedString = "helloabcdef";
+
+            ToolsetAssert.Throws<ArgumentNullException>(() =>
+            {
+                exampleString.StringBuilderFormat(null);
+            });
+
+            Assert.AreEqual(expectedString, exampleString.StringBuilderAppend("a", "b", "c", "d", "e", "f"));
         }
     }
 }
