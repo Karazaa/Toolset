@@ -1,18 +1,15 @@
 {
-    "name": "ProtobufScripts",
-    "rootNamespace": "",
+    "name": "NetworkingScripts",
+    "rootNamespace": "Toolset.NetworkRequest",
     "references": [
-        "GUID:7c346a50f859b834cb499c8009f0f597"
+        "GUID:7c346a50f859b834cb499c8009f0f597",
+        "GUID:ae1cfedc4f1d6d046b6007e2d607f9da"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
-    "precompiledReferences": [
-        "protobuf-net.Core.dll",
-        "protobuf-net.dll",
-        "protobuf-net.Reflection.dll"
-    ],
+    "precompiledReferences": [],
     "autoReferenced": true,
     "defineConstraints": [],
     "versionDefines": [],
