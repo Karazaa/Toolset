@@ -11,11 +11,12 @@ namespace Toolset.Networking
     {
         protected enum RetryPolicy { None, Silent, Prompt }
         public int AttemptCount { get; private set; }
-        protected abstract RetryPolicy RequestRetryPolicy { get; set; }
+        public bool IsCompletedSuccessfully { get; private set; }
+        protected abstract RetryPolicy RequestRetryPolicy { get; }
         protected virtual int MaximumAttemptCount => 5;
         protected virtual int SilentRetryInitialWaitMilliseconds => 1000;
 
-        public virtual IEnumerator Send()
+        public virtual IEnumerator Send(Action<NetworkRequest> onCompletionCallback = null)
         {
             // Send the initial attempt of the request.
             IInternalRequestOperation internalRequestOperation = InternalSend();
@@ -24,7 +25,10 @@ namespace Toolset.Networking
 
             // If we don't have a retry policy specified, break right here.
             if (RequestRetryPolicy == RetryPolicy.None)
+            {
+                Complete(internalRequestOperation, onCompletionCallback);
                 yield break;
+            }
 
             // Otherwise prepare the retry wait routine for the given policy.
             IEnumerator retryWait = RequestRetryPolicy == RetryPolicy.Prompt ? PromptRetryWait() : SilentRetryWait();
@@ -42,6 +46,8 @@ namespace Toolset.Networking
             // If we get here and the internal operation still hasn't completed successfully, handle exceeding above maximum retries.
             if (!internalRequestOperation.IsCompletedSuccessfully)
                 yield return HandleExceedsMaximumRetries();
+
+            Complete(internalRequestOperation, onCompletionCallback);
         }
 
         protected abstract IInternalRequestOperation InternalSend();
@@ -55,7 +61,7 @@ namespace Toolset.Networking
             int iterations = 0;
             int lastWaitTimeMilliseconds = 0;
             int totalWaitTimeMilliseconds = SilentRetryInitialWaitMilliseconds;
-           
+
             while (iterations < AttemptCount)
             {
                 iterations++;
@@ -67,12 +73,18 @@ namespace Toolset.Networking
             // Calculate the time in the future this routine will be done waiting, and then just
             // yield until that time has been reached.
             long finalTime = DateTime.UtcNow.MillisecondsSinceUnixEpoch() + totalWaitTimeMilliseconds;
-            while(DateTime.UtcNow.MillisecondsSinceUnixEpoch() < finalTime)
+            while (DateTime.UtcNow.MillisecondsSinceUnixEpoch() < finalTime)
             {
                 yield return null;
             }
         }
 
         protected abstract IEnumerator HandleExceedsMaximumRetries();
+
+        private void Complete(IInternalRequestOperation internalRequestOperation, Action<NetworkRequest> onCompletionCallback = null)
+        {
+            IsCompletedSuccessfully = internalRequestOperation.IsCompletedSuccessfully;
+            onCompletionCallback?.Invoke(this);
+        }
     }
 }
