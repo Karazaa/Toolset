@@ -15,12 +15,6 @@ namespace Toolset.Networking.Tests
         {
         }
 
-        protected override IEnumerator HandleExceedsMaximumRetries()
-        {
-            HandledExceededMaximumRetries = true;
-            yield break;
-        }
-
         protected override IInternalRequestOperation InternalSend()
         {
             m_exampleInternalRequestOperation.Reset();
@@ -31,6 +25,16 @@ namespace Toolset.Networking.Tests
         {
             RetryPromptCounts++;
             yield break;
+        }
+
+        protected override IEnumerator HandleExceedsMaximumRetries()
+        {
+            HandledExceededMaximumRetries = true;
+            yield break;
+        }
+
+        protected override void ParseResponse(bool isCompletedSuccessfully)
+        {
         }
 
         public int GetAttemptsForSuccessCount()

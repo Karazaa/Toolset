@@ -15,7 +15,7 @@ namespace Toolset.Networking
     public enum RequestRetryPolicy { None, Silent, Prompt }
 
     /// <summary>
-    /// Base class used for sending and receiving a network request.
+    /// Base class used for sending a network request.
     /// </summary>
     public abstract class NetworkRequest
     {
@@ -124,9 +124,16 @@ namespace Toolset.Networking
         /// None, and the request has exceeded the maximum number of retries allowed.</returns>
         protected abstract IEnumerator HandleExceedsMaximumRetries();
 
+        /// <summary>
+        /// Method that gets invoked upon successful completion of the request to parse the data
+        /// from the request into a usable object. Needs to be implemented by inheritors of NetworkRequest.
+        /// </summary>
+        protected abstract void ParseResponse(bool isCompletedSuccessfully);
+
         private void Complete(IInternalRequestOperation internalRequestOperation, Action<NetworkRequest> onCompletionCallback = null)
         {
             IsCompletedSuccessfully = internalRequestOperation.IsCompletedSuccessfully;
+            ParseResponse(IsCompletedSuccessfully);
             onCompletionCallback?.Invoke(this);
         }
     }
