@@ -5,12 +5,18 @@ namespace Toolset.Networking.Tests
 {
     public class ExampleBaseRequest : NetworkRequest
     {
-        protected override RetryPolicy RequestRetryPolicy { get => RetryPolicy.Silent; }
-        private readonly ExampleInternalRequestOperation m_exampleInternalRequestOperation = new ExampleInternalRequestOperation();
+        public int RetryPromptCounts { get; private set; }
+        public bool HandledExceededMaximumRetries { get; private set; }
+        private readonly IInternalRequestOperation m_exampleInternalRequestOperation = new ExampleInternalRequestOperation();
+
+        public ExampleBaseRequest(NetworkRequestSettings settings = null) : base(settings)
+        {
+        }
 
         protected override IEnumerator HandleExceedsMaximumRetries()
         {
-            throw new NotImplementedException();
+            HandledExceededMaximumRetries = true;
+            yield break;
         }
 
         protected override IInternalRequestOperation InternalSend()
@@ -21,7 +27,13 @@ namespace Toolset.Networking.Tests
 
         protected override IEnumerator PromptRetryWait()
         {
-            throw new NotImplementedException();
+            RetryPromptCounts++;
+            yield break;
+        }
+
+        public int GetAttemptsForSuccessCount()
+        {
+            return ExampleInternalRequestOperation.c_numberOfAttemptsForSuccess;
         }
     }
 }

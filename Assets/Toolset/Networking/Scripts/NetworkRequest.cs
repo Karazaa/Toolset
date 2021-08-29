@@ -5,16 +5,23 @@ using Toolset.Core;
 namespace Toolset.Networking
 {
     /// <summary>
+    /// The type of retry that should occur in the event of a Network Request Timeout or retryable error.
+    /// </summary>
+    public enum RequestRetryPolicy { None, Silent, Prompt }
+
+    /// <summary>
     /// Base class used for sending and receiving a network request.
     /// </summary>
     public abstract class NetworkRequest
     {
-        protected enum RetryPolicy { None, Silent, Prompt }
         public int AttemptCount { get; private set; }
         public bool IsCompletedSuccessfully { get; private set; }
-        protected abstract RetryPolicy RequestRetryPolicy { get; }
-        protected virtual int MaximumAttemptCount => 5;
-        protected virtual int SilentRetryInitialWaitMilliseconds => 1000;
+        private NetworkRequestSettings m_networkRequestSettings;
+
+        public NetworkRequest(NetworkRequestSettings settings = null)
+        {
+            m_networkRequestSettings = settings ?? new NetworkRequestSettings();
+        }
 
         public virtual IEnumerator Send(Action<NetworkRequest> onCompletionCallback = null)
         {
@@ -24,19 +31,16 @@ namespace Toolset.Networking
             yield return internalRequestOperation;
 
             // If we don't have a retry policy specified, break right here.
-            if (RequestRetryPolicy == RetryPolicy.None)
+            if (m_networkRequestSettings.RetryPolicy == RequestRetryPolicy.None)
             {
                 Complete(internalRequestOperation, onCompletionCallback);
                 yield break;
             }
 
-            // Otherwise prepare the retry wait routine for the given policy.
-            IEnumerator retryWait = RequestRetryPolicy == RetryPolicy.Prompt ? PromptRetryWait() : SilentRetryWait();
-
             // As long as the operation has not completed successfully and we are beneath the maximum attempt countm keep retrying.
-            while (!internalRequestOperation.IsCompletedSuccessfully && AttemptCount < MaximumAttemptCount)
+            while (!internalRequestOperation.IsCompletedSuccessfully && AttemptCount < m_networkRequestSettings.MaximumAttemptCount)
             {
-                yield return retryWait;
+                yield return m_networkRequestSettings.RetryPolicy == RequestRetryPolicy.Prompt ? PromptRetryWait() : SilentRetryWait();
 
                 internalRequestOperation = InternalSend();
                 AttemptCount++;
@@ -60,7 +64,7 @@ namespace Toolset.Networking
             // based on the initial wait time and the number of attempts that have occurred.
             int iterations = 0;
             int lastWaitTimeMilliseconds = 0;
-            int totalWaitTimeMilliseconds = SilentRetryInitialWaitMilliseconds;
+            int totalWaitTimeMilliseconds = m_networkRequestSettings.SilentRetryInitialWaitMilliseconds;
 
             while (iterations < AttemptCount)
             {

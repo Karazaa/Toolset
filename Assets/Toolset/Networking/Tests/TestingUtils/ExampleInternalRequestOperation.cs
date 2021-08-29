@@ -2,8 +2,9 @@ namespace Toolset.Networking.Tests
 {
     public class ExampleInternalRequestOperation : IInternalRequestOperation
     {
+        public const int c_numberOfAttemptsForSuccess = 6;
         public static int ExampleAttemptCounter { get; set; }
-        public bool IsCompletedSuccessfully => ExampleAttemptCounter > 3;
+        public bool IsCompletedSuccessfully => ExampleAttemptCounter >= c_numberOfAttemptsForSuccess;
 
         public object Current => this;
 
