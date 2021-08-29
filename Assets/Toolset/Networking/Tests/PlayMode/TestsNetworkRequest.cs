@@ -5,7 +5,7 @@ using UnityEngine.TestTools;
 namespace Toolset.Networking.Tests
 {
     /// <summary>
-    /// Class for testing the NetworkRequest class.
+    /// Class for running Integration Tests for the the NetworkRequest class.
     /// </summary>
     public class TestsNetworkRequest
     {
@@ -21,9 +21,16 @@ namespace Toolset.Networking.Tests
                 SilentRetryInitialWaitMilliseconds = 250
             });
 
-            yield return baseRequest.Send();
+            bool didCallbackInvoke = false;
+            yield return baseRequest.Send((networkRequest) => 
+            {
+                Assert.AreEqual(baseRequest.IsCompletedSuccessfully, networkRequest.IsCompletedSuccessfully);
+                Assert.AreEqual(baseRequest.AttemptCount, networkRequest.AttemptCount);
+                didCallbackInvoke = true;
+            });
 
             Assert.IsTrue(baseRequest.IsCompletedSuccessfully);
+            Assert.IsTrue(didCallbackInvoke);
             Assert.AreEqual(baseRequest.GetAttemptsForSuccessCount(), baseRequest.AttemptCount);
         }
 

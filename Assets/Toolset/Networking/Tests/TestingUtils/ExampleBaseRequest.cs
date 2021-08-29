@@ -1,8 +1,10 @@
-using System;
 using System.Collections;
 
 namespace Toolset.Networking.Tests
 {
+    /// <summary>
+    /// Example class used for testing NetworkRequests.
+    /// </summary>
     public class ExampleBaseRequest : NetworkRequest
     {
         public int RetryPromptCounts { get; private set; }
