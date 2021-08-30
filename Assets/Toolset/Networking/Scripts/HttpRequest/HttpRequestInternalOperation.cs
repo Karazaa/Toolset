@@ -12,6 +12,14 @@ namespace Toolset.Networking
 
     public class HttpRequestInternalOperation : IInternalRequestOperation
     {
+        public struct HttpRequestParameters
+        {
+            public HttpRequestMethod Method { get; set; }
+            public Uri Url { get; set; }
+            public int TimeoutSeconds { get; set; }
+            public byte[] Payload { get; set; }
+        }
+
         private enum States { Instantiated, WaitingToSend, WaitingForResponse, Errored, Succeeded }
         private enum Events { RequestCreated, RequestSent, ErrorOccurred, ReceivedSuccessfulResponse, Reset }
 
@@ -19,25 +27,22 @@ namespace Toolset.Networking
         public bool ShouldRetry { get; private set; }
         public UnityWebRequest.Result Result { get; private set; }
         public DownloadHandler DownloadHandler { get; private set; }
+        public object Current => throw new NotImplementedException();
 
         private const string c_httpVerbConnect = "CONNECT";
         private const string c_httpVerbOptions = "OPTIONS";
         private const string c_httpVerbTrace = "TRACE";
         private const string c_httpVerbPatch = "PATCH";
 
-        private HttpRequestMethod m_httpRequestMethod;
-        private Uri m_url;
-        private int m_timeoutSeconds;
+        private HttpRequestParameters m_requestParameters;
 
         private StateMachine<States, Events> m_stateMachine;
         private UnityWebRequest m_unityWebRequest;
         private IEnumerator m_webRequestRoutine;
 
-        public HttpRequestInternalOperation(HttpRequestMethod method, Uri url, int timeoutSeconds)
+        public HttpRequestInternalOperation(HttpRequestParameters requestParameters)
         {
-            m_httpRequestMethod = method;
-            m_url = url;
-            m_timeoutSeconds = timeoutSeconds;
+            m_requestParameters = requestParameters;
 
             m_stateMachine = new StateMachine<States, Events>(States.Instantiated);
             m_stateMachine.OnEventGoto(States.Instantiated, Events.RequestCreated, States.WaitingToSend);
@@ -46,8 +51,6 @@ namespace Toolset.Networking
             m_stateMachine.OnEventGoto(States.WaitingForResponse, Events.ReceivedSuccessfulResponse, States.Succeeded);
             m_stateMachine.OnEventGoto(States.Errored, Events.Reset, States.Instantiated);
         }
-
-        object IEnumerator.Current => throw new System.NotImplementedException();
 
         public bool MoveNext()
         {
@@ -84,9 +87,12 @@ namespace Toolset.Networking
             m_stateMachine.Fire(Events.Reset);
 
             m_webRequestRoutine = null;
-            m_unityWebRequest = new UnityWebRequest(m_url);
-            m_unityWebRequest.method = GetMethodString(m_httpRequestMethod);
-            m_unityWebRequest.timeout = m_timeoutSeconds;
+            m_unityWebRequest = new UnityWebRequest(m_requestParameters.Url);
+            m_unityWebRequest.method = GetMethodString(m_requestParameters.Method);
+            m_unityWebRequest.timeout = m_requestParameters.TimeoutSeconds;
+
+            if (m_requestParameters.Payload != null)
+                m_unityWebRequest.uploadHandler = new UploadHandlerRaw(m_requestParameters.Payload);
 
             m_stateMachine.Fire(Events.RequestCreated);
         }

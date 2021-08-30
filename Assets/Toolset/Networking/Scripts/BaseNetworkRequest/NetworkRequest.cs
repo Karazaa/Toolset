@@ -29,11 +29,11 @@ namespace Toolset.Networking
         /// </summary>
         public bool IsCompletedSuccessfully { get; private set; }
 
-        private NetworkRequestSettings m_networkRequestSettings;
+        protected NetworkRequestSettings NetworkRequestSettings { get; private set; }
 
         public NetworkRequest(NetworkRequestSettings settings = null)
         {
-            m_networkRequestSettings = settings ?? new NetworkRequestSettings();
+            NetworkRequestSettings = settings ?? new NetworkRequestSettings();
         }
 
         /// <summary>
@@ -53,16 +53,16 @@ namespace Toolset.Networking
             yield return internalRequestOperation;
 
             // If we don't have a retry policy specified, break right here.
-            if (m_networkRequestSettings.RetryPolicy == RequestRetryPolicy.None)
+            if (NetworkRequestSettings.RetryPolicy == RequestRetryPolicy.None)
             {
                 Complete(internalRequestOperation, onCompletionCallback);
                 yield break;
             }
 
             // As long as the operation has not completed successfully and we are beneath the maximum attempt countm keep retrying.
-            while (internalRequestOperation.ShouldRetry && AttemptCount < m_networkRequestSettings.MaximumAttemptCount)
+            while (internalRequestOperation.ShouldRetry && AttemptCount < NetworkRequestSettings.MaximumAttemptCount)
             {
-                yield return m_networkRequestSettings.RetryPolicy == RequestRetryPolicy.Prompt ? PromptRetryWait() : SilentRetryWait();
+                yield return NetworkRequestSettings.RetryPolicy == RequestRetryPolicy.Prompt ? PromptRetryWait() : SilentRetryWait();
 
                 internalRequestOperation = InternalSend();
                 AttemptCount++;
@@ -97,7 +97,7 @@ namespace Toolset.Networking
             // based on the initial wait time and the number of attempts that have occurred.
             int iterations = 0;
             int lastWaitTimeMilliseconds = 0;
-            int totalWaitTimeMilliseconds = m_networkRequestSettings.SilentRetryInitialWaitMilliseconds;
+            int totalWaitTimeMilliseconds = NetworkRequestSettings.SilentRetryInitialWaitMilliseconds;
 
             while (iterations < AttemptCount)
             {

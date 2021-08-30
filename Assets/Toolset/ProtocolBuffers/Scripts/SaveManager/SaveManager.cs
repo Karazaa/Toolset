@@ -230,12 +230,9 @@ namespace Toolset.ProtocolBuffers
 
         private static void ValidateAttribute<T>(string operation)
         {
-            if (typeof(T) is IExtensible)
-                return;
-
-            if (!typeof(T).IsDefined(typeof(ProtoContractAttribute), true))
-                throw new InvalidOperationException("[Toolset.SaveManager] Attempting {0} operation for model type {1} which does not have the ProtoContract Attribute."
-                                                        .StringBuilderFormat(operation, typeof(T).Name));
+            if(!ProtoBufUtils.IsSerializableProtobuf(typeof(T)))
+                throw new InvalidOperationException("[Toolset.SaveManager] Attempting {0} operation for model type {1} which is not ProtoBuf serializable."
+                                                        .StringBuilderFormat(operation, typeof(T).Name));   
         }
 
         private static void ValidateFileName(string operation, string fileName)
