@@ -10,13 +10,39 @@ namespace Toolset.Networking
     /// </summary>
     public enum HttpRequestMethod { Get, Head, Post, Put, Create, Delete, Connect, Options, Trace, Patch  }
 
+    /// <summary>
+    /// Implementation of IInternalRequestOperation for HttpRequests.
+    /// </summary>
     public class HttpRequestInternalOperation : IInternalRequestOperation
     {
+        /// <summary>
+        /// Struct of parameters to be passed into HttpRequestInternalOperation that
+        /// will define how the request is carried out. Unlike settings objects,
+        /// all of these values need to be defined before initiating the request.
+        /// </summary>
         public struct HttpRequestParameters
         {
+            /// <summary>
+            /// The HttpRequest method to use for this specific request.
+            /// </summary>
             public HttpRequestMethod Method { get; set; }
+
+            /// <summary>
+            /// The Url endpoint to send the request to.
+            /// Even though the type is Uri, the Url should be
+            /// formatted like a Url.
+            /// </summary>
             public Uri Url { get; set; }
+
+            /// <summary>
+            /// The amount of time the request can be outstanding for before it
+            /// is considered timed out.
+            /// </summary>
             public int TimeoutSeconds { get; set; }
+
+            /// <summary>
+            /// The data to send to the server in the body of the request.
+            /// </summary>
             public byte[] Data { get; set; }
         }
 
@@ -26,8 +52,18 @@ namespace Toolset.Networking
         public bool IsCompletedSuccessfully { get; private set; }
         public bool ShouldRetry { get; private set; }
         public byte[] ResponseData { get; private set; }
+
+        /// <summary>
+        /// The result that signifies whether or not the request succeeded or had any errors.
+        /// </summary>
         public UnityWebRequest.Result Result { get; private set; }
+        
+        /// <summary>
+        /// The download handler for the request which is used for retrieving data from the body of the
+        /// server's response.
+        /// </summary>
         public DownloadHandler DownloadHandler { get; private set; }
+
         public object Current => throw new NotImplementedException();
 
         private const string c_httpVerbConnect = "CONNECT";
@@ -53,6 +89,10 @@ namespace Toolset.Networking
             m_stateMachine.OnEventGoto(States.Errored, Events.Reset, States.Instantiated);
         }
 
+        /// <summary>
+        /// Iterates the HttpRequestInternalOperation
+        /// </summary>
+        /// <returns>True if the IEnumerator should continue iterating, false if not.</returns>
         public bool MoveNext()
         {
             if (m_stateMachine.CurrentState == States.WaitingToSend)
@@ -83,6 +123,10 @@ namespace Toolset.Networking
             }
         }
 
+        /// <summary>
+        /// Resets the state of the HttpRequestInternalOperation so that it can be used to send
+        /// data to the server again.
+        /// </summary>
         public void Reset()
         {
             m_stateMachine.Fire(Events.Reset);

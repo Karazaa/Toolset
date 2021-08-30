@@ -32,7 +32,7 @@ namespace Toolset.Networking
         public bool IsCompletedSuccessfully { get; private set; }
 
         /// <summary>
-        /// The Deserialized response data object.
+        /// The Serialized request payload data object.
         /// </summary>
         public byte[] PayloadData { get; private set; }
 
@@ -142,11 +142,13 @@ namespace Toolset.Networking
         /// None, and the request has exceeded the maximum number of retries allowed.</returns>
         protected abstract IEnumerator HandleExceedsMaximumRetries();
 
-
         private void Complete(Action<NetworkRequest<TResponseModel>> onCompletionCallback = null)
         {
             IsCompletedSuccessfully = m_internalRequestOperation.IsCompletedSuccessfully;
-            ResponseData = ProtoBufUtils.Deserialize<TResponseModel>(m_internalRequestOperation.ResponseData);
+
+            if (typeof(TResponseModel) !=  typeof(NoResponseData))
+                ResponseData = ProtoBufUtils.Deserialize<TResponseModel>(m_internalRequestOperation.ResponseData);
+
             onCompletionCallback?.Invoke(this);
         }
     }
