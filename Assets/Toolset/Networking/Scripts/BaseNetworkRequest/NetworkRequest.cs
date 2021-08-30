@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using Toolset.Core;
+using Toolset.ProtocolBuffers;
 
 namespace Toolset.Networking
 {
@@ -15,9 +16,10 @@ namespace Toolset.Networking
     public enum RequestRetryPolicy { None, Silent, Prompt }
 
     /// <summary>
-    /// Base class used for sending a network request.
+    /// Base class for sending a request over a network.
     /// </summary>
-    public abstract class NetworkRequest
+    /// <typeparam name="TResponseModel">The model of the expected data in the request's response.</typeparam>
+    public abstract class NetworkRequest<TResponseModel> where TResponseModel : class
     {
         /// <summary>
         /// How many times the Network Request has been attempted.
@@ -29,11 +31,27 @@ namespace Toolset.Networking
         /// </summary>
         public bool IsCompletedSuccessfully { get; private set; }
 
+        /// <summary>
+        /// The Deserialized response data object.
+        /// </summary>
+        public byte[] PayloadData { get; private set; }
+
+        /// <summary>
+        /// The Deserialized response data object.
+        /// </summary>
+        public TResponseModel ResponseData { get; private set; }
+
+        /// <summary>
+        /// The settings object for this NetworkRequest.
+        /// </summary>
         protected NetworkRequestSettings NetworkRequestSettings { get; private set; }
 
-        public NetworkRequest(NetworkRequestSettings settings = null)
+        private IInternalRequestOperation m_internalRequestOperation;
+
+        public NetworkRequest(object payloadObject = null, NetworkRequestSettings settings = null)
         {
             NetworkRequestSettings = settings ?? new NetworkRequestSettings();
+            PayloadData = ProtoBufUtils.Serialize(payloadObject);
         }
 
         /// <summary>
@@ -45,35 +63,35 @@ namespace Toolset.Networking
         /// Useful for when the calling scope initiates the request but does not yield on the returned IEnumerator.
         /// </param>
         /// <returns>An IEnumerator that can be yielded on.</returns>
-        public virtual IEnumerator Send(Action<NetworkRequest> onCompletionCallback = null)
+        public virtual IEnumerator Send(Action<NetworkRequest<TResponseModel>> onCompletionCallback = null)
         {
             // Send the initial attempt of the request.
-            IInternalRequestOperation internalRequestOperation = InternalSend();
+            m_internalRequestOperation = InternalSend();
             AttemptCount++;
-            yield return internalRequestOperation;
+            yield return m_internalRequestOperation;
 
             // If we don't have a retry policy specified, break right here.
             if (NetworkRequestSettings.RetryPolicy == RequestRetryPolicy.None)
             {
-                Complete(internalRequestOperation, onCompletionCallback);
+                Complete(onCompletionCallback);
                 yield break;
             }
 
             // As long as the operation has not completed successfully and we are beneath the maximum attempt countm keep retrying.
-            while (internalRequestOperation.ShouldRetry && AttemptCount < NetworkRequestSettings.MaximumAttemptCount)
+            while (m_internalRequestOperation.ShouldRetry && AttemptCount < NetworkRequestSettings.MaximumAttemptCount)
             {
                 yield return NetworkRequestSettings.RetryPolicy == RequestRetryPolicy.Prompt ? PromptRetryWait() : SilentRetryWait();
 
-                internalRequestOperation = InternalSend();
+                m_internalRequestOperation = InternalSend();
                 AttemptCount++;
-                yield return internalRequestOperation;
+                yield return m_internalRequestOperation;
             }
 
             // If we get here and the internal operation still hasn't completed successfully, handle exceeding above maximum retries.
-            if (internalRequestOperation.ShouldRetry)
+            if (m_internalRequestOperation.ShouldRetry)
                 yield return HandleExceedsMaximumRetries();
 
-            Complete(internalRequestOperation, onCompletionCallback);
+            Complete(onCompletionCallback);
         }
 
         /// <summary>
@@ -91,7 +109,7 @@ namespace Toolset.Networking
         /// <returns>An IEnumerator that will be yielded on in the Send method of if the request's retry policy is set to Prompt.</returns>
         protected abstract IEnumerator PromptRetryWait();
 
-        protected IEnumerator SilentRetryWait()
+        private IEnumerator SilentRetryWait()
         {
             // Calculate a number of milliseconds to wait along a fibonacci sequence 
             // based on the initial wait time and the number of attempts that have occurred.
@@ -124,16 +142,11 @@ namespace Toolset.Networking
         /// None, and the request has exceeded the maximum number of retries allowed.</returns>
         protected abstract IEnumerator HandleExceedsMaximumRetries();
 
-        /// <summary>
-        /// Method that gets invoked upon successful completion of the request to parse the data
-        /// from the request into a usable object. Needs to be implemented by inheritors of NetworkRequest.
-        /// </summary>
-        protected abstract void ParseResponse(bool isCompletedSuccessfully);
 
-        private void Complete(IInternalRequestOperation internalRequestOperation, Action<NetworkRequest> onCompletionCallback = null)
+        private void Complete(Action<NetworkRequest<TResponseModel>> onCompletionCallback = null)
         {
-            IsCompletedSuccessfully = internalRequestOperation.IsCompletedSuccessfully;
-            ParseResponse(IsCompletedSuccessfully);
+            IsCompletedSuccessfully = m_internalRequestOperation.IsCompletedSuccessfully;
+            ResponseData = ProtoBufUtils.Deserialize<TResponseModel>(m_internalRequestOperation.ResponseData);
             onCompletionCallback?.Invoke(this);
         }
     }

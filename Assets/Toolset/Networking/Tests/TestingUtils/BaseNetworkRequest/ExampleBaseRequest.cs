@@ -3,15 +3,22 @@ using System.Collections;
 namespace Toolset.Networking.Tests
 {
     /// <summary>
+    /// Empty response model used for network request tests.
+    /// </summary>
+    public class ExampleResponseModel
+    { 
+    }
+
+    /// <summary>
     /// Example class used for testing NetworkRequests.
     /// </summary>
-    public class ExampleBaseRequest : NetworkRequest
+    public class ExampleBaseRequest : NetworkRequest<ExampleResponseModel>
     {
         public int RetryPromptCounts { get; private set; }
         public bool HandledExceededMaximumRetries { get; private set; }
         private readonly IInternalRequestOperation m_exampleInternalRequestOperation = new ExampleInternalRequestOperation();
 
-        public ExampleBaseRequest(NetworkRequestSettings settings = null) : base(settings)
+        public ExampleBaseRequest(NetworkRequestSettings settings = null) : base(null, settings)
         {
         }
 
@@ -31,10 +38,6 @@ namespace Toolset.Networking.Tests
         {
             HandledExceededMaximumRetries = true;
             yield break;
-        }
-
-        protected override void ParseResponse(bool isCompletedSuccessfully)
-        {
         }
 
         public int GetAttemptsForSuccessCount()

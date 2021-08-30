@@ -18,5 +18,10 @@ namespace Toolset.Networking
         /// re-send this internal request operation.
         /// </summary>
         bool ShouldRetry { get; }
+
+        /// <summary>
+        /// The raw data contained in the response.
+        /// </summary>
+        byte[] ResponseData { get; }
     }
 }

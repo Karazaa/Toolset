@@ -28,7 +28,7 @@ namespace Toolset.ProtocolBuffers
         /// <returns>A byte array that contains the serialized data of the passed instance.</returns>
         public static byte[] Serialize<T>(T instance) where T : class
         {
-            if (!IsSerializableProtobuf(typeof(T)))
+            if (instance == null || !IsSerializableProtobuf(typeof(T)))
                 return null;
 
             using (MemoryStream memoryStream = new MemoryStream())
@@ -47,7 +47,7 @@ namespace Toolset.ProtocolBuffers
         /// <returns>A new instance of the class T.</returns>
         public static T Deserialize<T>(byte[] data) where T : class
         {
-            if (!IsSerializableProtobuf(typeof(T)))
+            if (data == null || !IsSerializableProtobuf(typeof(T)))
                 return null;
 
             using (MemoryStream memoryStream = new MemoryStream(data))

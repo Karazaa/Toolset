@@ -12,6 +12,8 @@ namespace Toolset.Networking.Tests
 
         public object Current => this;
 
+        public byte[] ResponseData => null;
+
         public bool MoveNext()
         {
             return false;

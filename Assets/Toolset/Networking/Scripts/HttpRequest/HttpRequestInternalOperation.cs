@@ -17,7 +17,7 @@ namespace Toolset.Networking
             public HttpRequestMethod Method { get; set; }
             public Uri Url { get; set; }
             public int TimeoutSeconds { get; set; }
-            public byte[] Payload { get; set; }
+            public byte[] Data { get; set; }
         }
 
         private enum States { Instantiated, WaitingToSend, WaitingForResponse, Errored, Succeeded }
@@ -25,6 +25,7 @@ namespace Toolset.Networking
 
         public bool IsCompletedSuccessfully { get; private set; }
         public bool ShouldRetry { get; private set; }
+        public byte[] ResponseData { get; private set; }
         public UnityWebRequest.Result Result { get; private set; }
         public DownloadHandler DownloadHandler { get; private set; }
         public object Current => throw new NotImplementedException();
@@ -91,8 +92,8 @@ namespace Toolset.Networking
             m_unityWebRequest.method = GetMethodString(m_requestParameters.Method);
             m_unityWebRequest.timeout = m_requestParameters.TimeoutSeconds;
 
-            if (m_requestParameters.Payload != null)
-                m_unityWebRequest.uploadHandler = new UploadHandlerRaw(m_requestParameters.Payload);
+            if (m_requestParameters.Data != null)
+                m_unityWebRequest.uploadHandler = new UploadHandlerRaw(m_requestParameters.Data);
 
             m_stateMachine.Fire(Events.RequestCreated);
         }
