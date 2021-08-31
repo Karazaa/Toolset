@@ -8,7 +8,7 @@ namespace Toolset.ProtocolBuffers.Tests
     /// <summary>
     /// Class of unit tests used to validate the protobuf-net dll.
     /// </summary>
-    public class TestsProtobufNet
+    public class TestsProtoBufNet
     {
         private static string c_testFilePath = "Assets/Toolset/ProtocolBuffers/Tests/Editor/ProtobufNet/TestsProtobufNet.tso";
 
@@ -17,11 +17,11 @@ namespace Toolset.ProtocolBuffers.Tests
         {
             FileStream fileStream = File.Create(c_testFilePath);
 
-            ExampleProtobufModel modelToSerialize = new ExampleProtobufModel()
+            ExampleProtoBufModel modelToSerialize = new ExampleProtoBufModel()
             {
                 ExampleInt = 123,
                 ExampleString = "This is the string I want to save.",
-                ExampleInternalModel = new ExampleInternalProtobufModel()
+                ExampleInternalModel = new ExampleInternalProtoBufModel()
                 {
                     ExampleString1 = "This is the first internal string.",
                     ExampleString2 = "This is the second internal string.",
@@ -38,8 +38,8 @@ namespace Toolset.ProtocolBuffers.Tests
 
             fileStream = File.OpenRead(c_testFilePath);
 
-            ExampleProtobufModel modelToDeserialize;
-            modelToDeserialize = Serializer.Deserialize<ExampleProtobufModel>(fileStream);
+            ExampleProtoBufModel modelToDeserialize;
+            modelToDeserialize = Serializer.Deserialize<ExampleProtoBufModel>(fileStream);
 
             fileStream.Close();
 

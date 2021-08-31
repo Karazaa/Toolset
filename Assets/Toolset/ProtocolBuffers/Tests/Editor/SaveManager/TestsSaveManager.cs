@@ -30,7 +30,7 @@ namespace Toolset.ProtocolBuffers.Tests
         [Test]
         public void TestLoadWithoutSaveFile()
         {
-            ExampleProtobufModel nullModel = SaveManager.LoadModel<ExampleProtobufModel>("somefakefilepath");
+            ExampleProtoBufModel nullModel = SaveManager.LoadModel<ExampleProtoBufModel>("somefakefilepath");
 
             Assert.IsNull(nullModel);
         }
@@ -40,7 +40,7 @@ namespace Toolset.ProtocolBuffers.Tests
         {
             ToolsetAssert.Throws<InvalidOperationException>(() =>
             {
-                SaveManager.SaveModel("Faulty", new ExampleFaultyProtobufModel());
+                SaveManager.SaveModel("Faulty", new ExampleFaultyProtoBufModel());
             });
         }
 
@@ -49,7 +49,7 @@ namespace Toolset.ProtocolBuffers.Tests
         {
             ToolsetAssert.Throws<InvalidOperationException>(() =>
             {
-                SaveManager.LoadModel<ExampleFaultyProtobufModel>("Faulty");
+                SaveManager.LoadModel<ExampleFaultyProtoBufModel>("Faulty");
             });
         }
 
@@ -58,7 +58,7 @@ namespace Toolset.ProtocolBuffers.Tests
         {
             ToolsetAssert.Throws<InvalidOperationException>(() =>
             {
-                SaveManager.LoadModelsByType<ExampleFaultyProtobufModel>();
+                SaveManager.LoadModelsByType<ExampleFaultyProtoBufModel>();
             });
         }
 
@@ -67,7 +67,7 @@ namespace Toolset.ProtocolBuffers.Tests
         {
             ToolsetAssert.Throws<InvalidOperationException>(() =>
             {
-                SaveManager.DeleteModel<ExampleFaultyProtobufModel>("Faulty");
+                SaveManager.DeleteModel<ExampleFaultyProtoBufModel>("Faulty");
             });
         }
 
@@ -76,7 +76,7 @@ namespace Toolset.ProtocolBuffers.Tests
         {
             ToolsetAssert.Throws<InvalidOperationException>(() =>
             {
-                SaveManager.DeleteModelsByType<ExampleFaultyProtobufModel>();
+                SaveManager.DeleteModelsByType<ExampleFaultyProtoBufModel>();
             });
         }
 
@@ -85,7 +85,7 @@ namespace Toolset.ProtocolBuffers.Tests
         {
             AssertExceptionsOnInvalidFileNames((callbackParameter) =>
             {
-                SaveManager.SaveModel(callbackParameter, new ExampleProtobufModel());
+                SaveManager.SaveModel(callbackParameter, new ExampleProtoBufModel());
             });
         }
 
@@ -94,7 +94,7 @@ namespace Toolset.ProtocolBuffers.Tests
         {
             AssertExceptionsOnInvalidFileNames((callbackParameter) =>
             {
-                SaveManager.LoadModel<ExampleProtobufModel>(callbackParameter);
+                SaveManager.LoadModel<ExampleProtoBufModel>(callbackParameter);
             });
         }
 
@@ -103,7 +103,7 @@ namespace Toolset.ProtocolBuffers.Tests
         {
             AssertExceptionsOnInvalidFileNames((callbackParameter) =>
             {
-                SaveManager.DeleteModel<ExampleProtobufModel>(callbackParameter);
+                SaveManager.DeleteModel<ExampleProtoBufModel>(callbackParameter);
             });
         }
 
@@ -114,11 +114,11 @@ namespace Toolset.ProtocolBuffers.Tests
             // this saved model has different values from the ones in TestOverwriteAndLoad. Although generating these models
             // randomly has an exteremely low chance to populate the same values, it is best to avoid any potential false
             // fail edge case in these tests.
-            ExampleProtobufModel modelToSave = new ExampleProtobufModel()
+            ExampleProtoBufModel modelToSave = new ExampleProtoBufModel()
             {
                 ExampleInt = 456,
                 ExampleString = "Some random words.",
-                ExampleInternalModel = new ExampleInternalProtobufModel()
+                ExampleInternalModel = new ExampleInternalProtoBufModel()
                 {
                     ExampleString1 = "string 1",
                     ExampleString2 = "string 2",
@@ -129,9 +129,9 @@ namespace Toolset.ProtocolBuffers.Tests
 
             SaveManager.SaveModel(m_batchModelNames[0], modelToSave);
 
-            Assert.IsTrue(File.Exists(SaveManager.GetDataFilePathForType<ExampleProtobufModel>(m_batchModelNames[0])));
+            Assert.IsTrue(File.Exists(SaveManager.GetDataFilePathForType<ExampleProtoBufModel>(m_batchModelNames[0])));
 
-            ExampleProtobufModel modelToLoad = SaveManager.LoadModel<ExampleProtobufModel>(m_batchModelNames[0]);
+            ExampleProtoBufModel modelToLoad = SaveManager.LoadModel<ExampleProtoBufModel>(m_batchModelNames[0]);
 
             AssertModelsAreEqual(modelToSave, modelToLoad);
 
@@ -156,18 +156,18 @@ namespace Toolset.ProtocolBuffers.Tests
         {
             TestSaveAndLoad();
 
-            ExampleProtobufModel preSaveLoadedModel = SaveManager.LoadModel<ExampleProtobufModel>(m_batchModelNames[0]);
+            ExampleProtoBufModel preSaveLoadedModel = SaveManager.LoadModel<ExampleProtoBufModel>(m_batchModelNames[0]);
             ExamplePersistentProto preSaveGeneratedLoadedModel = SaveManager.LoadModel<ExamplePersistentProto>(m_batchModelNamesWithSubdirectory[0]);
 
             // Note: We can't lean on GenerateRandomValidProtobuf for generation here, because we need to guarantee that 
             // this saved model has different values from the ones in TestSaveAndLoad. Although generating these models
             // randomly has an exteremely low chance to populate the same values, it is best to avoid any potential false
             // fail edge case in these tests.
-            ExampleProtobufModel modelToSave = new ExampleProtobufModel()
+            ExampleProtoBufModel modelToSave = new ExampleProtoBufModel()
             {
                 ExampleInt = 789,
                 ExampleString = "More random words",
-                ExampleInternalModel = new ExampleInternalProtobufModel()
+                ExampleInternalModel = new ExampleInternalProtoBufModel()
                 {
                     ExampleString1 = "string A",
                     ExampleString2 = "string B",
@@ -180,9 +180,9 @@ namespace Toolset.ProtocolBuffers.Tests
 
             SaveManager.SaveModel(m_batchModelNames[0], modelToSave);
 
-            Assert.IsTrue(File.Exists(SaveManager.GetDataFilePathForType<ExampleProtobufModel>(m_batchModelNames[0])));
+            Assert.IsTrue(File.Exists(SaveManager.GetDataFilePathForType<ExampleProtoBufModel>(m_batchModelNames[0])));
 
-            ExampleProtobufModel modelToLoad = SaveManager.LoadModel<ExampleProtobufModel>(m_batchModelNames[0]);
+            ExampleProtoBufModel modelToLoad = SaveManager.LoadModel<ExampleProtoBufModel>(m_batchModelNames[0]);
 
             AssertModelsAreEqual(modelToSave, modelToLoad);
 
@@ -207,26 +207,26 @@ namespace Toolset.ProtocolBuffers.Tests
         [Test]
         public void TestLoadAll()
         {
-            Dictionary<string, ExampleProtobufModel> modelsToSave = new Dictionary<string, ExampleProtobufModel>();
+            Dictionary<string, ExampleProtoBufModel> modelsToSave = new Dictionary<string, ExampleProtoBufModel>();
 
             for (int i = 0; i < m_batchModelNames.Count; ++i)
             {
                 modelsToSave.Add(m_batchModelNames[i], GenerateRandomValidProtobuf());
             }
 
-            foreach (KeyValuePair<string, ExampleProtobufModel> pair in modelsToSave)
+            foreach (KeyValuePair<string, ExampleProtoBufModel> pair in modelsToSave)
             {
                 SaveManager.SaveModel(pair.Key, pair.Value);
             }
 
-            foreach (KeyValuePair<string, ExampleProtobufModel> pair in modelsToSave)
+            foreach (KeyValuePair<string, ExampleProtoBufModel> pair in modelsToSave)
             {
-                Assert.IsTrue(File.Exists(SaveManager.GetDataFilePathForType<ExampleProtobufModel>(pair.Key)));
+                Assert.IsTrue(File.Exists(SaveManager.GetDataFilePathForType<ExampleProtoBufModel>(pair.Key)));
             }
 
-            Dictionary<string, ExampleProtobufModel> loadedModels = SaveManager.LoadModelsByType<ExampleProtobufModel>();
+            Dictionary<string, ExampleProtoBufModel> loadedModels = SaveManager.LoadModelsByType<ExampleProtoBufModel>();
 
-            foreach (KeyValuePair<string, ExampleProtobufModel> pair in loadedModels)
+            foreach (KeyValuePair<string, ExampleProtoBufModel> pair in loadedModels)
             {
                 AssertModelsAreEqual(modelsToSave[Path.GetFileNameWithoutExtension(pair.Key)], pair.Value);
             }
@@ -261,10 +261,10 @@ namespace Toolset.ProtocolBuffers.Tests
         {
             SaveManager.SaveModel(m_batchModelNames[0], GenerateRandomValidProtobuf());
 
-            string filePath = SaveManager.GetDataFilePathForType<ExampleProtobufModel>(m_batchModelNames[0]);
+            string filePath = SaveManager.GetDataFilePathForType<ExampleProtoBufModel>(m_batchModelNames[0]);
             Assert.IsTrue(File.Exists(filePath));
 
-            SaveManager.DeleteModel<ExampleProtobufModel>(m_batchModelNames[0]);
+            SaveManager.DeleteModel<ExampleProtoBufModel>(m_batchModelNames[0]);
             Assert.IsFalse(File.Exists(filePath));
 
             SaveManager.SaveModel(m_batchModelNamesWithSubdirectory[0], GenerateRandomPersistentProto());
@@ -282,14 +282,14 @@ namespace Toolset.ProtocolBuffers.Tests
             for (int i = 0; i < m_batchModelNames.Count; ++i)
             {
                 SaveManager.SaveModel(m_batchModelNames[i], GenerateRandomValidProtobuf());
-                Assert.IsTrue(File.Exists(SaveManager.GetDataFilePathForType<ExampleProtobufModel>(m_batchModelNames[i])));
+                Assert.IsTrue(File.Exists(SaveManager.GetDataFilePathForType<ExampleProtoBufModel>(m_batchModelNames[i])));
             }
 
-            SaveManager.DeleteModelsByType<ExampleProtobufModel>();
+            SaveManager.DeleteModelsByType<ExampleProtoBufModel>();
 
             for (int i = 0; i < m_batchModelNames.Count; ++i)
             {
-                Assert.IsFalse(File.Exists(SaveManager.GetDataFilePathForType<ExampleProtobufModel>(m_batchModelNames[i])));
+                Assert.IsFalse(File.Exists(SaveManager.GetDataFilePathForType<ExampleProtoBufModel>(m_batchModelNames[i])));
             }
 
             for (int i = 0; i < m_batchModelNamesWithSubdirectory.Count; ++i)
@@ -326,7 +326,7 @@ namespace Toolset.ProtocolBuffers.Tests
         {
             for (int i = 0; i < m_batchModelNames.Count; ++i)
             {
-                SaveManager.DeleteFileAndMeta(SaveManager.GetDataFilePathForType<ExampleProtobufModel>(m_batchModelNames[i]));
+                SaveManager.DeleteFileAndMeta(SaveManager.GetDataFilePathForType<ExampleProtoBufModel>(m_batchModelNames[i]));
             }
 
             for (int i = 0; i < m_batchModelNamesWithSubdirectory.Count; ++i)
@@ -334,7 +334,7 @@ namespace Toolset.ProtocolBuffers.Tests
                 SaveManager.DeleteFileAndMeta(SaveManager.GetDataFilePathForType<ExamplePersistentProto>(m_batchModelNamesWithSubdirectory[i]));
             }
 
-            SaveManager.DeleteDirectoryAndMetaRecursively(SaveManager.GetDataDirectoryPathForType<ExampleProtobufModel>());
+            SaveManager.DeleteDirectoryAndMetaRecursively(SaveManager.GetDataDirectoryPathForType<ExampleProtoBufModel>());
             SaveManager.DeleteDirectoryAndMetaRecursively(SaveManager.GetDataDirectoryPathForType<ExamplePersistentProto>());
 
             if (Directory.Exists(m_pathToProtoGeneratedDirectory))
@@ -359,7 +359,7 @@ namespace Toolset.ProtocolBuffers.Tests
             SaveManager.GenerateCSharpFromProto(pathToPersistentProtoSourceDirectory, pathToPersistentProtoGeneratedDirectory);
         }
 
-        private void AssertModelsAreEqual(ExampleProtobufModel expected, ExampleProtobufModel actual)
+        private void AssertModelsAreEqual(ExampleProtoBufModel expected, ExampleProtoBufModel actual)
         {
             Assert.AreEqual(expected.ExampleInt, actual.ExampleInt);
             Assert.AreEqual(expected.ExampleString, actual.ExampleString);
@@ -375,7 +375,7 @@ namespace Toolset.ProtocolBuffers.Tests
             Assert.AreEqual(expected.LastUpdated, actual.LastUpdated);
         }
 
-        private void AssertModelsAreNotEqual(ExampleProtobufModel expected, ExampleProtobufModel actual)
+        private void AssertModelsAreNotEqual(ExampleProtoBufModel expected, ExampleProtoBufModel actual)
         {
             Assert.AreNotEqual(expected.ExampleInt, actual.ExampleInt);
             Assert.AreNotEqual(expected.ExampleString, actual.ExampleString);
@@ -391,13 +391,13 @@ namespace Toolset.ProtocolBuffers.Tests
             Assert.AreNotEqual(expected.LastUpdated, actual.LastUpdated);
         }
 
-        private ExampleProtobufModel GenerateRandomValidProtobuf()
+        private ExampleProtoBufModel GenerateRandomValidProtobuf()
         {
-            ExampleProtobufModel output = new ExampleProtobufModel()
+            ExampleProtoBufModel output = new ExampleProtoBufModel()
             {
                 ExampleInt = m_random.Next(),
                 ExampleString = m_random.Next().ToString(),
-                ExampleInternalModel = new ExampleInternalProtobufModel()
+                ExampleInternalModel = new ExampleInternalProtoBufModel()
                 {
                     ExampleString1 = m_random.Next().ToString(),
                     ExampleString2 = m_random.Next().ToString(),
