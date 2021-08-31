@@ -133,7 +133,7 @@ namespace Toolset.ProtocolBuffers.Tests
 
             ExampleProtoBufModel modelToLoad = SaveManager.LoadModel<ExampleProtoBufModel>(m_batchModelNames[0]);
 
-            AssertModelsAreEqual(modelToSave, modelToLoad);
+            ProtoTestingUtils.AssertModelsAreEqual(modelToSave, modelToLoad);
 
             ExamplePersistentProto exampleGeneratedProto = new ExamplePersistentProto()
             {
@@ -148,7 +148,7 @@ namespace Toolset.ProtocolBuffers.Tests
 
             ExamplePersistentProto generatedModelToLoad = SaveManager.LoadModel<ExamplePersistentProto>(m_batchModelNamesWithSubdirectory[0]);
 
-            AssertGeneratedModelsAreEqual(exampleGeneratedProto, generatedModelToLoad);
+            ProtoTestingUtils.AssertGeneratedModelsAreEqual(exampleGeneratedProto, generatedModelToLoad);
         }
 
         [Test]
@@ -176,7 +176,7 @@ namespace Toolset.ProtocolBuffers.Tests
                 ExampleIntList = new List<int>() { 4, 4, 4, 4 }
             };
 
-            AssertModelsAreNotEqual(modelToSave, preSaveLoadedModel);
+            ProtoTestingUtils.AssertModelsAreNotEqual(modelToSave, preSaveLoadedModel);
 
             SaveManager.SaveModel(m_batchModelNames[0], modelToSave);
 
@@ -184,7 +184,7 @@ namespace Toolset.ProtocolBuffers.Tests
 
             ExampleProtoBufModel modelToLoad = SaveManager.LoadModel<ExampleProtoBufModel>(m_batchModelNames[0]);
 
-            AssertModelsAreEqual(modelToSave, modelToLoad);
+            ProtoTestingUtils.AssertModelsAreEqual(modelToSave, modelToLoad);
 
             ExamplePersistentProto generatedModelToSave = new ExamplePersistentProto()
             {
@@ -193,7 +193,7 @@ namespace Toolset.ProtocolBuffers.Tests
                 LastUpdated = DateTime.Now.AddDays(10),
             };
 
-            AssertGeneratedModelsAreNotEqual(generatedModelToSave, preSaveGeneratedLoadedModel);
+            ProtoTestingUtils.AssertGeneratedModelsAreNotEqual(generatedModelToSave, preSaveGeneratedLoadedModel);
 
             SaveManager.SaveModel(m_batchModelNamesWithSubdirectory[0], generatedModelToSave);
 
@@ -201,7 +201,7 @@ namespace Toolset.ProtocolBuffers.Tests
 
             ExamplePersistentProto generatedModelToLoad = SaveManager.LoadModel<ExamplePersistentProto>(m_batchModelNamesWithSubdirectory[0]);
 
-            AssertGeneratedModelsAreEqual(generatedModelToSave, generatedModelToLoad);
+            ProtoTestingUtils.AssertGeneratedModelsAreEqual(generatedModelToSave, generatedModelToLoad);
         }
 
         [Test]
@@ -211,7 +211,7 @@ namespace Toolset.ProtocolBuffers.Tests
 
             for (int i = 0; i < m_batchModelNames.Count; ++i)
             {
-                modelsToSave.Add(m_batchModelNames[i], GenerateRandomValidProtobuf());
+                modelsToSave.Add(m_batchModelNames[i], ProtoTestingUtils.GenerateRandomValidProtobuf());
             }
 
             foreach (KeyValuePair<string, ExampleProtoBufModel> pair in modelsToSave)
@@ -228,14 +228,14 @@ namespace Toolset.ProtocolBuffers.Tests
 
             foreach (KeyValuePair<string, ExampleProtoBufModel> pair in loadedModels)
             {
-                AssertModelsAreEqual(modelsToSave[Path.GetFileNameWithoutExtension(pair.Key)], pair.Value);
+                ProtoTestingUtils.AssertModelsAreEqual(modelsToSave[Path.GetFileNameWithoutExtension(pair.Key)], pair.Value);
             }
 
             Dictionary<string, ExamplePersistentProto> generatedModelsToSave = new Dictionary<string, ExamplePersistentProto>();
 
             for (int i = 0; i < m_batchModelNamesWithSubdirectory.Count; ++i)
             {
-                generatedModelsToSave.Add(m_batchModelNamesWithSubdirectory[i], GenerateRandomPersistentProto());
+                generatedModelsToSave.Add(m_batchModelNamesWithSubdirectory[i], ProtoTestingUtils.GenerateRandomPersistentProto());
             }
 
             foreach (KeyValuePair<string, ExamplePersistentProto> pair in generatedModelsToSave)
@@ -252,14 +252,14 @@ namespace Toolset.ProtocolBuffers.Tests
 
             foreach (KeyValuePair<string, ExamplePersistentProto> pair in generatedLoadedModels)
             {
-                AssertGeneratedModelsAreEqual(generatedModelsToSave[Path.GetFileNameWithoutExtension(pair.Key)], pair.Value);
+                ProtoTestingUtils.AssertGeneratedModelsAreEqual(generatedModelsToSave[Path.GetFileNameWithoutExtension(pair.Key)], pair.Value);
             }
         }
 
         [Test]
         public void TestDelete()
         {
-            SaveManager.SaveModel(m_batchModelNames[0], GenerateRandomValidProtobuf());
+            SaveManager.SaveModel(m_batchModelNames[0], ProtoTestingUtils.GenerateRandomValidProtobuf());
 
             string filePath = SaveManager.GetDataFilePathForType<ExampleProtoBufModel>(m_batchModelNames[0]);
             Assert.IsTrue(File.Exists(filePath));
@@ -267,7 +267,7 @@ namespace Toolset.ProtocolBuffers.Tests
             SaveManager.DeleteModel<ExampleProtoBufModel>(m_batchModelNames[0]);
             Assert.IsFalse(File.Exists(filePath));
 
-            SaveManager.SaveModel(m_batchModelNamesWithSubdirectory[0], GenerateRandomPersistentProto());
+            SaveManager.SaveModel(m_batchModelNamesWithSubdirectory[0], ProtoTestingUtils.GenerateRandomPersistentProto());
 
             string persistentFilePath = SaveManager.GetDataFilePathForType<ExamplePersistentProto>(m_batchModelNamesWithSubdirectory[0]);
             Assert.IsTrue(File.Exists(persistentFilePath));
@@ -281,7 +281,7 @@ namespace Toolset.ProtocolBuffers.Tests
         {
             for (int i = 0; i < m_batchModelNames.Count; ++i)
             {
-                SaveManager.SaveModel(m_batchModelNames[i], GenerateRandomValidProtobuf());
+                SaveManager.SaveModel(m_batchModelNames[i], ProtoTestingUtils.GenerateRandomValidProtobuf());
                 Assert.IsTrue(File.Exists(SaveManager.GetDataFilePathForType<ExampleProtoBufModel>(m_batchModelNames[i])));
             }
 
@@ -294,7 +294,7 @@ namespace Toolset.ProtocolBuffers.Tests
 
             for (int i = 0; i < m_batchModelNamesWithSubdirectory.Count; ++i)
             {
-                SaveManager.SaveModel(m_batchModelNamesWithSubdirectory[i], GenerateRandomPersistentProto());
+                SaveManager.SaveModel(m_batchModelNamesWithSubdirectory[i], ProtoTestingUtils.GenerateRandomPersistentProto());
                 Assert.IsTrue(File.Exists(SaveManager.GetDataFilePathForType<ExamplePersistentProto>(m_batchModelNamesWithSubdirectory[i])));
             }
 
@@ -357,73 +357,6 @@ namespace Toolset.ProtocolBuffers.Tests
             string pathToPersistentProtoSourceDirectory = UnityEngine.Application.dataPath + "/Toolset/ProtocolBuffers/Tests/TestingUtils/PersistentTesting/ProtoFiles";
             string pathToPersistentProtoGeneratedDirectory = UnityEngine.Application.dataPath + "/Toolset/ProtocolBuffers/Tests/TestingUtils/PersistentTesting/Generated";
             SaveManager.GenerateCSharpFromProto(pathToPersistentProtoSourceDirectory, pathToPersistentProtoGeneratedDirectory);
-        }
-
-        private void AssertModelsAreEqual(ExampleProtoBufModel expected, ExampleProtoBufModel actual)
-        {
-            Assert.AreEqual(expected.ExampleInt, actual.ExampleInt);
-            Assert.AreEqual(expected.ExampleString, actual.ExampleString);
-            Assert.AreEqual(expected.ExampleInternalModel.ExampleString1, actual.ExampleInternalModel.ExampleString1);
-            Assert.AreEqual(expected.ExampleInternalModel.ExampleString2, actual.ExampleInternalModel.ExampleString2);
-            Assert.AreEqual(expected.ExampleInternalModel.ExampleString3, actual.ExampleInternalModel.ExampleString3);
-        }
-
-        private void AssertGeneratedModelsAreEqual(ExamplePersistentProto expected, ExamplePersistentProto actual)
-        {
-            Assert.AreEqual(expected.ExampleInt, actual.ExampleInt);
-            Assert.AreEqual(expected.ExampleString, actual.ExampleString);
-            Assert.AreEqual(expected.LastUpdated, actual.LastUpdated);
-        }
-
-        private void AssertModelsAreNotEqual(ExampleProtoBufModel expected, ExampleProtoBufModel actual)
-        {
-            Assert.AreNotEqual(expected.ExampleInt, actual.ExampleInt);
-            Assert.AreNotEqual(expected.ExampleString, actual.ExampleString);
-            Assert.AreNotEqual(expected.ExampleInternalModel.ExampleString1, actual.ExampleInternalModel.ExampleString1);
-            Assert.AreNotEqual(expected.ExampleInternalModel.ExampleString2, actual.ExampleInternalModel.ExampleString2);
-            Assert.AreNotEqual(expected.ExampleInternalModel.ExampleString3, actual.ExampleInternalModel.ExampleString3);
-        }
-
-        private void AssertGeneratedModelsAreNotEqual(ExamplePersistentProto expected, ExamplePersistentProto actual)
-        {
-            Assert.AreNotEqual(expected.ExampleInt, actual.ExampleInt);
-            Assert.AreNotEqual(expected.ExampleString, actual.ExampleString);
-            Assert.AreNotEqual(expected.LastUpdated, actual.LastUpdated);
-        }
-
-        private ExampleProtoBufModel GenerateRandomValidProtobuf()
-        {
-            ExampleProtoBufModel output = new ExampleProtoBufModel()
-            {
-                ExampleInt = m_random.Next(),
-                ExampleString = m_random.Next().ToString(),
-                ExampleInternalModel = new ExampleInternalProtoBufModel()
-                {
-                    ExampleString1 = m_random.Next().ToString(),
-                    ExampleString2 = m_random.Next().ToString(),
-                    ExampleString3 = m_random.Next().ToString()
-                },
-                ExampleIntList = new List<int>() { }
-            };
-
-            for (int i = 0; i < m_random.Next(1, 10); ++i)
-            {
-                output.ExampleIntList.Add(m_random.Next());
-            }
-
-            return output;
-        }
-
-        private ExamplePersistentProto GenerateRandomPersistentProto()
-        {
-            ExamplePersistentProto output = new ExamplePersistentProto()
-            {
-                ExampleInt = m_random.Next(),
-                ExampleString = m_random.Next().ToString(),
-                LastUpdated = DateTime.Now.AddSeconds(m_random.Next(1, 10000))
-            };
-
-            return output;
         }
 
         private void AssertExceptionsOnInvalidFileNames(Action<string> callbackToTest)

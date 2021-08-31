@@ -10,12 +10,15 @@ namespace Toolset.ProtocolBuffers
     public static class ProtoBufUtils
     {
         /// <summary>
-        /// Gets whether or not the passed in type is protobuf serializable.
+        /// Gets whether or not the passed in type is ProtoBuf serializable.
         /// </summary>
         /// <param name="T">The type to check.</param>
         /// <returns>Whether or not the passed in type is serializable.</returns>
-        public static bool IsSerializableProtobuf(Type T)
+        public static bool IsSerializableProtoBuf(Type T)
         {
+            if (T == null)
+                return false;
+
             return T is IExtensible || T.IsDefined(typeof(ProtoContractAttribute), true);
         }
 
@@ -28,7 +31,7 @@ namespace Toolset.ProtocolBuffers
         /// <returns>A byte array that contains the serialized data of the passed instance.</returns>
         public static byte[] Serialize<T>(T instance) where T : class
         {
-            if (instance == null || !IsSerializableProtobuf(typeof(T)))
+            if (instance == null || !IsSerializableProtoBuf(typeof(T)))
                 return null;
 
             using (MemoryStream memoryStream = new MemoryStream())
@@ -47,7 +50,7 @@ namespace Toolset.ProtocolBuffers
         /// <returns>A new instance of the class T.</returns>
         public static T Deserialize<T>(byte[] data) where T : class
         {
-            if (data == null || !IsSerializableProtobuf(typeof(T)))
+            if (data == null || !IsSerializableProtoBuf(typeof(T)))
                 return null;
 
             using (MemoryStream memoryStream = new MemoryStream(data))

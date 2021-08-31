@@ -230,7 +230,7 @@ namespace Toolset.ProtocolBuffers
 
         private static void ValidateAttribute<T>(string operation)
         {
-            if(!ProtoBufUtils.IsSerializableProtobuf(typeof(T)))
+            if(!ProtoBufUtils.IsSerializableProtoBuf(typeof(T)))
                 throw new InvalidOperationException("[Toolset.SaveManager] Attempting {0} operation for model type {1} which is not ProtoBuf serializable."
                                                         .StringBuilderFormat(operation, typeof(T).Name));   
         }
