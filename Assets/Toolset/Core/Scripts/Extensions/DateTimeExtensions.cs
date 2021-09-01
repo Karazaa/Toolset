@@ -10,7 +10,7 @@ namespace Toolset.Core
         /// <summary>
         /// DateTime representing the start of the unix epoch.
         /// </summary>
-        public static readonly DateTime s_epochTime = new DateTime(1970, 1, 1);
+        public static DateTime EpochTime { get; } = new DateTime(1970, 1, 1);
 
         /// <summary>
         /// Gets the number of milliseconds that have passed between the DateTime and the start
@@ -20,7 +20,7 @@ namespace Toolset.Core
         /// <returns>Milliseconds between the passed DateTime and the unix epoch.</returns>
         public static long MillisecondsSinceUnixEpoch(this DateTime dateTime)
         {
-            return (long)dateTime.Subtract(s_epochTime).TotalMilliseconds;
+            return (long)dateTime.Subtract(EpochTime).TotalMilliseconds;
         }
     }
 }
