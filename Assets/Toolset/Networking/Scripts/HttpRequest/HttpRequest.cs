@@ -25,11 +25,13 @@ namespace Toolset.Networking
 
         public HttpRequest(object payloadData = null, HttpRequestSettings httpRequestSettings = null) : base(payloadData, httpRequestSettings ?? new HttpRequestSettings())
         {
+            HttpRequestSettings baseRequestSettingsAsHttpSettings = NetworkRequestSettings as HttpRequestSettings;
             HttpRequestInternalOperation.HttpRequestParameters requestParameters = new HttpRequestInternalOperation.HttpRequestParameters()
             {
                 Method = HttpRequestMethod,
                 Url = this.Url,
-                TimeoutSeconds = (NetworkRequestSettings as HttpRequestSettings).RequestTimeoutSeconds,
+                TimeoutSeconds = baseRequestSettingsAsHttpSettings.TimeoutSeconds,
+                IterationMinDelayMilliseconds = baseRequestSettingsAsHttpSettings.IterationMinDelayMilliseconds,
                 Data = PayloadData
             };
 

@@ -6,7 +6,7 @@ namespace Toolset.Networking.Tests
     {
         protected override HttpRequestMethod HttpRequestMethod => HttpRequestMethod.Get;
 
-        protected override Uri Url => new Uri("http://localhost/");
+        protected override Uri Url => new Uri("https://localhost:44345/ExampleGet");
     }
 
     public class ExampleNoResponseHttpPutRequest : HttpRequest<NoResponseData>

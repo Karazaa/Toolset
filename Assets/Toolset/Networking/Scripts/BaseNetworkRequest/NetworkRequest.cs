@@ -32,19 +32,24 @@ namespace Toolset.Networking
         public bool IsCompletedSuccessfully { get; private set; }
 
         /// <summary>
-        /// The Serialized request payload data object.
-        /// </summary>
-        public byte[] PayloadData { get; private set; }
-
-        /// <summary>
         /// The Deserialized response data object.
         /// </summary>
         public TResponseModel ResponseData { get; private set; }
 
         /// <summary>
+        /// The raw bytes of the response data object.
+        /// </summary>
+        public byte[] RawBytesResponseData { get; private set; }
+
+        /// <summary>
         /// The settings object for this NetworkRequest.
         /// </summary>
         protected NetworkRequestSettings NetworkRequestSettings { get; private set; }
+
+        /// <summary>
+        /// The Serialized request payload data object.
+        /// </summary>
+        protected byte[] PayloadData { get; private set; }
 
         private IInternalRequestOperation m_internalRequestOperation;
 
@@ -146,6 +151,7 @@ namespace Toolset.Networking
         {
             IsCompletedSuccessfully = m_internalRequestOperation.IsCompletedSuccessfully;
 
+            RawBytesResponseData = m_internalRequestOperation.ResponseData;
             if (typeof(TResponseModel) !=  typeof(NoResponseData))
                 ResponseData = ProtoBufUtils.Deserialize<TResponseModel>(m_internalRequestOperation.ResponseData);
 

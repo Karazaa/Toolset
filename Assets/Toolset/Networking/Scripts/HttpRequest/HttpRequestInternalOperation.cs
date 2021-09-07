@@ -1,14 +1,14 @@
 using System;
-using System.Collections;
 using UnityEngine.Networking;
 using Toolset.Core;
+using UnityEngine;
 
 namespace Toolset.Networking
 {
     /// <summary>
     /// Enum of Http Request Methods as defined by Mozilla here: https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods
     /// </summary>
-    public enum HttpRequestMethod { Get, Head, Post, Put, Create, Delete, Connect, Options, Trace, Patch  }
+    public enum HttpRequestMethod { Get, Head, Post, Put, Create, Delete, Connect, Options, Trace, Patch }
 
     /// <summary>
     /// Implementation of IInternalRequestOperation for HttpRequests.
@@ -41,6 +41,12 @@ namespace Toolset.Networking
             public int TimeoutSeconds { get; set; }
 
             /// <summary>
+            /// An int that limits the rate of iteration of the HttpRequestInternalOperation's enumeration.
+            /// needed to prevent potential stack overflows in the UnityWebRequest class.
+            /// </summary>
+            public int IterationMinDelayMilliseconds { get; set; }
+
+            /// <summary>
             /// The data to send to the server in the body of the request.
             /// </summary>
             public byte[] Data { get; set; }
@@ -57,14 +63,17 @@ namespace Toolset.Networking
         /// The result that signifies whether or not the request succeeded or had any errors.
         /// </summary>
         public UnityWebRequest.Result Result { get; private set; }
-        
+
         /// <summary>
         /// The download handler for the request which is used for retrieving data from the body of the
         /// server's response.
         /// </summary>
         public DownloadHandler DownloadHandler { get; private set; }
 
-        public object Current => throw new NotImplementedException();
+        /// <summary>
+        /// Returns a reference to the current IEnumerator.
+        /// </summary>
+        public object Current => this;
 
         private const string c_httpVerbConnect = "CONNECT";
         private const string c_httpVerbOptions = "OPTIONS";
@@ -75,7 +84,7 @@ namespace Toolset.Networking
 
         private StateMachine<States, Events> m_stateMachine;
         private UnityWebRequest m_unityWebRequest;
-        private IEnumerator m_webRequestRoutine;
+        private AsyncOperation m_webRequestRoutine;
 
         public HttpRequestInternalOperation(HttpRequestParameters requestParameters)
         {
@@ -85,7 +94,9 @@ namespace Toolset.Networking
             m_stateMachine.OnEventGoto(States.Instantiated, Events.RequestCreated, States.WaitingToSend);
             m_stateMachine.OnEventGoto(States.WaitingToSend, Events.RequestSent, States.WaitingForResponse);
             m_stateMachine.OnEventGoto(States.WaitingForResponse, Events.ErrorOccurred, States.Errored);
+            m_stateMachine.ExecuteOnEnter(States.Errored, OnEnterErroredState);
             m_stateMachine.OnEventGoto(States.WaitingForResponse, Events.ReceivedSuccessfulResponse, States.Succeeded);
+            m_stateMachine.ExecuteOnEnter(States.Succeeded, OnEnterSuccededState);
             m_stateMachine.OnEventGoto(States.Errored, Events.Reset, States.Instantiated);
         }
 
@@ -98,10 +109,11 @@ namespace Toolset.Networking
             if (m_stateMachine.CurrentState == States.WaitingToSend)
             {
                 m_stateMachine.Fire(Events.RequestSent);
-                m_webRequestRoutine = SendWebRequest();
+                m_webRequestRoutine = m_unityWebRequest.SendWebRequest();
+                return true;
             }
 
-            if (m_webRequestRoutine.MoveNext())
+            if (!m_webRequestRoutine.isDone)
             {
                 return true;
             }
@@ -171,9 +183,14 @@ namespace Toolset.Networking
             }
         }
 
-        private IEnumerator SendWebRequest()
+        private void OnEnterSuccededState(States previousState, Events triggeredEvent, States currentState)
         {
-            yield return m_unityWebRequest.SendWebRequest();
+            IsCompletedSuccessfully = true;
+        }
+
+        private void OnEnterErroredState(States previousState, Events triggeredEvent, States currentState)
+        {
+            IsCompletedSuccessfully = false;
         }
     }
 }

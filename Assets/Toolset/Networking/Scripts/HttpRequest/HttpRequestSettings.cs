@@ -6,9 +6,15 @@ namespace Toolset.Networking
     public class HttpRequestSettings : NetworkRequestSettings
     {
         /// <summary>
-        /// The number of seconds this request can be outstanding for before
-        /// it is considered timed out.
+        /// The amount of time the request can be outstanding for before it
+        /// is considered timed out.
         /// </summary>
-        public int RequestTimeoutSeconds { get; set; } = 30;
+        public int TimeoutSeconds { get; set; } = 30;
+
+        /// <summary>
+        /// An int that limits the rate of iteration of the HttpRequestInternalOperation's enumeration.
+        /// needed to prevent potential stack overflows in the UnityWebRequest class.
+        /// </summary>
+        public int IterationMinDelayMilliseconds { get; set; } = 200;
     }
 }

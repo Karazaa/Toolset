@@ -105,7 +105,7 @@ namespace Toolset.Core
             if (m_onStateExitedCallbacksDict.ContainsKey(previousState))
                 m_onStateExitedCallbacksDict[previousState].Invoke(previousState, eventToFire, nextState);
 
-            if (m_onStateEnteredCallbacksDict.ContainsKey(previousState))
+            if (m_onStateEnteredCallbacksDict.ContainsKey(nextState))
                 m_onStateEnteredCallbacksDict[nextState].Invoke(previousState, eventToFire, nextState);
         }
 
