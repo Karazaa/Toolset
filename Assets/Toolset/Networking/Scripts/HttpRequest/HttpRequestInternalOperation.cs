@@ -60,12 +60,6 @@ namespace Toolset.Networking
         public UnityWebRequest.Result Result { get; private set; }
 
         /// <summary>
-        /// The download handler for the request which is used for retrieving data from the body of the
-        /// server's response.
-        /// </summary>
-        public DownloadHandler DownloadHandler { get; private set; }
-
-        /// <summary>
         /// Returns a reference to the current IEnumerator.
         /// </summary>
         public object Current => this;
@@ -108,6 +102,9 @@ namespace Toolset.Networking
                 return true;
             }
 
+            if (m_webRequestRoutine == null || m_unityWebRequest == null)
+                return false;
+
             if (!m_webRequestRoutine.isDone)
             {
 #if UNITY_EDITOR
@@ -122,8 +119,7 @@ namespace Toolset.Networking
             else
             {
                 Result = m_unityWebRequest.result;
-                DownloadHandler = m_unityWebRequest.downloadHandler;
-                ResponseData = DownloadHandler.data;
+                ResponseData = m_unityWebRequest.downloadHandler.data;
 
                 if (Result == UnityWebRequest.Result.Success)
                 {
@@ -147,7 +143,6 @@ namespace Toolset.Networking
         {
             m_stateMachine.Fire(Events.Reset);
 
-            m_webRequestRoutine = null;
             m_unityWebRequest = new UnityWebRequest(m_requestParameters.Url);
             m_unityWebRequest.method = GetMethodString(m_requestParameters.Method);
             m_unityWebRequest.timeout = m_requestParameters.TimeoutSeconds;
@@ -191,11 +186,20 @@ namespace Toolset.Networking
         private void OnEnterSuccededState(States previousState, Events triggeredEvent, States currentState)
         {
             IsCompletedSuccessfully = true;
+            DisposeWebRequest();
         }
 
         private void OnEnterErroredState(States previousState, Events triggeredEvent, States currentState)
         {
             IsCompletedSuccessfully = false;
+            DisposeWebRequest();
+        }
+
+        private void DisposeWebRequest()
+        {
+            m_unityWebRequest.Dispose();
+            m_unityWebRequest = null;
+            m_webRequestRoutine = null;
         }
     }
 }
