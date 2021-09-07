@@ -1,26 +1,35 @@
 using System;
+using Toolset.ProtocolBuffers.Tests;
 
 namespace Toolset.Networking.Tests
 {
-    public class ExampleNoResponseHttpGetRequest : HttpRequest<NoResponseData>
+    public class ExampleHttpGetRequest : HttpRequest<NoData, NoData>
     {
         protected override HttpRequestMethod HttpRequestMethod => HttpRequestMethod.Get;
 
         protected override Uri Url => new Uri("https://localhost:44345/ExampleGet");
     }
 
-    public class ExampleNoResponseHttpPutRequest : HttpRequest<NoResponseData>
+    public class ExampleHttpPutRequest : HttpRequest<ExamplePersistentProto, ExamplePersistentProto>
     {
+        public ExampleHttpPutRequest(ExamplePersistentProto uploadData) : base(uploadData)
+        {
+        }
+
         protected override HttpRequestMethod HttpRequestMethod => HttpRequestMethod.Put;
 
-        protected override Uri Url => new Uri("http://localhost/");
+        protected override Uri Url => new Uri("https://localhost:44345/ExamplePut");
     }
 
-    public class ExampleNoResponseHttpPostRequest : HttpRequest<NoResponseData>
+    public class ExampleHttpPostRequest : HttpRequest<ExamplePersistentProto, ExamplePersistentProto>
     {
+        public ExampleHttpPostRequest(ExamplePersistentProto uploadData) : base(uploadData)
+        {
+        }
+
         protected override HttpRequestMethod HttpRequestMethod => HttpRequestMethod.Post;
 
-        protected override Uri Url => new Uri("http://localhost/");
+        protected override Uri Url => new Uri("https://localhost:44345/ExamplePost");
     }
 
 }

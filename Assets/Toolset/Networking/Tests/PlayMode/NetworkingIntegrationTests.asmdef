@@ -6,7 +6,8 @@
         "UnityEditor.TestRunner",
         "Core",
         "NetworkingScripts",
-        "NetworkingTestingUtils"
+        "NetworkingTestingUtils",
+        "ProtobufTestingUtils"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

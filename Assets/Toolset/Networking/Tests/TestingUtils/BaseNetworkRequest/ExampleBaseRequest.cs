@@ -5,7 +5,7 @@ namespace Toolset.Networking.Tests
     /// <summary>
     /// Example class used for testing NetworkRequests.
     /// </summary>
-    public class ExampleBaseRequest : NetworkRequest<NoResponseData>
+    public class ExampleBaseRequest : NetworkRequest<NoData, NoData>
     {
         public int RetryPromptCounts { get; private set; }
         public bool HandledExceededMaximumRetries { get; private set; }

@@ -8,7 +8,7 @@ namespace Toolset.Networking
     /// body of the response.
     /// </summary>
     [ProtoContract]
-    public class NoResponseData
+    public class NoData
     {
     }
 }

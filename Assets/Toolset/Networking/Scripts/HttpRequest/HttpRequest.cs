@@ -4,10 +4,11 @@ using System.Collections;
 namespace Toolset.Networking
 {
     /// <summary>
-    /// Base class for sending a request over a network.
+    /// Base class for sending a request over a network via Http.
     /// </summary>
-    /// <typeparam name="TResponseModel">The model of the expected data in the request's response.</typeparam>
-    public abstract class HttpRequest<TResponseModel> : NetworkRequest<TResponseModel> where TResponseModel : class
+    /// <typeparam name="TRequestDataModel">The model for the data to upload in the server request.</typeparam>
+    /// <typeparam name="TResponseDataModel">The model for the data packaged in the server response</typeparam>
+    public abstract class HttpRequest<TRequestDataModel, TResponseDataModel> : NetworkRequest<TRequestDataModel, TResponseDataModel> where TRequestDataModel : class where TResponseDataModel : class
     {
         /// <summary>
         /// Gets the HttpRequestMethod to use for this HttpRequest.

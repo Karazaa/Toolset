@@ -18,8 +18,9 @@ namespace Toolset.Networking
     /// <summary>
     /// Base class for sending a request over a network.
     /// </summary>
-    /// <typeparam name="TResponseModel">The model of the expected data in the request's response.</typeparam>
-    public abstract class NetworkRequest<TResponseModel> where TResponseModel : class
+    /// <typeparam name="TRequestDataModel">The model for the data to upload in the server request.</typeparam>
+    /// <typeparam name="TResponseDataModel">The model for the data packaged in the server response</typeparam>
+    public abstract class NetworkRequest<TRequestDataModel, TResponseDataModel> where TRequestDataModel : class where TResponseDataModel : class
     {
         /// <summary>
         /// How many times the Network Request has been attempted.
@@ -34,7 +35,7 @@ namespace Toolset.Networking
         /// <summary>
         /// The Deserialized response data object.
         /// </summary>
-        public TResponseModel ResponseData { get; private set; }
+        public TResponseDataModel ResponseData { get; private set; }
 
         /// <summary>
         /// The raw bytes of the response data object.
@@ -56,7 +57,7 @@ namespace Toolset.Networking
         public NetworkRequest(object payloadObject = null, NetworkRequestSettings settings = null)
         {
             NetworkRequestSettings = settings ?? new NetworkRequestSettings();
-            PayloadData = ProtoBufUtils.Serialize(payloadObject);
+            PayloadData = ProtoBufUtils.Serialize(payloadObject as TRequestDataModel);
         }
 
         /// <summary>
@@ -68,7 +69,7 @@ namespace Toolset.Networking
         /// Useful for when the calling scope initiates the request but does not yield on the returned IEnumerator.
         /// </param>
         /// <returns>An IEnumerator that can be yielded on.</returns>
-        public virtual IEnumerator Send(Action<NetworkRequest<TResponseModel>> onCompletionCallback = null)
+        public virtual IEnumerator Send(Action<NetworkRequest<TRequestDataModel, TResponseDataModel>> onCompletionCallback = null)
         {
             // Send the initial attempt of the request.
             m_internalRequestOperation = InternalSend();
@@ -147,13 +148,13 @@ namespace Toolset.Networking
         /// None, and the request has exceeded the maximum number of retries allowed.</returns>
         protected abstract IEnumerator HandleExceedsMaximumRetries();
 
-        private void Complete(Action<NetworkRequest<TResponseModel>> onCompletionCallback = null)
+        private void Complete(Action<NetworkRequest<TRequestDataModel, TResponseDataModel>> onCompletionCallback = null)
         {
             IsCompletedSuccessfully = m_internalRequestOperation.IsCompletedSuccessfully;
 
             RawBytesResponseData = m_internalRequestOperation.ResponseData;
-            if (typeof(TResponseModel) !=  typeof(NoResponseData))
-                ResponseData = ProtoBufUtils.Deserialize<TResponseModel>(m_internalRequestOperation.ResponseData);
+            if (typeof(TResponseDataModel) !=  typeof(NoData))
+                ResponseData = ProtoBufUtils.Deserialize<TResponseDataModel>(m_internalRequestOperation.ResponseData);
 
             onCompletionCallback?.Invoke(this);
         }
