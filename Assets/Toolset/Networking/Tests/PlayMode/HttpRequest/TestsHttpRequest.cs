@@ -53,7 +53,10 @@ namespace Toolset.Networking.Tests
         [Timeout(c_timeoutMilliseconds)]
         public IEnumerator TestTimeoutHttpRequest()
         {
-            ExampleHttpTimeoutRequest getRequest = new ExampleHttpTimeoutRequest();
+            ExampleHttpTimeoutRequest getRequest = new ExampleHttpTimeoutRequest(new HttpRequestSettings()
+            {
+                SilentRetryInitialWaitMilliseconds = 100
+            });
             yield return getRequest.Send();
 
             Assert.IsFalse(getRequest.IsCompletedSuccessfully);

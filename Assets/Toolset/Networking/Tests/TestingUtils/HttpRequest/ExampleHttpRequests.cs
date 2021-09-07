@@ -34,6 +34,10 @@ namespace Toolset.Networking.Tests
 
     public class ExampleHttpTimeoutRequest : HttpRequest<NoData, NoData>
     {
+        public ExampleHttpTimeoutRequest(HttpRequestSettings settings) : base(httpRequestSettings: settings)
+        {
+        }
+
         protected override HttpRequestMethod HttpRequestMethod => HttpRequestMethod.Get;
 
         protected override Uri Url => new Uri("https://localhost:8000/SomeRandomNonsenseToForceATimeout");

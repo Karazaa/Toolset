@@ -10,11 +10,5 @@ namespace Toolset.Networking
         /// is considered timed out.
         /// </summary>
         public int TimeoutSeconds { get; set; } = 30;
-
-        /// <summary>
-        /// An int that limits the rate of iteration of the HttpRequestInternalOperation's enumeration.
-        /// needed to prevent potential stack overflows in the UnityWebRequest class.
-        /// </summary>
-        public int IterationMinDelayMilliseconds { get; set; } = 200;
     }
 }

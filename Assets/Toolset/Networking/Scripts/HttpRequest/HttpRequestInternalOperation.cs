@@ -42,12 +42,6 @@ namespace Toolset.Networking
             public int TimeoutSeconds { get; set; }
 
             /// <summary>
-            /// An int that limits the rate of iteration of the HttpRequestInternalOperation's enumeration.
-            /// needed to prevent potential stack overflows in the UnityWebRequest class.
-            /// </summary>
-            public int IterationMinDelayMilliseconds { get; set; }
-
-            /// <summary>
             /// The data to send to the server in the body of the request.
             /// </summary>
             public byte[] Data { get; set; }

@@ -32,7 +32,6 @@ namespace Toolset.Networking
                 Method = HttpRequestMethod,
                 Url = this.Url,
                 TimeoutSeconds = baseRequestSettingsAsHttpSettings.TimeoutSeconds,
-                IterationMinDelayMilliseconds = baseRequestSettingsAsHttpSettings.IterationMinDelayMilliseconds,
                 Data = PayloadData
             };
 
