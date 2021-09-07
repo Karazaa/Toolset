@@ -32,4 +32,10 @@ namespace Toolset.Networking.Tests
         protected override Uri Url => new Uri("https://localhost:44345/ExamplePost");
     }
 
+    public class ExampleHttpTimeoutRequest : HttpRequest<NoData, NoData>
+    {
+        protected override HttpRequestMethod HttpRequestMethod => HttpRequestMethod.Get;
+
+        protected override Uri Url => new Uri("https://localhost:8000/SomeRandomNonsenseToForceATimeout");
+    }
 }

@@ -119,9 +119,9 @@ namespace Toolset.Networking
 #if UNITY_EDITOR
                 // Due to Unity awfulness, there is a virtual memory access issue within
                 // UnityWebRequest that can cause the editor to crash during PlayMode tests.
-                // Sleeping the main thread for 1 ms while waiting for m_webRequestRoutine.isDone
+                // Sleeping the main thread for 10 ms while waiting for m_webRequestRoutine.isDone
                 // resolves the issue in editor however.
-                Thread.Sleep(1);
+                Thread.Sleep(10);
 #endif
                 return true;
             }
@@ -138,6 +138,7 @@ namespace Toolset.Networking
                 }
                 else
                 {
+                    ShouldRetry = Result == UnityWebRequest.Result.ConnectionError;
                     m_stateMachine.Fire(Events.ErrorOccurred);
                     return false;
                 }

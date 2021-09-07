@@ -48,5 +48,16 @@ namespace Toolset.Networking.Tests
             Assert.IsTrue(postRequest.IsCompletedSuccessfully);
             ProtoTestingUtils.AssertGeneratedModelsAreEqual(upload, postRequest.ResponseData);
         }
+
+        [UnityTest]
+        [Timeout(c_timeoutMilliseconds)]
+        public IEnumerator TestTimeoutHttpRequest()
+        {
+            ExampleHttpTimeoutRequest getRequest = new ExampleHttpTimeoutRequest();
+            yield return getRequest.Send();
+
+            Assert.IsFalse(getRequest.IsCompletedSuccessfully);
+            Assert.AreEqual((new HttpRequestSettings()).MaximumAttemptCount, getRequest.AttemptCount);
+        }
     }
 }

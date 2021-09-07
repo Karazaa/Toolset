@@ -47,12 +47,12 @@ namespace Toolset.Networking
 
         protected override IEnumerator PromptRetryWait()
         {
-            throw new System.NotImplementedException();
+            yield break;
         }
 
         protected override IEnumerator HandleExceedsMaximumRetries()
         {
-            throw new System.NotImplementedException();
+            yield break;
         }
     }
 }
