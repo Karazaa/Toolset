@@ -18,9 +18,8 @@ namespace Toolset.Networking.Tests
             ExampleNoResponseHttpGetRequest getRequest = new ExampleNoResponseHttpGetRequest();
             yield return getRequest.Send();
 
-            //var str = System.Text.Encoding.Default.GetString(getRequest.RawBytesResponseData);
-
             Assert.IsTrue(getRequest.IsCompletedSuccessfully);
+            Assert.AreEqual("Example Get Response", System.Text.Encoding.Default.GetString(getRequest.RawBytesResponseData));
         }
     }
 }

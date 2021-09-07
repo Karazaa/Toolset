@@ -2,6 +2,7 @@ using System;
 using UnityEngine.Networking;
 using Toolset.Core;
 using UnityEngine;
+using System.Threading;
 
 namespace Toolset.Networking
 {
@@ -115,12 +116,20 @@ namespace Toolset.Networking
 
             if (!m_webRequestRoutine.isDone)
             {
+#if UNITY_EDITOR
+                // Due to Unity awfulness, there is a virtual memory access issue within
+                // UnityWebRequest that can cause the editor to crash during PlayMode tests.
+                // Sleeping the main thread for 1 ms while waiting for m_webRequestRoutine.isDone
+                // resolves the issue in editor however.
+                Thread.Sleep(1);
+#endif
                 return true;
             }
             else
             {
                 Result = m_unityWebRequest.result;
                 DownloadHandler = m_unityWebRequest.downloadHandler;
+                ResponseData = DownloadHandler.data;
 
                 if (Result == UnityWebRequest.Result.Success)
                 {
@@ -150,6 +159,7 @@ namespace Toolset.Networking
 
             if (m_requestParameters.Data != null)
                 m_unityWebRequest.uploadHandler = new UploadHandlerRaw(m_requestParameters.Data);
+            m_unityWebRequest.downloadHandler = new DownloadHandlerBuffer();
 
             m_stateMachine.Fire(Events.RequestCreated);
         }
