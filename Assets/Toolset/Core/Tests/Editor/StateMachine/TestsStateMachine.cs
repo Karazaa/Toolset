@@ -31,6 +31,18 @@ namespace Toolset.Core.Tests
         }
 
         [Test]
+        public void TestOnEnterCallback()
+        {
+            AssertCallbackFired(true);
+        }
+
+        [Test]
+        public void TestOnExitCallback()
+        {
+            AssertCallbackFired(false);
+        }
+
+        [Test]
         public void TestFullStateCircuit()
         {
             m_stateMachine.Fire(Events.AToB);
@@ -90,6 +102,26 @@ namespace Toolset.Core.Tests
 
             m_stateMachine.ForceState(States.A);
             Assert.AreEqual(m_stateMachine.CurrentState, States.A);
+        }
+
+        private void AssertCallbackFired(bool onEnter)
+        {
+            StateMachine<States, Events> stateMachine = new StateMachine<States, Events>(States.A);
+            stateMachine.OnEventGoto(States.A, Events.AToB, States.B);
+
+            bool callbackFired = false;
+            Action<States, Events, States> callback = (prev, triggeredEvent, next) =>
+            {
+                callbackFired = true;
+            };
+
+            if (onEnter)
+                stateMachine.ExecuteOnEnter(States.B, callback);
+            else
+                stateMachine.ExecuteOnExit(States.A, callback);
+
+            stateMachine.Fire(Events.AToB);
+            Assert.IsTrue(callbackFired);
         }
 
         private void EnterA(States previousState, Events transitionEvent, States nextState)
