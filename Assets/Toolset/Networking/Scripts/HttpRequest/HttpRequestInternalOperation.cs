@@ -2,7 +2,6 @@ using System;
 using UnityEngine.Networking;
 using Toolset.Core;
 using UnityEngine;
-using System.Threading;
 
 namespace Toolset.Networking
 {
@@ -60,11 +59,6 @@ namespace Toolset.Networking
         public UnityWebRequest.Result Result { get; private set; }
 
         public object Current { get; }
-
-        private const string c_httpVerbConnect = "CONNECT";
-        private const string c_httpVerbOptions = "OPTIONS";
-        private const string c_httpVerbTrace = "TRACE";
-        private const string c_httpVerbPatch = "PATCH";
 
         private HttpRequestParameters m_requestParameters;
 
@@ -131,7 +125,7 @@ namespace Toolset.Networking
             m_stateMachine.Fire(Events.Reset);
 
             m_unityWebRequest = new UnityWebRequest(m_requestParameters.Url);
-            m_unityWebRequest.method = GetMethodString(m_requestParameters.Method);
+            m_unityWebRequest.method = m_requestParameters.Method.GetMethodAsString();
             m_unityWebRequest.timeout = m_requestParameters.TimeoutSeconds;
 
             if (m_requestParameters.Data != null)
@@ -139,35 +133,6 @@ namespace Toolset.Networking
             m_unityWebRequest.downloadHandler = new DownloadHandlerBuffer();
 
             m_stateMachine.Fire(Events.RequestCreated);
-        }
-
-        private string GetMethodString(HttpRequestMethod method)
-        {
-            switch (method)
-            {
-                case HttpRequestMethod.Get:
-                    return UnityWebRequest.kHttpVerbGET;
-                case HttpRequestMethod.Head:
-                    return UnityWebRequest.kHttpVerbHEAD;
-                case HttpRequestMethod.Post:
-                    return UnityWebRequest.kHttpVerbPOST;
-                case HttpRequestMethod.Put:
-                    return UnityWebRequest.kHttpVerbPUT;
-                case HttpRequestMethod.Create:
-                    return UnityWebRequest.kHttpVerbCREATE;
-                case HttpRequestMethod.Delete:
-                    return UnityWebRequest.kHttpVerbDELETE;
-                case HttpRequestMethod.Connect:
-                    return c_httpVerbConnect;
-                case HttpRequestMethod.Options:
-                    return c_httpVerbOptions;
-                case HttpRequestMethod.Trace:
-                    return c_httpVerbTrace;
-                case HttpRequestMethod.Patch:
-                    return c_httpVerbPatch;
-                default:
-                    throw new InvalidOperationException("[Toolset.HttpRequestInternalOperation] Could not parse Http method!");
-            }
         }
 
         private void OnEnterSuccededState(States previousState, Events triggeredEvent, States currentState)
