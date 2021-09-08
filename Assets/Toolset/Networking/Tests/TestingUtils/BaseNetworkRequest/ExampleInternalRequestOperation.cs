@@ -10,7 +10,7 @@ namespace Toolset.Networking.Tests
         public bool IsCompletedSuccessfully => ExampleAttemptCounter >= c_numberOfAttemptsForSuccess;
         public bool ShouldRetry => !IsCompletedSuccessfully;
 
-        public object Current => this;
+        public object Current { get; }
 
         public byte[] ResponseData => null;
 

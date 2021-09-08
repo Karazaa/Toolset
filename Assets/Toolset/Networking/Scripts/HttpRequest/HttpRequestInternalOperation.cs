@@ -59,10 +59,7 @@ namespace Toolset.Networking
         /// </summary>
         public UnityWebRequest.Result Result { get; private set; }
 
-        /// <summary>
-        /// Returns a reference to the current IEnumerator.
-        /// </summary>
-        public object Current => this;
+        public object Current { get; }
 
         private const string c_httpVerbConnect = "CONNECT";
         private const string c_httpVerbOptions = "OPTIONS";
@@ -102,18 +99,8 @@ namespace Toolset.Networking
                 return true;
             }
 
-            if (m_webRequestRoutine == null || m_unityWebRequest == null)
-                return false;
-
             if (!m_webRequestRoutine.isDone)
             {
-#if UNITY_EDITOR
-                // Due to Unity awfulness, there is a virtual memory access issue within
-                // UnityWebRequest that can cause the editor to crash during PlayMode tests.
-                // Sleeping the main thread for 10 ms while waiting for m_webRequestRoutine.isDone
-                // resolves the issue in editor however.
-                Thread.Sleep(10);
-#endif
                 return true;
             }
             else
