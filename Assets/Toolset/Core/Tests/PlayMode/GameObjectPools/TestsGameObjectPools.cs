@@ -14,7 +14,7 @@ namespace Toolset.Core.Tests
     public class TestsGameObjectPools
     {
         private const string c_exampleScenePath = "Assets/Toolset/Core/Tests/TestingUtils/GameObjectPools/ExampleSceneGameObjectPools.unity";
-        public const int c_timeoutMilliseconds = 10000;
+        private const int c_timeoutMilliseconds = 10000;
 
         [UnitySetUp]
         public IEnumerator SetUp()
