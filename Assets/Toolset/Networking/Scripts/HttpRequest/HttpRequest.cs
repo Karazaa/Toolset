@@ -22,6 +22,21 @@ namespace Toolset.Networking
         /// </summary>
         protected abstract Uri Url { get; }
 
+        /// <summary>
+        /// The server name returned in the header of the response.
+        /// </summary>
+        public string ResponseServerName => m_internalRequestOperation?.ResponseServerName;
+
+        /// <summary>
+        /// The date initiated returned in the header of the response.
+        /// </summary>
+        public DateTime ResponseInitiatedDate => m_internalRequestOperation?.ResponseInitiatedDate ?? default;
+
+        /// <summary>
+        /// The date content length returned in the header of the response.
+        /// </summary>
+        public long ResponseContentLength => m_internalRequestOperation?.ResponseContentLength ?? default;
+
         private readonly HttpRequestInternalOperation m_internalRequestOperation;
 
         public HttpRequest(object payloadData = null, HttpRequestSettings httpRequestSettings = null) : base(payloadData, httpRequestSettings ?? new HttpRequestSettings())

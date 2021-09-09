@@ -8,9 +8,7 @@ namespace Toolset.Networking
     /// </summary>
     public static class HttpRequestMethodExtensions
     {
-        public const string c_httpVerbConnect = "CONNECT";
         public const string c_httpVerbOptions = "OPTIONS";
-        public const string c_httpVerbTrace = "TRACE";
         public const string c_httpVerbPatch = "PATCH";
 
         /// <summary>
@@ -22,26 +20,20 @@ namespace Toolset.Networking
         {
             switch (method)
             {
+                case HttpRequestMethod.Delete:
+                    return UnityWebRequest.kHttpVerbDELETE;
                 case HttpRequestMethod.Get:
                     return UnityWebRequest.kHttpVerbGET;
                 case HttpRequestMethod.Head:
                     return UnityWebRequest.kHttpVerbHEAD;
+                case HttpRequestMethod.Options:
+                    return c_httpVerbOptions;
+                case HttpRequestMethod.Patch:
+                    return c_httpVerbPatch;
                 case HttpRequestMethod.Post:
                     return UnityWebRequest.kHttpVerbPOST;
                 case HttpRequestMethod.Put:
                     return UnityWebRequest.kHttpVerbPUT;
-                case HttpRequestMethod.Create:
-                    return UnityWebRequest.kHttpVerbCREATE;
-                case HttpRequestMethod.Delete:
-                    return UnityWebRequest.kHttpVerbDELETE;
-                case HttpRequestMethod.Connect:
-                    return c_httpVerbConnect;
-                case HttpRequestMethod.Options:
-                    return c_httpVerbOptions;
-                case HttpRequestMethod.Trace:
-                    return c_httpVerbTrace;
-                case HttpRequestMethod.Patch:
-                    return c_httpVerbPatch;
                 default:
                     throw new InvalidOperationException("[Toolset.HttpRequestMethod] Could not parse Http method!");
             }

@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using System;
 using System.Collections;
 using UnityEngine.TestTools;
 using Toolset.ProtocolBuffers.Tests;
@@ -12,6 +13,20 @@ namespace Toolset.Networking.Tests
     {
         public const int c_timeoutMilliseconds = 30000;
 
+        private const long c_expectedHeadResponse = 2048L;
+        private const string c_expectedGetResponse = "Example Get Response";
+        private const string c_expectedOptionsResponse = "Some options.";
+
+        [UnityTest]
+        [Timeout(c_timeoutMilliseconds)]
+        public IEnumerator TestDeleteHttpRequest()
+        {
+            ExampleHttpDeleteRequest deleteRequest = new ExampleHttpDeleteRequest();
+            yield return deleteRequest.Send();
+
+            AssertRequestSucceededWithProperHeaders(deleteRequest);
+        }
+
         [UnityTest]
         [Timeout(c_timeoutMilliseconds)]
         public IEnumerator TestGetHttpRequest()
@@ -19,21 +34,43 @@ namespace Toolset.Networking.Tests
             ExampleHttpGetRequest getRequest = new ExampleHttpGetRequest();
             yield return getRequest.Send();
 
-            Assert.IsTrue(getRequest.IsCompletedSuccessfully);
-            Assert.AreEqual("Example Get Response", System.Text.Encoding.Default.GetString(getRequest.RawBytesResponseData));
+            AssertRequestSucceededWithProperHeaders(getRequest);
+            Assert.AreEqual(c_expectedGetResponse, System.Text.Encoding.Default.GetString(getRequest.RawBytesResponseData));
         }
 
         [UnityTest]
         [Timeout(c_timeoutMilliseconds)]
-        public IEnumerator TestPutHttpRequest()
+        public IEnumerator TestHeadHttpRequest()
+        {
+            ExampleHttpHeadRequest headRequest = new ExampleHttpHeadRequest();
+            yield return headRequest.Send();
+
+            AssertRequestSucceededWithProperHeaders(headRequest);
+            Assert.AreEqual(c_expectedHeadResponse, headRequest.ResponseContentLength);
+        }
+
+        [UnityTest]
+        [Timeout(c_timeoutMilliseconds)]
+        public IEnumerator TestOptionsHttpRequest()
+        {
+            ExampleHttpOptionsRequest optionsRequest = new ExampleHttpOptionsRequest();
+            yield return optionsRequest.Send();
+
+            AssertRequestSucceededWithProperHeaders(optionsRequest);
+            Assert.AreEqual(c_expectedOptionsResponse, System.Text.Encoding.Default.GetString(optionsRequest.RawBytesResponseData));
+        }
+
+        [UnityTest]
+        [Timeout(c_timeoutMilliseconds)]
+        public IEnumerator TestPatchHttpRequest()
         {
             ExamplePersistentProto upload = ProtoTestingUtils.GenerateRandomPersistentProto();
 
-            ExampleHttpPutRequest putRequest = new ExampleHttpPutRequest(upload);
-            yield return putRequest.Send();
+            ExampleHttpPatchRequest patchRequest = new ExampleHttpPatchRequest(upload);
+            yield return patchRequest.Send();
 
-            Assert.IsTrue(putRequest.IsCompletedSuccessfully);
-            ProtoTestingUtils.AssertGeneratedModelsAreEqual(upload, putRequest.ResponseData);
+            AssertRequestSucceededWithProperHeaders(patchRequest);
+            ProtoTestingUtils.AssertGeneratedModelsAreEqual(upload, patchRequest.ResponseData);
         }
 
         [UnityTest]
@@ -45,8 +82,21 @@ namespace Toolset.Networking.Tests
             ExampleHttpPostRequest postRequest = new ExampleHttpPostRequest(upload);
             yield return postRequest.Send();
 
-            Assert.IsTrue(postRequest.IsCompletedSuccessfully);
+            AssertRequestSucceededWithProperHeaders(postRequest);
             ProtoTestingUtils.AssertGeneratedModelsAreEqual(upload, postRequest.ResponseData);
+        }
+
+        [UnityTest]
+        [Timeout(c_timeoutMilliseconds)]
+        public IEnumerator TestPutHttpRequest()
+        {
+            ExamplePersistentProto upload = ProtoTestingUtils.GenerateRandomPersistentProto();
+
+            ExampleHttpPutRequest putRequest = new ExampleHttpPutRequest(upload);
+            yield return putRequest.Send();
+
+            AssertRequestSucceededWithProperHeaders(putRequest);
+            ProtoTestingUtils.AssertGeneratedModelsAreEqual(upload, putRequest.ResponseData);
         }
 
         [UnityTest]
@@ -61,6 +111,13 @@ namespace Toolset.Networking.Tests
 
             Assert.IsFalse(getRequest.IsCompletedSuccessfully);
             Assert.AreEqual((new HttpRequestSettings()).MaximumAttemptCount, getRequest.AttemptCount);
+        }
+
+        private void AssertRequestSucceededWithProperHeaders<TRequest, TResponse>(HttpRequest<TRequest, TResponse> httpRequest) where TRequest : class where TResponse : class
+        {
+            Assert.IsTrue(httpRequest.IsCompletedSuccessfully);
+            Assert.AreNotEqual(default(string), httpRequest.ResponseServerName);
+            Assert.AreNotEqual(default(DateTime), httpRequest.ResponseInitiatedDate);
         }
     }
 }

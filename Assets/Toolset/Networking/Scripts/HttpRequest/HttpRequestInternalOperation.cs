@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine.Networking;
 using Toolset.Core;
 using UnityEngine;
@@ -8,7 +9,7 @@ namespace Toolset.Networking
     /// <summary>
     /// Enum of Http Request Methods as defined by Mozilla here: https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods
     /// </summary>
-    public enum HttpRequestMethod { Get, Head, Post, Put, Create, Delete, Connect, Options, Trace, Patch }
+    public enum HttpRequestMethod { Delete, Get, Head, Options, Patch, Post, Put }
 
     /// <summary>
     /// Implementation of IInternalRequestOperation for HttpRequests.
@@ -58,10 +59,28 @@ namespace Toolset.Networking
         /// </summary>
         public UnityWebRequest.Result Result { get; private set; }
 
+        /// <summary>
+        /// The server name returned in the header of the response.
+        /// </summary>
+        public string ResponseServerName { get; private set; }
+
+        /// <summary>
+        /// The date initiated returned in the header of the response.
+        /// </summary>
+        public DateTime ResponseInitiatedDate { get; private set; }
+
+        /// <summary>
+        /// The date content length returned in the header of the response.
+        /// </summary>
+        public long ResponseContentLength { get; private set; }
+
         public object Current { get; }
 
-        private HttpRequestParameters m_requestParameters;
+        private const string c_headerServerNameKey = "Server";
+        private const string c_headerDateKey = "Date";
+        private const string c_headerContentLengthKey = "Content-Length";
 
+        private HttpRequestParameters m_requestParameters;
         private StateMachine<States, Events> m_stateMachine;
         private UnityWebRequest m_unityWebRequest;
         private AsyncOperation m_webRequestRoutine;
@@ -101,6 +120,7 @@ namespace Toolset.Networking
             {
                 Result = m_unityWebRequest.result;
                 ResponseData = m_unityWebRequest.downloadHandler.data;
+                ParseResponseHeaders(m_unityWebRequest.GetResponseHeaders());
 
                 if (Result == UnityWebRequest.Result.Success)
                 {
@@ -133,6 +153,23 @@ namespace Toolset.Networking
             m_unityWebRequest.downloadHandler = new DownloadHandlerBuffer();
 
             m_stateMachine.Fire(Events.RequestCreated);
+        }
+
+        private void ParseResponseHeaders(Dictionary<string, string> headerDict)
+        {
+            if (headerDict == null)
+                return;
+
+            if (headerDict.TryGetValue(c_headerServerNameKey, out string serverName))
+                ResponseServerName = serverName;
+
+            if (headerDict.TryGetValue(c_headerDateKey, out string dateString))
+                if (DateTime.TryParse(dateString, out DateTime parsedDate))
+                    ResponseInitiatedDate = parsedDate;
+
+            if (headerDict.TryGetValue(c_headerContentLengthKey, out string contentLengthString))
+                if (long.TryParse(contentLengthString, out long contentLength))
+                    ResponseContentLength = contentLength;
         }
 
         private void OnEnterSuccededState(States previousState, Events triggeredEvent, States currentState)
