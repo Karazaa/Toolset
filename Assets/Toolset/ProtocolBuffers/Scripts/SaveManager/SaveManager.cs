@@ -1,6 +1,8 @@
 using System;
 using System.IO;
+using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using ProtoBuf;
 using ProtoBuf.Reflection;
@@ -43,6 +45,23 @@ namespace Toolset.ProtocolBuffers
             }
         }
 
+        public static Task SaveModelAsync<T>(string fileName, T modelToSave) where T : class
+        {
+            ValidateFileName(nameof(SaveModelAsync), fileName);
+            ValidateAttribute<T>(nameof(SaveModelAsync));
+
+            string filePath = GetDataFilePathForType<T>(fileName);
+            Directory.CreateDirectory(Path.Combine(GetDataDirectoryPathForType<T>(), Path.GetDirectoryName(fileName)));
+
+            using (MemoryStream memoryStream = new MemoryStream())
+            {
+                Serializer.Serialize(memoryStream, modelToSave);
+                using (FileStream fileStream = File.Create(filePath))
+                {
+                    return memoryStream.CopyToAsync(fileStream);
+                }
+            }
+        }
 
         /// <summary>
         /// Loads the filename into an instance of class T.
@@ -65,6 +84,28 @@ namespace Toolset.ProtocolBuffers
             {
                 T output = Serializer.Deserialize<T>(fileStream);
                 return output;
+            }
+        }
+
+        public static async Task<T> LoadModelAsync<T>(string fileName) where T : class
+        {
+            ValidateFileName(nameof(LoadModelAsync), fileName);
+            ValidateAttribute<T>(nameof(LoadModelAsync));
+
+            string filePath = GetDataFilePathForType<T>(fileName);
+
+            if (!File.Exists(filePath))
+                return null;
+
+            using (FileStream fileStream = File.OpenRead(filePath))
+            {
+                using (MemoryStream memoryStream = new MemoryStream())
+                {
+                    await fileStream.CopyToAsync(memoryStream);
+
+                    T output = Serializer.Deserialize<T>(memoryStream);
+                    return output;
+                }
             }
         }
 
