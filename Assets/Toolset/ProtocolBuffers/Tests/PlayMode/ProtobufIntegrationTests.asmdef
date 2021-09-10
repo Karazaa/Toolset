@@ -1,0 +1,26 @@
+{
+    "name": "ProtobufIntegrationTests",
+    "rootNamespace": "Toolset.ProtocolBuffers.Tests",
+    "references": [
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner",
+        "Core",
+        "ProtobufScripts",
+        "ProtobufTestingUtils"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll",
+        "protobuf-net.dll",
+        "System.Memory.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
