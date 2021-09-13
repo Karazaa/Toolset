@@ -83,7 +83,7 @@ namespace Toolset.ProtocolBuffers.Tests
         [Test]
         public void TestSaveInvalidFileName()
         {
-            AssertExceptionsOnInvalidFileNames((callbackParameter) =>
+            SaveManagerTestingUtils.AssertExceptionsOnInvalidFileNames((callbackParameter) =>
             {
                 SaveManager.SaveModel(callbackParameter, new ExampleProtoBufModel());
             });
@@ -92,7 +92,7 @@ namespace Toolset.ProtocolBuffers.Tests
         [Test]
         public void TestLoadInvalidFileName()
         {
-            AssertExceptionsOnInvalidFileNames((callbackParameter) =>
+            SaveManagerTestingUtils.AssertExceptionsOnInvalidFileNames((callbackParameter) =>
             {
                 SaveManager.LoadModel<ExampleProtoBufModel>(callbackParameter);
             });
@@ -101,7 +101,7 @@ namespace Toolset.ProtocolBuffers.Tests
         [Test]
         public void TestDeleteInvalidFileName()
         {
-            AssertExceptionsOnInvalidFileNames((callbackParameter) =>
+            SaveManagerTestingUtils.AssertExceptionsOnInvalidFileNames((callbackParameter) =>
             {
                 SaveManager.DeleteModel<ExampleProtoBufModel>(callbackParameter);
             });
@@ -324,18 +324,8 @@ namespace Toolset.ProtocolBuffers.Tests
         [TearDown]
         public void TearDown()
         {
-            for (int i = 0; i < m_batchModelNames.Count; ++i)
-            {
-                SaveManager.DeleteFileAndMeta(SaveManager.GetDataFilePathForType<ExampleProtoBufModel>(m_batchModelNames[i]));
-            }
-
-            for (int i = 0; i < m_batchModelNamesWithSubdirectory.Count; ++i)
-            {
-                SaveManager.DeleteFileAndMeta(SaveManager.GetDataFilePathForType<ExamplePersistentProto>(m_batchModelNamesWithSubdirectory[i]));
-            }
-
-            SaveManager.DeleteDirectoryAndMetaRecursively(SaveManager.GetDataDirectoryPathForType<ExampleProtoBufModel>());
-            SaveManager.DeleteDirectoryAndMetaRecursively(SaveManager.GetDataDirectoryPathForType<ExamplePersistentProto>());
+            SaveManager.DeleteModelsByType<ExampleProtoBufModel>();
+            SaveManager.DeleteModelsByType<ExamplePersistentProto>();
 
             if (Directory.Exists(m_pathToProtoGeneratedDirectory))
             {
@@ -349,42 +339,6 @@ namespace Toolset.ProtocolBuffers.Tests
         public void OneTimeTearDown()
         {
             AssetDatabase.Refresh();
-        }
-
-        [MenuItem("Toolset/Testing/Generate Persistent Proto")]
-        public static void GeneratePersistentProto()
-        {
-            string pathToPersistentProtoSourceDirectory = UnityEngine.Application.dataPath + "/Toolset/ProtocolBuffers/Tests/TestingUtils/PersistentTesting/ProtoFiles";
-            string pathToPersistentProtoGeneratedDirectory = UnityEngine.Application.dataPath + "/Toolset/ProtocolBuffers/Tests/TestingUtils/PersistentTesting/Generated";
-            SaveManager.GenerateCSharpFromProto(pathToPersistentProtoSourceDirectory, pathToPersistentProtoGeneratedDirectory);
-        }
-
-        private void AssertExceptionsOnInvalidFileNames(Action<string> callbackToTest)
-        {
-            char[] invalidPathChars = Path.GetInvalidPathChars();
-
-            ToolsetAssert.Throws<InvalidOperationException>(() =>
-            {
-                callbackToTest(null);
-            });
-
-            ToolsetAssert.Throws<InvalidOperationException>(() =>
-            {
-                callbackToTest(string.Empty);
-            });
-
-            ToolsetAssert.Throws<InvalidOperationException>(() =>
-            {
-                callbackToTest("    ");
-            });
-
-            for (int i = 0; i < invalidPathChars.Length; ++i)
-            {
-                ToolsetAssert.Throws<InvalidOperationException>(() =>
-                {
-                    callbackToTest(invalidPathChars[i].ToString());
-                });
-            }
         }
     }
 }

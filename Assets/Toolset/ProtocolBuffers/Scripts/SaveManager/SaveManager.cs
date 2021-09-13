@@ -21,12 +21,13 @@ namespace Toolset.ProtocolBuffers
         private const string c_protoFileFormat = "{0}/{1}.proto";
         private const string c_protoSearchPattern = "*.proto";
 
+        private const int c_asyncBufferSize = 4096;
+
         private static readonly List<char> s_invalidPathCharacters = new List<char>();
 
         /// <summary>
         /// Saves the instance of a class to a specific filename.
-        /// Does not support directories within the filename yet. 
-        /// Class must have the ProtoContract Attribute.
+        /// Class must be Protobuf Serializable.
         /// </summary>
         /// <typeparam name="T">The class type to save. Files are saved in subdirectories grouped by type.</typeparam>
         /// <param name="fileName">The name of the file.</param>
@@ -45,7 +46,15 @@ namespace Toolset.ProtocolBuffers
             }
         }
 
-        public static Task SaveModelAsync<T>(string fileName, T modelToSave) where T : class
+        /// <summary>
+        /// Saves the instance of a class asynchronously to a specific filename.
+        /// Class must be Protobuf Serializable.
+        /// </summary>
+        /// <typeparam name="T">The class type to save. Files are saved in subdirectories grouped by type.</typeparam>
+        /// <param name="fileName">The name of the file.</param>
+        /// <param name="modelToSave">The instance of the class to save.</param>
+        /// <returns>A task that can be awaited or converted to an IEnumerator.</returns>
+        public static async Task SaveModelAsync<T>(string fileName, T modelToSave) where T : class
         {
             ValidateFileName(nameof(SaveModelAsync), fileName);
             ValidateAttribute<T>(nameof(SaveModelAsync));
@@ -56,9 +65,9 @@ namespace Toolset.ProtocolBuffers
             using (MemoryStream memoryStream = new MemoryStream())
             {
                 Serializer.Serialize(memoryStream, modelToSave);
-                using (FileStream fileStream = File.Create(filePath))
+                using (FileStream fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.Read, c_asyncBufferSize, FileOptions.Asynchronous))
                 {
-                    return memoryStream.CopyToAsync(fileStream);
+                    await fileStream.WriteAsync(memoryStream.ToArray(), 0, (int)memoryStream.Length);
                 }
             }
         }
@@ -87,6 +96,13 @@ namespace Toolset.ProtocolBuffers
             }
         }
 
+        /// <summary>
+        /// Loads the filename into an instance of class T asynchronously.
+        /// Returns null if no file can be found or if deserialization failed.
+        /// </summary>
+        /// <typeparam name="T">The class type to load. Files are saved in subdirectories grouped by type.</typeparam>
+        /// <param name="fileName">The name of the file.</param>
+        /// <returns>A task that can be awaited with a reult that contains an instance of the class that has been loaded.</returns>
         public static async Task<T> LoadModelAsync<T>(string fileName) where T : class
         {
             ValidateFileName(nameof(LoadModelAsync), fileName);
@@ -97,12 +113,13 @@ namespace Toolset.ProtocolBuffers
             if (!File.Exists(filePath))
                 return null;
 
-            using (FileStream fileStream = File.OpenRead(filePath))
+            using (FileStream fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read, c_asyncBufferSize, FileOptions.Asynchronous))
             {
-                using (MemoryStream memoryStream = new MemoryStream())
-                {
-                    await fileStream.CopyToAsync(memoryStream);
+                byte[] dataThatWasRead = new byte[fileStream.Length];
+                await fileStream.ReadAsync(dataThatWasRead, 0, dataThatWasRead.Length);
 
+                using (MemoryStream memoryStream = new MemoryStream(dataThatWasRead))
+                {
                     T output = Serializer.Deserialize<T>(memoryStream);
                     return output;
                 }
@@ -152,7 +169,7 @@ namespace Toolset.ProtocolBuffers
             if (!File.Exists(filePath))
                 return;
 
-            File.Delete(filePath);
+            DeleteFileAndMeta(filePath);
         }
 
         /// <summary>
@@ -165,7 +182,7 @@ namespace Toolset.ProtocolBuffers
 
             string directoryPath = GetDataDirectoryPathForType<T>();
 
-            Directory.Delete(directoryPath, true);
+            DeleteDirectoryAndMetaRecursively(directoryPath);
         }
 
         /// <summary>

@@ -2,7 +2,9 @@
     "name": "ProtobufTestingUtils",
     "rootNamespace": "Toolset.ProtocolBuffers.Tests",
     "references": [
-        "GUID:7c346a50f859b834cb499c8009f0f597"
+        "GUID:7c346a50f859b834cb499c8009f0f597",
+        "GUID:ae1cfedc4f1d6d046b6007e2d607f9da",
+        "GUID:31fc7982565dbf349b2268bac226ec5a"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
