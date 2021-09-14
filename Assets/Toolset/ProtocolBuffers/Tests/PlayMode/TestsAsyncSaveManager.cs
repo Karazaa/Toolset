@@ -1,9 +1,11 @@
 using NUnit.Framework;
+using System;
 using System.IO;
 using System.Collections;
 using System.Threading.Tasks;
 using UnityEngine.TestTools;
 using Toolset.Core;
+using Toolset.Core.Tests;
 
 namespace Toolset.ProtocolBuffers.Tests
 {
@@ -32,13 +34,13 @@ namespace Toolset.ProtocolBuffers.Tests
         [Test]
         public async void TestSaveAsyncFaultyProtobufModel()
         {
-            await ToolsetAssert.ThrowsAnyAsync(SaveManager.SaveModelAsync("Faulty", new ExampleFaultyProtoBufModel()));
+            await ToolsetAssert.ThrowsAsync<InvalidOperationException>(SaveManager.SaveModelAsync("Faulty", new ExampleFaultyProtoBufModel()));
         }
 
         [Test]
         public async void TestLoadAsyncFaultyProtobufModel()
         {
-            await ToolsetAssert.ThrowsAnyAsync(SaveManager.LoadModelAsync<ExampleFaultyProtoBufModel>("Faulty"));
+            await ToolsetAssert.ThrowsAsync<InvalidOperationException>(SaveManager.LoadModelAsync<ExampleFaultyProtoBufModel>("Faulty"));
         }
 
         [Test]

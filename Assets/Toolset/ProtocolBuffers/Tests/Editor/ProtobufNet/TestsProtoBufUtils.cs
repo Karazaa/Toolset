@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using Toolset.Core.Tests;
 
 namespace Toolset.ProtocolBuffers.Tests
 {

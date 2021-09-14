@@ -2,6 +2,7 @@ using UnityEditor;
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using Toolset.Core.Tests;
 
 namespace Toolset.ProtocolBuffers.Tests
 {
@@ -62,12 +63,12 @@ namespace Toolset.ProtocolBuffers.Tests
         {
             char[] invalidPathChars = Path.GetInvalidPathChars();
 
-            await ToolsetAssert.ThrowsAnyAsync(asyncOperationToTest(null));
-            await ToolsetAssert.ThrowsAnyAsync(asyncOperationToTest(string.Empty));
-            await ToolsetAssert.ThrowsAnyAsync(asyncOperationToTest("    "));
+            await ToolsetAssert.ThrowsAsync<InvalidOperationException>(asyncOperationToTest(null));
+            await ToolsetAssert.ThrowsAsync<InvalidOperationException>(asyncOperationToTest(string.Empty));
+            await ToolsetAssert.ThrowsAsync<InvalidOperationException>(asyncOperationToTest("    "));
             for (int i = 0; i < invalidPathChars.Length; ++i)
             {
-                await ToolsetAssert.ThrowsAnyAsync(asyncOperationToTest(invalidPathChars[i].ToString()));
+                await ToolsetAssert.ThrowsAsync<InvalidOperationException>(asyncOperationToTest(invalidPathChars[i].ToString()));
             }
         }
     }
