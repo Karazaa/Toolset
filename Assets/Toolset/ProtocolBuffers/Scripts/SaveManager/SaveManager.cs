@@ -89,11 +89,7 @@ namespace Toolset.ProtocolBuffers
             if (!File.Exists(filePath))
                 return null;
 
-            using (FileStream fileStream = File.OpenRead(filePath))
-            {
-                T output = Serializer.Deserialize<T>(fileStream);
-                return output;
-            }
+            return InternalLoadModel<T>(filePath);
         }
 
         /// <summary>
@@ -113,17 +109,9 @@ namespace Toolset.ProtocolBuffers
             if (!File.Exists(filePath))
                 return null;
 
-            using (FileStream fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read, c_asyncBufferSize, FileOptions.Asynchronous))
-            {
-                byte[] dataThatWasRead = new byte[fileStream.Length];
-                await fileStream.ReadAsync(dataThatWasRead, 0, dataThatWasRead.Length);
-
-                using (MemoryStream memoryStream = new MemoryStream(dataThatWasRead))
-                {
-                    T output = Serializer.Deserialize<T>(memoryStream);
-                    return output;
-                }
-            }
+            Task<T> internalWaitTask = InternalLoadModelAsync<T>(filePath);
+            await internalWaitTask;
+            return internalWaitTask.Result;
         }
 
         /// <summary>
@@ -145,10 +133,34 @@ namespace Toolset.ProtocolBuffers
             IEnumerable<string> filePaths = Directory.EnumerateFiles(directoryPath, c_tsoSearchPattern);
             foreach (string filePath in filePaths)
             {
-                using (FileStream fileStream = File.OpenRead(filePath))
-                {
-                    output.Add(filePath, Serializer.Deserialize<T>(fileStream));
-                }
+                output.Add(filePath, InternalLoadModel<T>(filePath));
+            }
+
+            return output;
+        }
+
+        /// <summary>
+        /// Returns a Task that contains a dictionary of filepath to loaded instance of the class as its result. 
+        /// Used for loading all files of a type in one async operation.
+        /// </summary>
+        /// <typeparam name="T">The class type to load. Files are saved in subdirectories grouped by type.</typeparam>
+        /// <returns>A Task with a resulting dictionary of filepath to loaded instance of the class.</returns>
+        public static async Task<Dictionary<string, T>> LoadModelsByTypeAsync<T>() where T : class
+        {
+            ValidateAttribute<T>(nameof(LoadModelsByTypeAsync));
+
+            string directoryPath = GetDataDirectoryPathForType<T>();
+
+            Dictionary<string, T> output = new Dictionary<string, T>();
+            if (!Directory.Exists(directoryPath))
+                return output;
+
+            IEnumerable<string> filePaths = Directory.EnumerateFiles(directoryPath, c_tsoSearchPattern);
+            foreach (string filePath in filePaths)
+            {
+                Task<T> internalWaitTask = InternalLoadModelAsync<T>(filePath);
+                await internalWaitTask;
+                output.Add(filePath, internalWaitTask.Result);
             }
 
             return output;
@@ -288,9 +300,9 @@ namespace Toolset.ProtocolBuffers
 
         private static void ValidateAttribute<T>(string operation)
         {
-            if(!ProtoBufUtils.IsSerializableProtoBuf(typeof(T)))
+            if (!ProtoBufUtils.IsSerializableProtoBuf(typeof(T)))
                 throw new InvalidOperationException("[Toolset.SaveManager] Attempting {0} operation for model type {1} which is not ProtoBuf serializable."
-                                                        .StringBuilderFormat(operation, typeof(T).Name));   
+                                                        .StringBuilderFormat(operation, typeof(T).Name));
         }
 
         private static void ValidateFileName(string operation, string fileName)
@@ -298,6 +310,31 @@ namespace Toolset.ProtocolBuffers
             if (fileName.IsNullOrWhiteSpace() || fileName.IndexOfAny(Path.GetInvalidPathChars()) != -1)
                 throw new InvalidOperationException("[Toolset.SaveManager] File Name {0} passed in {1} operation is not a valid file name."
                                             .StringBuilderFormat(fileName, operation));
+        }
+
+        private static T InternalLoadModel<T>(string filePath)
+        {
+            using (FileStream fileStream = File.OpenRead(filePath))
+            {
+                T output = Serializer.Deserialize<T>(fileStream);
+                return output;
+            }
+        }
+
+
+        private static async Task<T> InternalLoadModelAsync<T>(string filepath) where T : class
+        {
+            using (FileStream fileStream = new FileStream(filepath, FileMode.Open, FileAccess.Read, FileShare.Read, c_asyncBufferSize, FileOptions.Asynchronous))
+            {
+                byte[] dataThatWasRead = new byte[fileStream.Length];
+                await fileStream.ReadAsync(dataThatWasRead, 0, dataThatWasRead.Length);
+
+                using (MemoryStream memoryStream = new MemoryStream(dataThatWasRead))
+                {
+                    T output = Serializer.Deserialize<T>(memoryStream);
+                    return output;
+                }
+            }
         }
     }
 }
