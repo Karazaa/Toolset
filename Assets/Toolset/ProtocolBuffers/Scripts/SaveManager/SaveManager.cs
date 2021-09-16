@@ -37,13 +37,7 @@ namespace Toolset.ProtocolBuffers
             ValidateFileName(nameof(SaveModel), fileName);
             ValidateAttribute<T>(nameof(SaveModel));
 
-            string filePath = GetDataFilePathForType<T>(fileName);
-            Directory.CreateDirectory(Path.Combine(GetDataDirectoryPathForType<T>(), Path.GetDirectoryName(fileName)));
-
-            using (FileStream fileStream = File.Create(filePath))
-            {
-                Serializer.Serialize(fileStream, modelToSave);
-            }
+            InternalSaveModel(fileName, modelToSave);
         }
 
         /// <summary>
@@ -69,6 +63,22 @@ namespace Toolset.ProtocolBuffers
                 {
                     await fileStream.WriteAsync(memoryStream.ToArray(), 0, (int)memoryStream.Length);
                 }
+            }
+        }
+
+        /// <summary>
+        /// TODO: Fill this out.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="dataToSave"></param>
+        public static void SaveModelsByType<T>(Dictionary<string, T> dataToSave) where T : class
+        {
+            ValidateAttribute<T>(nameof(SaveModelAsync));
+
+            foreach(KeyValuePair<string, T> pair in dataToSave)
+            {
+                ValidateFileName(nameof(SaveModelAsync), pair.Key);
+                InternalSaveModel(pair.Key, pair.Value);
             }
         }
 
@@ -312,7 +322,18 @@ namespace Toolset.ProtocolBuffers
                                             .StringBuilderFormat(fileName, operation));
         }
 
-        private static T InternalLoadModel<T>(string filePath)
+        private static void InternalSaveModel<T>(string fileName, T modelToSave) where T : class
+        {
+            string filePath = GetDataFilePathForType<T>(fileName);
+            Directory.CreateDirectory(Path.Combine(GetDataDirectoryPathForType<T>(), Path.GetDirectoryName(fileName)));
+
+            using (FileStream fileStream = File.Create(filePath))
+            {
+                Serializer.Serialize(fileStream, modelToSave);
+            }
+        }
+
+        private static T InternalLoadModel<T>(string filePath) where T : class
         {
             using (FileStream fileStream = File.OpenRead(filePath))
             {
@@ -320,7 +341,6 @@ namespace Toolset.ProtocolBuffers
                 return output;
             }
         }
-
 
         private static async Task<T> InternalLoadModelAsync<T>(string filepath) where T : class
         {
