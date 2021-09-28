@@ -164,7 +164,7 @@ namespace Toolset.ProtocolBuffers.Tests
         }
 
         [Test]
-        public void TestLoadAll()
+        public void TestSaveAndLoadAll()
         {
             Dictionary<string, ExampleProtoBufModel> modelsToSave = new Dictionary<string, ExampleProtoBufModel>();
 
@@ -173,10 +173,7 @@ namespace Toolset.ProtocolBuffers.Tests
                 modelsToSave.Add(ProtoTestingUtils.m_batchModelNames[i], ProtoTestingUtils.GenerateRandomValidProtobuf());
             }
 
-            foreach (KeyValuePair<string, ExampleProtoBufModel> pair in modelsToSave)
-            {
-                SaveManager.SaveModel(pair.Key, pair.Value);
-            }
+            SaveManager.SaveModelsByType(modelsToSave);
 
             foreach (KeyValuePair<string, ExampleProtoBufModel> pair in modelsToSave)
             {
@@ -197,10 +194,7 @@ namespace Toolset.ProtocolBuffers.Tests
                 generatedModelsToSave.Add(ProtoTestingUtils.m_batchModelNamesWithSubdirectory[i], ProtoTestingUtils.GenerateRandomPersistentProto());
             }
 
-            foreach (KeyValuePair<string, ExamplePersistentProto> pair in generatedModelsToSave)
-            {
-                SaveManager.SaveModel(pair.Key, pair.Value);
-            }
+            SaveManager.SaveModelsByType(generatedModelsToSave);
 
             foreach (KeyValuePair<string, ExamplePersistentProto> pair in generatedModelsToSave)
             {

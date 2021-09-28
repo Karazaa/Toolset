@@ -86,7 +86,7 @@ namespace Toolset.ProtocolBuffers.Tests
         }
 
         [UnityTest]
-        public IEnumerator TestLoadAllAsync()
+        public IEnumerator TestSaveAndLoadAllAsync()
         {
             Dictionary<string, ExampleProtoBufModel> modelsToSave = new Dictionary<string, ExampleProtoBufModel>();
 
@@ -95,10 +95,7 @@ namespace Toolset.ProtocolBuffers.Tests
                 modelsToSave.Add(ProtoTestingUtils.m_batchModelNames[i], ProtoTestingUtils.GenerateRandomValidProtobuf());
             }
 
-            foreach (KeyValuePair<string, ExampleProtoBufModel> pair in modelsToSave)
-            {
-                yield return SaveManager.SaveModelAsync(pair.Key, pair.Value).GetAsIEnumerator();
-            }
+            yield return SaveManager.SaveModelsByTypeAsync(modelsToSave).GetAsIEnumerator();
 
             foreach (KeyValuePair<string, ExampleProtoBufModel> pair in modelsToSave)
             {
@@ -121,10 +118,7 @@ namespace Toolset.ProtocolBuffers.Tests
                 generatedModelsToSave.Add(ProtoTestingUtils.m_batchModelNamesWithSubdirectory[i], ProtoTestingUtils.GenerateRandomPersistentProto());
             }
 
-            foreach (KeyValuePair<string, ExamplePersistentProto> pair in generatedModelsToSave)
-            {
-                yield return SaveManager.SaveModelAsync(pair.Key, pair.Value).GetAsIEnumerator();
-            }
+            yield return SaveManager.SaveModelsByTypeAsync(generatedModelsToSave).GetAsIEnumerator();
 
             foreach (KeyValuePair<string, ExamplePersistentProto> pair in generatedModelsToSave)
             {

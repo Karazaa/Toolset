@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -53,32 +52,38 @@ namespace Toolset.ProtocolBuffers
             ValidateFileName(nameof(SaveModelAsync), fileName);
             ValidateAttribute<T>(nameof(SaveModelAsync));
 
-            string filePath = GetDataFilePathForType<T>(fileName);
-            Directory.CreateDirectory(Path.Combine(GetDataDirectoryPathForType<T>(), Path.GetDirectoryName(fileName)));
-
-            using (MemoryStream memoryStream = new MemoryStream())
-            {
-                Serializer.Serialize(memoryStream, modelToSave);
-                using (FileStream fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.Read, c_asyncBufferSize, FileOptions.Asynchronous))
-                {
-                    await fileStream.WriteAsync(memoryStream.ToArray(), 0, (int)memoryStream.Length);
-                }
-            }
+            await InternalSaveModelAsync(fileName, modelToSave);
         }
 
         /// <summary>
-        /// TODO: Fill this out.
+        /// Saves the dictionary of file names/protobuf serializable objects.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="dataToSave"></param>
+        /// <typeparam name="T">The protobuf serializable class<./typeparam>
+        /// <param name="dataToSave">The dictionary mapping desired file names to objects to save.</param>
         public static void SaveModelsByType<T>(Dictionary<string, T> dataToSave) where T : class
         {
             ValidateAttribute<T>(nameof(SaveModelAsync));
 
-            foreach(KeyValuePair<string, T> pair in dataToSave)
+            foreach (KeyValuePair<string, T> pair in dataToSave)
             {
                 ValidateFileName(nameof(SaveModelAsync), pair.Key);
                 InternalSaveModel(pair.Key, pair.Value);
+            }
+        }
+
+        /// <summary>
+        /// Saves the dictionary of file names/protobuf serializable objects asynchronously.
+        /// </summary>
+        /// <typeparam name="T">The protobuf serializable class.</typeparam>
+        /// <param name="dataToSave">The dictionary mapping desired file names to objects to save.</param>
+        public static async Task SaveModelsByTypeAsync<T>(Dictionary<string, T> dataToSave) where T : class
+        {
+            ValidateAttribute<T>(nameof(SaveModelAsync));
+
+            foreach (KeyValuePair<string, T> pair in dataToSave)
+            {
+                ValidateFileName(nameof(SaveModelAsync), pair.Key);
+                await InternalSaveModelAsync(pair.Key, pair.Value);
             }
         }
 
@@ -330,6 +335,21 @@ namespace Toolset.ProtocolBuffers
             using (FileStream fileStream = File.Create(filePath))
             {
                 Serializer.Serialize(fileStream, modelToSave);
+            }
+        }
+
+        private static async Task InternalSaveModelAsync<T>(string fileName, T modelToSave) where T : class
+        {
+            string filePath = GetDataFilePathForType<T>(fileName);
+            Directory.CreateDirectory(Path.Combine(GetDataDirectoryPathForType<T>(), Path.GetDirectoryName(fileName)));
+
+            using (MemoryStream memoryStream = new MemoryStream())
+            {
+                Serializer.Serialize(memoryStream, modelToSave);
+                using (FileStream fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.Read, c_asyncBufferSize, FileOptions.Asynchronous))
+                {
+                    await fileStream.WriteAsync(memoryStream.ToArray(), 0, (int)memoryStream.Length);
+                }
             }
         }
 
