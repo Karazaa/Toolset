@@ -1,5 +1,6 @@
 using System.Collections;
 using System;
+using UnityEngine;
 
 namespace Toolset.Core.Tests
 {
@@ -10,6 +11,9 @@ namespace Toolset.Core.Tests
     {
         public bool IsNominalFinished => m_stateMachine.CurrentState == States.AfterRootYield;
         public IEnumerator NominalRootRoutine => NominalRootLayer();
+
+        public bool IsNominalWaitFinished => m_stateMachine.CurrentState == States.AfterRootYield;
+        public IEnumerator NominalWaitRootRoutine => NominalWaitRootLayer();
 
         public bool IsFaultyFinished => (m_stateMachine.CurrentState == States.BeforeNest2Yield && 
                                             m_wasFaultyRootAfterInvoked && 
@@ -52,6 +56,33 @@ namespace Toolset.Core.Tests
         {
             m_stateMachine.Fire(Events.BeforeYield3);
             yield return null;
+            m_stateMachine.Fire(Events.AfterYield3);
+        }
+
+        private IEnumerator NominalWaitRootLayer()
+        {
+            m_stateMachine.Fire(Events.BeforeYield1);
+            yield return new WaitForSeconds(1.0f);
+            yield return NominalWaitNestLayer1();
+            yield return new WaitForSeconds(1.0f);
+            m_stateMachine.Fire(Events.AfterYield1);
+        }
+
+        private IEnumerator NominalWaitNestLayer1()
+        {
+            m_stateMachine.Fire(Events.BeforeYield2);
+            yield return new WaitForSeconds(1.0f);
+            yield return NominalWaitNestLayer2();
+            yield return new WaitForSeconds(1.0f);
+            m_stateMachine.Fire(Events.AfterYield2);
+        }
+
+        private IEnumerator NominalWaitNestLayer2()
+        {
+            m_stateMachine.Fire(Events.BeforeYield3);
+            yield return new WaitForSeconds(1.0f);
+            yield return null;
+            yield return new WaitForSeconds(1.0f);
             m_stateMachine.Fire(Events.AfterYield3);
         }
 

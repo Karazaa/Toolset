@@ -40,6 +40,16 @@ namespace Toolset.Core
         private readonly List<RoutineGraph> m_outstandingRoutines = new List<RoutineGraph>();
         private readonly HashSet<IEnumerator> m_activeParentRoutines = new HashSet<IEnumerator>();
 
+        /// <summary>
+        /// Runs the given IEnumerator as if it were a Unity Coroutine, but if an exceptionHandler
+        /// is passed, any exceptions thrown by any layer of child IEnumerators will be caught
+        /// and passed to the handler.
+        /// </summary>
+        /// <param name="routine">An IEnumerator for the RoutineManager to run.</param>
+        /// <param name="exceptionHandler">
+        /// An optional exception handler which will be invoked when exceptions originating
+        /// from the routine are caught by RoutineManager
+        /// </param>
         public void StartRoutine(IEnumerator routine, Action<Exception> exceptionHandler = null)
         {
             if (!m_activeParentRoutines.Contains(routine))

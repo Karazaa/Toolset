@@ -28,6 +28,21 @@ namespace Toolset.Core.Tests
 
         [UnityTest]
         [Timeout(c_timeoutMilliseconds)]
+        public IEnumerator TestStartRoutineWaitNominal()
+        {
+            ExampleRoutineRunner runner = new ExampleRoutineRunner();
+            Assert.IsFalse(runner.IsNominalWaitFinished);
+
+            RoutineManager.I.StartRoutine(runner.NominalWaitRootRoutine);
+
+            while (!runner.IsNominalWaitFinished)
+            {
+                yield return null;
+            }
+        }
+
+        [UnityTest]
+        [Timeout(c_timeoutMilliseconds)]
         public IEnumerator TestStartRoutineFaulty()
         {
             ExampleRoutineRunner runner = new ExampleRoutineRunner();
