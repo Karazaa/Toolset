@@ -5,6 +5,10 @@ using UnityEngine;
 
 namespace Toolset.Core
 {
+    /// <summary>
+    /// Class used to run Routines. This is similar to starting Coroutines on MonoBehaviors, but
+    /// can handle exceptions thrown by nested IEnumerators.
+    /// </summary>
     public class RoutineManager : MonoBehaviorSingleton<RoutineManager>
     {
         private class RoutineGraph
