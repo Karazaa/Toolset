@@ -29,6 +29,7 @@ namespace Toolset.Core
         {
             public IEnumerator Routine { get; private set; }
             public RoutineNode ParentNode { get; private set; }
+            public bool IsWaitForFixedUpdate { get; private set; }
 
             public RoutineNode(IEnumerator routine, RoutineNode parentNode)
             {
@@ -64,7 +65,7 @@ namespace Toolset.Core
 
             private IEnumerator WaitForFixedUpdateRoutine()
             {
-                yield return null;
+                yield break;
             }
 
             private IEnumerator WaitForSecondsRoutine(float seconds)
@@ -111,13 +112,28 @@ namespace Toolset.Core
         {
             for (int i = m_outstandingRoutines.Count - 1; i >= 0; --i)
             {
-                InternalMoveNext(m_outstandingRoutines[i]);
+                if (!m_outstandingRoutines[i].HeadNode.IsWaitForFixedUpdate)
+                    IterateListRoutineAtIndex(i);
+            }
+        }
 
-                if (m_outstandingRoutines[i].HeadNode == null)
-                {
-                    m_activeParentRoutines.Remove(m_outstandingRoutines[i].ParentRoutine);
-                    m_outstandingRoutines.RemoveAt(i);
-                }
+        private void FixedUpdate()
+        {
+            for (int i = m_outstandingRoutines.Count - 1; i >= 0; --i)
+            {
+                if (m_outstandingRoutines[i].HeadNode.IsWaitForFixedUpdate)
+                    IterateListRoutineAtIndex(i);
+            }
+        }
+
+        private void IterateListRoutineAtIndex(int index)
+        {
+            InternalMoveNext(m_outstandingRoutines[index]);
+
+            if (m_outstandingRoutines[index].HeadNode == null)
+            {
+                m_activeParentRoutines.Remove(m_outstandingRoutines[index].ParentRoutine);
+                m_outstandingRoutines.RemoveAt(index);
             }
         }
 
@@ -149,7 +165,8 @@ namespace Toolset.Core
                     else if (internalRoutine.Current is YieldInstruction yieldInstruction)
                     {
                         routineGraph.HeadNode = new RoutineNode(yieldInstruction, currentHeadNode);
-                        InternalMoveNext(routineGraph);
+                        if (!routineGraph.HeadNode.IsWaitForFixedUpdate)
+                            InternalMoveNext(routineGraph);
                     }
                 }
                 else
