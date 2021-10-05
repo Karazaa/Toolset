@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine.TestTools;
 using NUnit.Framework;
@@ -27,7 +28,7 @@ namespace Toolset.Core.Tests
         }
 
         [UnityTest]
-        [Timeout(c_timeoutMilliseconds)]
+        //[Timeout(c_timeoutMilliseconds)]
         public IEnumerator TestStartRoutineWaitNominal()
         {
             ExampleRoutineRunner runner = new ExampleRoutineRunner();
@@ -35,10 +36,14 @@ namespace Toolset.Core.Tests
 
             RoutineManager.I.StartRoutine(runner.NominalWaitRootRoutine);
 
+            DateTime started = DateTime.Now;
             while (!runner.IsNominalWaitFinished)
             {
                 yield return null;
             }
+            DateTime finished = DateTime.Now;
+
+            Assert.Greater((finished - started).TotalSeconds, 6.0);
         }
 
         [UnityTest]

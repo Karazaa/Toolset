@@ -35,6 +35,52 @@ namespace Toolset.Core
                 Routine = routine;
                 ParentNode = parentNode;
             }
+
+            public RoutineNode(YieldInstruction yieldInstruction, RoutineNode parentNode)
+            {
+                switch (yieldInstruction)
+                {
+                    case WaitForEndOfFrame waitForEndOfFrame:
+                        Routine = WaitForEndOfFrameRoutine();
+                        break;
+                    case WaitForFixedUpdate waitForFixedUpdate:
+                        Routine = WaitForFixedUpdateRoutine();
+                        break;
+                    case ToolsetWaitForSeconds toolsetWaitForSeconds:
+                        Routine = WaitForSecondsRoutine(toolsetWaitForSeconds.Seconds);
+                        break;
+                    case WaitForSeconds waitForSeconds:
+                        throw new InvalidOperationException("[Toolset.RoutineManager] The WaitForSeconds YieldInstruction is not properly supported by RoutineManager. Use ToolsetWaitForSeconds instead!");
+                    default:
+                        throw new InvalidOperationException("[Toolset.RoutineManager] Encountered YieldInstruction type that is not supported!");
+                }
+                ParentNode = parentNode;
+            }
+
+            private IEnumerator WaitForEndOfFrameRoutine()
+            {
+                yield return null;
+            }
+
+            private IEnumerator WaitForFixedUpdateRoutine()
+            {
+                yield return null;
+            }
+
+            private IEnumerator WaitForSecondsRoutine(float seconds)
+            {
+                float secondsRemaining = seconds;
+
+                DateTime lastIterationTime;
+                DateTime currentIterationTime;
+                while (secondsRemaining > 0.0f)
+                {
+                    lastIterationTime = DateTime.Now;
+                    yield return null;
+                    currentIterationTime = DateTime.Now;
+                    secondsRemaining -= ((float)(currentIterationTime - lastIterationTime).TotalSeconds) * Time.timeScale;
+                }
+            }
         }
 
         private readonly List<RoutineGraph> m_outstandingRoutines = new List<RoutineGraph>();
@@ -98,6 +144,11 @@ namespace Toolset.Core
                     if (internalRoutine.Current is IEnumerator headRoutine)
                     {
                         routineGraph.HeadNode = new RoutineNode(headRoutine, currentHeadNode);
+                        InternalMoveNext(routineGraph);
+                    }
+                    else if (internalRoutine.Current is YieldInstruction yieldInstruction)
+                    {
+                        routineGraph.HeadNode = new RoutineNode(yieldInstruction, currentHeadNode);
                         InternalMoveNext(routineGraph);
                     }
                 }
