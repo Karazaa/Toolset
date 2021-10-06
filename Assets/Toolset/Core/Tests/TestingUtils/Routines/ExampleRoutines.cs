@@ -15,11 +15,23 @@ namespace Toolset.Core.Tests
         public bool IsNominalWaitFinished => m_stateMachine.CurrentState == States.AfterRootYield;
         public IEnumerator NominalWaitRootRoutine => NominalWaitRootLayer();
 
-        public bool IsFaultyFinished => (m_stateMachine.CurrentState == States.BeforeNest2Yield && 
-                                            m_wasFaultyRootAfterInvoked && 
-                                            m_wasFaultyNest1AfterInvoked && 
+        public bool IsFaultyFinished => (m_stateMachine.CurrentState == States.BeforeNest2Yield &&
+                                            m_wasFaultyRootAfterInvoked &&
+                                            m_wasFaultyNest1AfterInvoked &&
                                             !m_wasFaultyNest2AfterInvoked);
         public IEnumerator FaultyRootRoutine => FaultyRootLayer();
+
+        public bool IsFaultyWaitFinished => (m_stateMachine.CurrentState == States.BeforeNest2Yield &&
+                                    m_wasFaultyRootAfterInvoked &&
+                                    m_wasFaultyNest1AfterInvoked &&
+                                    !m_wasFaultyNest2AfterInvoked);
+        public IEnumerator FaultyWaitRootRoutine => FaultyWaitRootLayer();
+
+        public bool IsFaultyYieldInstructionFinished => (m_stateMachine.CurrentState == States.BeforeNest2Yield &&
+                            m_wasFaultyRootAfterInvoked &&
+                            m_wasFaultyNest1AfterInvoked &&
+                            !m_wasFaultyNest2AfterInvoked);
+        public IEnumerator FaultyYieldInstructionRootRoutine => FaultyYieldInstructionRootLayer();
 
         private enum States { Created, BeforeRootYield, AfterRootYield, BeforeNest1Yield, AfterNest1Yield, BeforeNest2Yield, AfterNest2Yield }
         private enum Events { BeforeYield1, AfterYield1, BeforeYield2, AfterYield2, BeforeYield3, AfterYield3 }
@@ -111,6 +123,50 @@ namespace Toolset.Core.Tests
         private void ExceptionThrower()
         {
             throw new InvalidOperationException("Intentional Exception!");
+        }
+
+        private IEnumerator FaultyWaitRootLayer()
+        {
+            m_stateMachine.Fire(Events.BeforeYield1);
+            yield return FaultyWaitNestLayer1();
+            m_wasFaultyRootAfterInvoked = true;
+        }
+
+        private IEnumerator FaultyWaitNestLayer1()
+        {
+            m_stateMachine.Fire(Events.BeforeYield2);
+            yield return FaultyWaitNestLayer2();
+            m_wasFaultyNest1AfterInvoked = true;
+        }
+
+        private IEnumerator FaultyWaitNestLayer2()
+        {
+            m_stateMachine.Fire(Events.BeforeYield3);
+            yield return new WaitForSeconds(1.0f);
+            yield return null;
+            m_wasFaultyNest2AfterInvoked = true;
+        }
+
+        private IEnumerator FaultyYieldInstructionRootLayer()
+        {
+            m_stateMachine.Fire(Events.BeforeYield1);
+            yield return FaultyYieldInstructionNestLayer1();
+            m_wasFaultyRootAfterInvoked = true;
+        }
+
+        private IEnumerator FaultyYieldInstructionNestLayer1()
+        {
+            m_stateMachine.Fire(Events.BeforeYield2);
+            yield return FaultyYieldInstructionNestLayer2();
+            m_wasFaultyNest1AfterInvoked = true;
+        }
+
+        private IEnumerator FaultyYieldInstructionNestLayer2()
+        {
+            m_stateMachine.Fire(Events.BeforeYield3);
+            yield return new YieldInstruction();
+            yield return null;
+            m_wasFaultyNest2AfterInvoked = true;
         }
     }
 }

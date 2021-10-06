@@ -28,7 +28,7 @@ namespace Toolset.Core.Tests
         }
 
         [UnityTest]
-        //[Timeout(c_timeoutMilliseconds)]
+        [Timeout(c_timeoutMilliseconds)]
         public IEnumerator TestStartRoutineWaitNominal()
         {
             ExampleRoutineRunner runner = new ExampleRoutineRunner();
@@ -54,7 +54,48 @@ namespace Toolset.Core.Tests
             Assert.IsFalse(runner.IsFaultyFinished);
 
             bool exceptionOccurred = false;
-            RoutineManager.I.StartRoutine(runner.FaultyRootRoutine, (exception) => {
+            RoutineManager.I.StartRoutine(runner.FaultyRootRoutine, (exception) =>
+            {
+                exceptionOccurred = true;
+            });
+
+            while (!runner.IsFaultyFinished || !exceptionOccurred)
+            {
+                yield return null;
+            }
+        }
+
+        [UnityTest]
+        [Timeout(c_timeoutMilliseconds)]
+        public IEnumerator TestStartRoutineWaitFaulty()
+        {
+            ExampleRoutineRunner runner = new ExampleRoutineRunner();
+            Assert.IsFalse(runner.IsFaultyWaitFinished);
+
+            bool exceptionOccurred = false;
+            RoutineManager.I.StartRoutine(runner.FaultyRootRoutine, (exception) =>
+            {
+                Assert.IsTrue(exception is InvalidOperationException);
+                exceptionOccurred = true;
+            });
+
+            while (!runner.IsFaultyFinished || !exceptionOccurred)
+            {
+                yield return null;
+            }
+        }
+
+        [UnityTest]
+        [Timeout(c_timeoutMilliseconds)]
+        public IEnumerator TestStartRoutineYieldInstructionFaulty()
+        {
+            ExampleRoutineRunner runner = new ExampleRoutineRunner();
+            Assert.IsFalse(runner.IsFaultyYieldInstructionFinished);
+
+            bool exceptionOccurred = false;
+            RoutineManager.I.StartRoutine(runner.FaultyRootRoutine, (exception) => 
+            {
+                Assert.IsTrue(exception is InvalidOperationException);
                 exceptionOccurred = true;
             });
 
