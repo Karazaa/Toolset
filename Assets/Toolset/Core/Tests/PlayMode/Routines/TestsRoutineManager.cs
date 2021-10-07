@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using UnityEngine.TestTools;
 using NUnit.Framework;
+using UnityEngine;
 
 namespace Toolset.Core.Tests
 {
@@ -31,19 +32,28 @@ namespace Toolset.Core.Tests
         [Timeout(c_timeoutMilliseconds)]
         public IEnumerator TestStartRoutineWaitNominal()
         {
-            ExampleRoutineRunner runner = new ExampleRoutineRunner();
-            Assert.IsFalse(runner.IsNominalWaitFinished);
-
-            RoutineManager.I.StartRoutine(runner.NominalWaitRootRoutine);
-
-            DateTime started = DateTime.Now;
-            while (!runner.IsNominalWaitFinished)
+            IEnumerator TestForTimeScale(float timeScale)
             {
-                yield return null;
-            }
-            DateTime finished = DateTime.Now;
+                Time.timeScale = timeScale;
 
-            Assert.Greater((finished - started).TotalSeconds, 6.0);
+                ExampleRoutineRunner runner = new ExampleRoutineRunner();
+                Assert.IsFalse(runner.IsNominalWaitFinished);
+
+                RoutineManager.I.StartRoutine(runner.NominalWaitRootRoutine);
+
+                DateTime started = DateTime.Now;
+                while (!runner.IsNominalWaitFinished)
+                {
+                    yield return null;
+                }
+                DateTime finished = DateTime.Now;
+
+                Assert.Greater((finished - started).TotalSeconds, 1.5/timeScale);
+            }
+
+            yield return TestForTimeScale(2.0f);
+            yield return TestForTimeScale(0.5f);
+            yield return TestForTimeScale(1.0f);
         }
 
         [UnityTest]

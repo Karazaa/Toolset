@@ -74,27 +74,27 @@ namespace Toolset.Core.Tests
         private IEnumerator NominalWaitRootLayer()
         {
             m_stateMachine.Fire(Events.BeforeYield1);
-            yield return new ToolsetWaitForSeconds(1.0f);
+            yield return new ToolsetWaitForSeconds(0.25f);
             yield return NominalWaitNestLayer1();
-            yield return new ToolsetWaitForSeconds(1.0f);
+            yield return new ToolsetWaitForSeconds(0.25f);
             m_stateMachine.Fire(Events.AfterYield1);
         }
 
         private IEnumerator NominalWaitNestLayer1()
         {
             m_stateMachine.Fire(Events.BeforeYield2);
-            yield return new ToolsetWaitForSeconds(1.0f);
+            yield return new ToolsetWaitForSeconds(0.25f);
             yield return NominalWaitNestLayer2();
-            yield return new ToolsetWaitForSeconds(1.0f);
+            yield return new ToolsetWaitForSeconds(0.25f);
             m_stateMachine.Fire(Events.AfterYield2);
         }
 
         private IEnumerator NominalWaitNestLayer2()
         {
             m_stateMachine.Fire(Events.BeforeYield3);
-            yield return new ToolsetWaitForSeconds(1.0f);
+            yield return new ToolsetWaitForSeconds(0.25f);
             yield return null;
-            yield return new ToolsetWaitForSeconds(1.0f);
+            yield return new ToolsetWaitForSeconds(0.25f);
             m_stateMachine.Fire(Events.AfterYield3);
         }
 
