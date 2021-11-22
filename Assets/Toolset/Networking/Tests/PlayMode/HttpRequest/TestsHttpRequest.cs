@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using UnityEngine.TestTools;
 using Toolset.ProtocolBuffers.Tests;
+using Toolset.Global.Utils;
 
 namespace Toolset.Networking.Tests
 {
@@ -11,14 +12,12 @@ namespace Toolset.Networking.Tests
     /// </summary>
     public class TestsHttpRequest
     {
-        public const int c_timeoutMilliseconds = 30000;
-
         private const long c_expectedHeadResponse = 2048L;
         private const string c_expectedGetResponse = "Example Get Response";
         private const string c_expectedOptionsResponse = "Some options.";
 
         [UnityTest]
-        [Timeout(c_timeoutMilliseconds)]
+        [Timeout(ToolsetTestingConstants.c_longTimeoutMilliseconds)]
         public IEnumerator TestDeleteHttpRequest()
         {
             ExampleHttpDeleteRequest deleteRequest = new ExampleHttpDeleteRequest();
@@ -28,7 +27,7 @@ namespace Toolset.Networking.Tests
         }
 
         [UnityTest]
-        [Timeout(c_timeoutMilliseconds)]
+        [Timeout(ToolsetTestingConstants.c_longTimeoutMilliseconds)]
         public IEnumerator TestGetHttpRequest()
         {
             ExampleHttpGetRequest getRequest = new ExampleHttpGetRequest();
@@ -39,7 +38,7 @@ namespace Toolset.Networking.Tests
         }
 
         [UnityTest]
-        [Timeout(c_timeoutMilliseconds)]
+        [Timeout(ToolsetTestingConstants.c_longTimeoutMilliseconds)]
         public IEnumerator TestHeadHttpRequest()
         {
             ExampleHttpHeadRequest headRequest = new ExampleHttpHeadRequest();
@@ -50,7 +49,7 @@ namespace Toolset.Networking.Tests
         }
 
         [UnityTest]
-        [Timeout(c_timeoutMilliseconds)]
+        [Timeout(ToolsetTestingConstants.c_longTimeoutMilliseconds)]
         public IEnumerator TestOptionsHttpRequest()
         {
             ExampleHttpOptionsRequest optionsRequest = new ExampleHttpOptionsRequest();
@@ -61,7 +60,7 @@ namespace Toolset.Networking.Tests
         }
 
         [UnityTest]
-        [Timeout(c_timeoutMilliseconds)]
+        [Timeout(ToolsetTestingConstants.c_longTimeoutMilliseconds)]
         public IEnumerator TestPatchHttpRequest()
         {
             ExamplePersistentProto upload = ProtoTestingUtils.GenerateRandomPersistentProto();
@@ -74,7 +73,7 @@ namespace Toolset.Networking.Tests
         }
 
         [UnityTest]
-        [Timeout(c_timeoutMilliseconds)]
+        [Timeout(ToolsetTestingConstants.c_longTimeoutMilliseconds)]
         public IEnumerator TestPostHttpRequest()
         {
             ExamplePersistentProto upload = ProtoTestingUtils.GenerateRandomPersistentProto();
@@ -87,7 +86,7 @@ namespace Toolset.Networking.Tests
         }
 
         [UnityTest]
-        [Timeout(c_timeoutMilliseconds)]
+        [Timeout(ToolsetTestingConstants.c_longTimeoutMilliseconds)]
         public IEnumerator TestPutHttpRequest()
         {
             ExamplePersistentProto upload = ProtoTestingUtils.GenerateRandomPersistentProto();
@@ -100,7 +99,7 @@ namespace Toolset.Networking.Tests
         }
 
         [UnityTest]
-        [Timeout(c_timeoutMilliseconds)]
+        [Timeout(ToolsetTestingConstants.c_longTimeoutMilliseconds)]
         public IEnumerator TestTimeoutHttpRequest()
         {
             ExampleHttpTimeoutRequest getRequest = new ExampleHttpTimeoutRequest(new HttpRequestSettings()

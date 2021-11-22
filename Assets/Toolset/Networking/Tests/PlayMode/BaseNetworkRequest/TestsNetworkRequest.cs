@@ -1,6 +1,7 @@
 using NUnit.Framework;
 using System.Collections;
 using UnityEngine.TestTools;
+using Toolset.Global.Utils;
 
 namespace Toolset.Networking.Tests
 {
@@ -9,10 +10,8 @@ namespace Toolset.Networking.Tests
     /// </summary>
     public class TestsNetworkRequest
     {
-        public const int c_timeoutMilliseconds = 10000;
-
         [UnityTest]
-        [Timeout(c_timeoutMilliseconds)]
+        [Timeout(ToolsetTestingConstants.c_mediumTimeoutMilliseconds)]
         public IEnumerator TestSilentRetry()
         {
             ExampleBaseRequest baseRequest = new ExampleBaseRequest(new NetworkRequestSettings()
@@ -35,7 +34,7 @@ namespace Toolset.Networking.Tests
         }
 
         [UnityTest]
-        [Timeout(c_timeoutMilliseconds)]
+        [Timeout(ToolsetTestingConstants.c_mediumTimeoutMilliseconds)]
         public IEnumerator TestExceedMaximumRetries()
         {
             int attemptCount = 3;
@@ -52,7 +51,7 @@ namespace Toolset.Networking.Tests
         }
 
         [UnityTest]
-        [Timeout(c_timeoutMilliseconds)]
+        [Timeout(ToolsetTestingConstants.c_mediumTimeoutMilliseconds)]
         public IEnumerator TestNoRetry()
         {
             ExampleBaseRequest baseRequest = new ExampleBaseRequest(new NetworkRequestSettings()
@@ -68,7 +67,7 @@ namespace Toolset.Networking.Tests
         }
 
         [UnityTest]
-        [Timeout(c_timeoutMilliseconds)]
+        [Timeout(ToolsetTestingConstants.c_mediumTimeoutMilliseconds)]
         public IEnumerator TestPromptRetry()
         {
             ExampleBaseRequest baseRequest = new ExampleBaseRequest(new NetworkRequestSettings()

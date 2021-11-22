@@ -3,6 +3,7 @@ using System.Collections;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using UnityEngine.TestTools;
+using Toolset.Global.Utils;
 
 namespace Toolset.Core.Tests
 {
@@ -11,12 +12,11 @@ namespace Toolset.Core.Tests
     /// </summary>
     public class TestsTaskExtensions
     {
-        private const int c_timeoutMilliseconds = 10000;
         private const int c_lengthDelay = 1000;
         private const int c_returnValue = 100;
 
         [UnityTest]
-        [Timeout(c_timeoutMilliseconds)]
+        [Timeout(ToolsetTestingConstants.c_mediumTimeoutMilliseconds)]
         public IEnumerator TestGetAsIEnumerator()
         {
             long timeStarted = DateTimeExtensions.MillisecondsSinceUnixEpoch(DateTime.Now);
@@ -27,7 +27,7 @@ namespace Toolset.Core.Tests
         }
 
         [UnityTest]
-        [Timeout(c_timeoutMilliseconds)]
+        [Timeout(ToolsetTestingConstants.c_mediumTimeoutMilliseconds)]
         public IEnumerator TestGetAsIEnumeratorWithReturnType()
         {
             long timeStarted = DateTimeExtensions.MillisecondsSinceUnixEpoch(DateTime.Now);
