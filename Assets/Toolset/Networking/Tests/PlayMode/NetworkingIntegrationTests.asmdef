@@ -2,12 +2,13 @@
     "name": "NetworkingIntegrationTests",
     "rootNamespace": "Toolset.Networking.Tests",
     "references": [
-        "UnityEngine.TestRunner",
-        "UnityEditor.TestRunner",
-        "Core",
-        "NetworkingScripts",
-        "NetworkingTestingUtils",
-        "ProtobufTestingUtils"
+        "GUID:27619889b8ba8c24980f49ee34dbb44a",
+        "GUID:0acc523941302664db1f4e527237feb3",
+        "GUID:e90593f91fae23c498b90bd6c0405521",
+        "GUID:2de3834e61f9c9d4385c9b999d66ac00",
+        "GUID:0eb7a52b90b68e14997bfb3b51d3bdc3",
+        "GUID:7c346a50f859b834cb499c8009f0f597",
+        "GUID:79b4f3fa33d8eae4a9cad543b4bb2454"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

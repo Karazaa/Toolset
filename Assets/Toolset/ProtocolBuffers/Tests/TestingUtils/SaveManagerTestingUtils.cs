@@ -2,7 +2,7 @@ using UnityEditor;
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using Toolset.Core.Tests;
+using Toolset.Global.Utils;
 
 namespace Toolset.ProtocolBuffers.Tests
 {

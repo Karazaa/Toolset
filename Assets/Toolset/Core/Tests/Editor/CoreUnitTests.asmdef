@@ -1,11 +1,12 @@
 {
-    "name": "UnitTests",
+    "name": "CoreUnitTests",
     "rootNamespace": "Toolset.Core.Tests",
     "references": [
-        "UnityEngine.TestRunner",
-        "UnityEditor.TestRunner",
-        "TestingUtils",
-        "Core"
+        "GUID:27619889b8ba8c24980f49ee34dbb44a",
+        "GUID:0acc523941302664db1f4e527237feb3",
+        "GUID:7c346a50f859b834cb499c8009f0f597",
+        "GUID:31fc7982565dbf349b2268bac226ec5a",
+        "GUID:79b4f3fa33d8eae4a9cad543b4bb2454"
     ],
     "includePlatforms": [
         "Editor"

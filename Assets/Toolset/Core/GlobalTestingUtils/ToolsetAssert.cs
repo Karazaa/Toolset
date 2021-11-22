@@ -3,8 +3,9 @@ using UnityEngine;
 using System;
 using System.Collections;
 using System.Threading.Tasks;
+using Toolset.Core;
 
-namespace Toolset.Core.Tests
+namespace Toolset.Global.Utils
 {
     /// <summary>
     /// Static class used for adding wrapping methods around NUnit's Assert class.

@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using System;
+using Toolset.Global.Utils;
 
 namespace Toolset.Core.Tests
 {

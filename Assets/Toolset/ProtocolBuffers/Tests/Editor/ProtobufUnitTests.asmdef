@@ -2,12 +2,13 @@
     "name": "ProtobufUnitTests",
     "rootNamespace": "Toolset.ProtocolBuffers.Tests",
     "references": [
-        "UnityEngine.TestRunner",
-        "UnityEditor.TestRunner",
-        "ProtobufTestingUtils",
-        "Core",
-        "ProtobufScripts",
-        "TestingUtils"
+        "GUID:27619889b8ba8c24980f49ee34dbb44a",
+        "GUID:0acc523941302664db1f4e527237feb3",
+        "GUID:0eb7a52b90b68e14997bfb3b51d3bdc3",
+        "GUID:ae1cfedc4f1d6d046b6007e2d607f9da",
+        "GUID:7c346a50f859b834cb499c8009f0f597",
+        "GUID:31fc7982565dbf349b2268bac226ec5a",
+        "GUID:79b4f3fa33d8eae4a9cad543b4bb2454"
     ],
     "includePlatforms": [
         "Editor"

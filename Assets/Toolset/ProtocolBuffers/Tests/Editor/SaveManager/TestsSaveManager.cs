@@ -3,7 +3,7 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using UnityEditor;
-using Toolset.Core.Tests;
+using Toolset.Global.Utils;
 
 namespace Toolset.ProtocolBuffers.Tests
 {

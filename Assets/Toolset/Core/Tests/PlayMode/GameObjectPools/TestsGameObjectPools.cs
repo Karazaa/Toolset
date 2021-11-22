@@ -5,6 +5,7 @@ using UnityEngine.TestTools;
 using UnityEngine.SceneManagement;
 using UnityEditor.SceneManagement;
 using NUnit.Framework;
+using Toolset.Global.Utils;
 
 namespace Toolset.Core.Tests
 {
@@ -14,7 +15,6 @@ namespace Toolset.Core.Tests
     public class TestsGameObjectPools
     {
         private const string c_exampleScenePath = "Assets/Toolset/Core/Tests/TestingUtils/GameObjectPools/ExampleSceneGameObjectPools.unity";
-        private const int c_timeoutMilliseconds = 10000;
 
         [UnitySetUp]
         public IEnumerator SetUp()
@@ -28,7 +28,7 @@ namespace Toolset.Core.Tests
         }
 
         [UnityTest]
-        [Timeout(c_timeoutMilliseconds)]
+        [Timeout(ToolsetTestingConstants.c_mediumTimeoutMilliseconds)]
         public IEnumerator TestIsSchemaSet()
         {
             while (!GameObjectPool<ExamplePoolable>.I.IsSchemaSet())
@@ -38,7 +38,7 @@ namespace Toolset.Core.Tests
         }
 
         [UnityTest]
-        [Timeout(c_timeoutMilliseconds)]
+        [Timeout(ToolsetTestingConstants.c_mediumTimeoutMilliseconds)]
         public IEnumerator TestInstantiatePoolable()
         {
             yield return TestIsSchemaSet();
@@ -52,7 +52,7 @@ namespace Toolset.Core.Tests
         }
 
         [UnityTest]
-        [Timeout(c_timeoutMilliseconds)]
+        [Timeout(ToolsetTestingConstants.c_mediumTimeoutMilliseconds)]
         public IEnumerator TestTakeThenReturn()
         {
             yield return TestIsSchemaSet();
@@ -75,7 +75,7 @@ namespace Toolset.Core.Tests
         }
 
         [UnityTest]
-        [Timeout(c_timeoutMilliseconds)]
+        [Timeout(ToolsetTestingConstants.c_mediumTimeoutMilliseconds)]
         public IEnumerator TestTakeFromInactive()
         {
             yield return TestTakeThenReturn();
@@ -89,7 +89,7 @@ namespace Toolset.Core.Tests
         }
 
         [Test]
-        [Timeout(c_timeoutMilliseconds)]
+        [Timeout(ToolsetTestingConstants.c_mediumTimeoutMilliseconds)]
         public void TestExceptionIfSchemaNotSet()
         {
             ExampleFaultyPoolable instance = null;

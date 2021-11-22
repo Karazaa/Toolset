@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine.TestTools;
 using Toolset.Core;
-using Toolset.Core.Tests;
+using Toolset.Global.Utils;
 
 namespace Toolset.ProtocolBuffers.Tests
 {

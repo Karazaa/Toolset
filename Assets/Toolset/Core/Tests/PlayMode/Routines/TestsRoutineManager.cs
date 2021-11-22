@@ -3,6 +3,7 @@ using System.Collections;
 using UnityEngine.TestTools;
 using NUnit.Framework;
 using UnityEngine;
+using Toolset.Global.Utils;
 
 namespace Toolset.Core.Tests
 {
@@ -11,10 +12,8 @@ namespace Toolset.Core.Tests
     /// </summary>
     public class TestsRoutineManager
     {
-        private const int c_timeoutMilliseconds = 10000;
-
         [UnityTest]
-        [Timeout(c_timeoutMilliseconds)]
+        [Timeout(ToolsetTestingConstants.c_mediumTimeoutMilliseconds)]
         public IEnumerator TestStartRoutineNominal()
         {
             ExampleRoutineRunner runner = new ExampleRoutineRunner();
@@ -29,7 +28,7 @@ namespace Toolset.Core.Tests
         }
 
         [UnityTest]
-        [Timeout(c_timeoutMilliseconds)]
+        [Timeout(ToolsetTestingConstants.c_mediumTimeoutMilliseconds)]
         public IEnumerator TestStartRoutineWaitNominal()
         {
             IEnumerator TestForTimeScale(float timeScale)
@@ -57,7 +56,7 @@ namespace Toolset.Core.Tests
         }
 
         [UnityTest]
-        [Timeout(c_timeoutMilliseconds)]
+        [Timeout(ToolsetTestingConstants.c_mediumTimeoutMilliseconds)]
         public IEnumerator TestStartRoutineFaulty()
         {
             ExampleRoutineRunner runner = new ExampleRoutineRunner();
@@ -76,14 +75,14 @@ namespace Toolset.Core.Tests
         }
 
         [UnityTest]
-        [Timeout(c_timeoutMilliseconds)]
+        [Timeout(ToolsetTestingConstants.c_mediumTimeoutMilliseconds)]
         public IEnumerator TestStartRoutineWaitFaulty()
         {
             ExampleRoutineRunner runner = new ExampleRoutineRunner();
             Assert.IsFalse(runner.IsFaultyWaitFinished);
 
             bool exceptionOccurred = false;
-            RoutineManager.I.StartRoutine(runner.FaultyRootRoutine, (exception) =>
+            RoutineManager.I.StartRoutine(runner.FaultyWaitRootRoutine, (exception) =>
             {
                 Assert.IsTrue(exception is InvalidOperationException);
                 exceptionOccurred = true;
@@ -96,7 +95,7 @@ namespace Toolset.Core.Tests
         }
 
         [UnityTest]
-        [Timeout(c_timeoutMilliseconds)]
+        [Timeout(ToolsetTestingConstants.c_mediumTimeoutMilliseconds)]
         public IEnumerator TestStartRoutineYieldInstructionFaulty()
         {
             ExampleRoutineRunner runner = new ExampleRoutineRunner();

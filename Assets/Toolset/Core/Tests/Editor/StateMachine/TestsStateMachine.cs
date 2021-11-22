@@ -2,6 +2,7 @@ using System;
 using NUnit.Framework;
 using States = Toolset.Core.Tests.ExampleStateMachineStates;
 using Events = Toolset.Core.Tests.ExampleStateMachineEvents;
+using Toolset.Global.Utils;
 
 namespace Toolset.Core.Tests
 {

@@ -46,9 +46,13 @@ namespace Toolset.Core
                         break;
                     case WaitForFixedUpdate waitForFixedUpdate:
                         Routine = WaitForFixedUpdateRoutine();
+                        IsWaitForFixedUpdate = true;
                         break;
                     case ToolsetWaitForSeconds toolsetWaitForSeconds:
                         Routine = WaitForSecondsRoutine(toolsetWaitForSeconds.Seconds);
+                        break;
+                    case AsyncOperation asyncOperation:
+                        Routine = AsyncOperationRoutine(asyncOperation);
                         break;
                     case WaitForSeconds waitForSeconds:
                         throw new InvalidOperationException("[Toolset.RoutineManager] The WaitForSeconds YieldInstruction is not properly supported by RoutineManager. Use ToolsetWaitForSeconds instead!");
@@ -80,6 +84,14 @@ namespace Toolset.Core
                     yield return null;
                     currentIterationTime = DateTime.Now;
                     secondsRemaining -= ((float)(currentIterationTime - lastIterationTime).TotalSeconds) * Time.timeScale;
+                }
+            }
+
+            private IEnumerator AsyncOperationRoutine(AsyncOperation asyncOperation)
+            {
+                while(!asyncOperation.isDone)
+                {
+                    yield return null;
                 }
             }
         }
