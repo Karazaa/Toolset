@@ -16,6 +16,7 @@ namespace Toolset.ProtocolBuffers.Tests
     public class TestsAsyncSaveManager
     {
         [UnityTest]
+        [Timeout(ToolsetTestingConstants.c_mediumTimeoutMilliseconds)]
         public IEnumerator TestSaveAndLoadAsync()
         {
             // Note: We can't lean on GenerateRandomValidProtobuf for generation here, because we need to guarantee that 
@@ -44,6 +45,7 @@ namespace Toolset.ProtocolBuffers.Tests
         }
 
         [UnityTest]
+        [Timeout(ToolsetTestingConstants.c_mediumTimeoutMilliseconds)]
         public IEnumerator TestOverwriteAndLoadAsync()
         {
             yield return TestSaveAndLoadAsync();
@@ -86,6 +88,7 @@ namespace Toolset.ProtocolBuffers.Tests
         }
 
         [UnityTest]
+        [Timeout(ToolsetTestingConstants.c_mediumTimeoutMilliseconds)]
         public IEnumerator TestSaveAndLoadAllAsync()
         {
             Dictionary<string, ExampleProtoBufModel> modelsToSave = new Dictionary<string, ExampleProtoBufModel>();
