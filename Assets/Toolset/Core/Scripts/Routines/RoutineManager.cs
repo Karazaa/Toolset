@@ -54,6 +54,8 @@ namespace Toolset.Core
                     case AsyncOperation asyncOperation:
                         Routine = AsyncOperationRoutine(asyncOperation);
                         break;
+                    case Coroutine coroutine:
+                        break;
                     case WaitForSeconds waitForSeconds:
                         throw new InvalidOperationException("[Toolset.RoutineManager] The WaitForSeconds YieldInstruction is not properly supported by RoutineManager. Use ToolsetWaitForSeconds instead!");
                     default:

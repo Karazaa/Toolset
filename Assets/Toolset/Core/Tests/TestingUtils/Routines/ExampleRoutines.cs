@@ -1,6 +1,7 @@
 using System.Collections;
 using System;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Toolset.Core.Tests
 {
@@ -12,6 +13,7 @@ namespace Toolset.Core.Tests
         public bool IsNominalFinished => m_stateMachine.CurrentState == States.AfterRootYield;
         public IEnumerator NominalRootRoutine => NominalRootLayer();
 
+        public float WaitTime { get; set; }
         public bool IsNominalWaitFinished => m_stateMachine.CurrentState == States.AfterRootYield;
         public IEnumerator NominalWaitRootRoutine => NominalWaitRootLayer();
 
@@ -33,12 +35,23 @@ namespace Toolset.Core.Tests
                             !m_wasFaultyNest2AfterInvoked);
         public IEnumerator FaultyYieldInstructionRootRoutine => FaultyYieldInstructionRootLayer();
 
+        public bool IsLoadExampleSceneFinished { get; private set; }
+        public IEnumerator LoadExampleSceneRoutine => LoadExampleScene();
+
+        public bool IsUnloadExampleSceneFinished { get; private set; }
+        public IEnumerator UnloadExampleSceneRoutine => UnloadExampleScene();
+
+        public bool IsWaitRealtimeFinished { get; private set; }
+        public IEnumerator WaitRealtimeRoutine => WaitRealtime();
+
         private enum States { Created, BeforeRootYield, AfterRootYield, BeforeNest1Yield, AfterNest1Yield, BeforeNest2Yield, AfterNest2Yield }
         private enum Events { BeforeYield1, AfterYield1, BeforeYield2, AfterYield2, BeforeYield3, AfterYield3 }
         private readonly StateMachine<States, Events> m_stateMachine = new StateMachine<States, Events>(States.Created);
         private bool m_wasFaultyRootAfterInvoked = false;
         private bool m_wasFaultyNest1AfterInvoked = false;
         private bool m_wasFaultyNest2AfterInvoked = false;
+
+        private const string c_exampleSceneName = "ExampleSceneRoutines";
 
         public ExampleRoutineRunner()
         {
@@ -74,27 +87,27 @@ namespace Toolset.Core.Tests
         private IEnumerator NominalWaitRootLayer()
         {
             m_stateMachine.Fire(Events.BeforeYield1);
-            yield return new ToolsetWaitForSeconds(0.25f);
+            yield return new ToolsetWaitForSeconds(WaitTime / 6.0f);
             yield return NominalWaitNestLayer1();
-            yield return new ToolsetWaitForSeconds(0.25f);
+            yield return new ToolsetWaitForSeconds(WaitTime / 6.0f);
             m_stateMachine.Fire(Events.AfterYield1);
         }
 
         private IEnumerator NominalWaitNestLayer1()
         {
             m_stateMachine.Fire(Events.BeforeYield2);
-            yield return new ToolsetWaitForSeconds(0.25f);
+            yield return new ToolsetWaitForSeconds(WaitTime / 6.0f);
             yield return NominalWaitNestLayer2();
-            yield return new ToolsetWaitForSeconds(0.25f);
+            yield return new ToolsetWaitForSeconds(WaitTime / 6.0f);
             m_stateMachine.Fire(Events.AfterYield2);
         }
 
         private IEnumerator NominalWaitNestLayer2()
         {
             m_stateMachine.Fire(Events.BeforeYield3);
-            yield return new ToolsetWaitForSeconds(0.25f);
+            yield return new ToolsetWaitForSeconds(WaitTime / 6.0f);
             yield return null;
-            yield return new ToolsetWaitForSeconds(0.25f);
+            yield return new ToolsetWaitForSeconds(WaitTime / 6.0f);
             m_stateMachine.Fire(Events.AfterYield3);
         }
 
@@ -142,7 +155,7 @@ namespace Toolset.Core.Tests
         private IEnumerator FaultyWaitNestLayer2()
         {
             m_stateMachine.Fire(Events.BeforeYield3);
-            yield return new WaitForSeconds(1.0f);
+            yield return new WaitForSeconds(WaitTime);
             yield return null;
             m_wasFaultyNest2AfterInvoked = true;
         }
@@ -167,6 +180,33 @@ namespace Toolset.Core.Tests
             yield return new YieldInstruction();
             yield return null;
             m_wasFaultyNest2AfterInvoked = true;
+        }
+
+        private IEnumerator LoadExampleScene()
+        {
+            IsLoadExampleSceneFinished = false;
+
+            yield return SceneManager.LoadSceneAsync(c_exampleSceneName, LoadSceneMode.Additive);
+
+            IsLoadExampleSceneFinished = true;
+        }
+
+        private IEnumerator UnloadExampleScene()
+        {
+            IsUnloadExampleSceneFinished = false;
+
+            yield return SceneManager.UnloadSceneAsync(c_exampleSceneName);
+
+            IsUnloadExampleSceneFinished = true;
+        }
+
+        private IEnumerator WaitRealtime()
+        {
+            IsWaitRealtimeFinished = false;
+
+            yield return new WaitForSecondsRealtime(WaitTime);
+
+            IsWaitRealtimeFinished = true;
         }
     }
 }
