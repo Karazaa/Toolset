@@ -9,7 +9,7 @@ namespace Toolset.Core
     public static class TaskExtensions
     {
         /// <summary>
-        /// Returns the given task as an IEnumerator that can be yielded on in Unity Coroutines.
+        /// Returns the given task as an IEnumerator that can be yielded on in Unity Coroutines or Toolset Routines.
         /// </summary>
         /// <param name="taskToConvert">The task to convert to an IEnumerator.</param>
         /// <returns>The task in IEnumerator form.</returns>
@@ -20,7 +20,7 @@ namespace Toolset.Core
     }
 
     /// <summary>
-    /// Class that implements IEnumerator that tasks get converted into when
+    /// Class that implements IEnumerator that Tasks get converted into when
     /// GetAsIEnumerator is invoked.
     /// </summary>
     public class TaskEnumerator : IEnumerator
@@ -47,4 +47,3 @@ namespace Toolset.Core
         }
     }
 }
-

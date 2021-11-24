@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Toolset.Core
@@ -52,7 +53,7 @@ namespace Toolset.Core
                         Routine = WaitForSecondsRoutine(toolsetWaitForSeconds.Seconds);
                         break;
                     case AsyncOperation asyncOperation:
-                        Routine = AsyncOperationRoutine(asyncOperation);
+                        Routine = asyncOperation.GetAsIEnumerator();
                         break;
                     case Coroutine coroutine:
                         break;
@@ -88,14 +89,6 @@ namespace Toolset.Core
                     secondsRemaining -= ((float)(currentIterationTime - lastIterationTime).TotalSeconds) * Time.timeScale;
                 }
             }
-
-            private IEnumerator AsyncOperationRoutine(AsyncOperation asyncOperation)
-            {
-                while(!asyncOperation.isDone)
-                {
-                    yield return null;
-                }
-            }
         }
 
         private readonly List<RoutineGraph> m_outstandingRoutines = new List<RoutineGraph>();
@@ -103,7 +96,7 @@ namespace Toolset.Core
 
         /// <summary>
         /// Runs the given IEnumerator as if it were a Unity Coroutine, but if an exceptionHandler
-        /// is passed, any exceptions thrown by any layer of child IEnumerators will be caught
+        /// is passed, any exceptions thrown by any layer of child iterators will be caught
         /// and passed to the handler.
         /// </summary>
         /// <param name="routine">An IEnumerator for the RoutineManager to run.</param>
@@ -171,16 +164,23 @@ namespace Toolset.Core
 
                 if (result)
                 {
-                    if (internalRoutine.Current is IEnumerator headRoutine)
+                    switch (internalRoutine.Current)
                     {
-                        routineGraph.HeadNode = new RoutineNode(headRoutine, currentHeadNode);
-                        InternalMoveNext(routineGraph);
-                    }
-                    else if (internalRoutine.Current is YieldInstruction yieldInstruction)
-                    {
-                        routineGraph.HeadNode = new RoutineNode(yieldInstruction, currentHeadNode);
-                        if (!routineGraph.HeadNode.IsWaitForFixedUpdate)
+                        case IEnumerator headRoutine:
+                            routineGraph.HeadNode = new RoutineNode(headRoutine, currentHeadNode);
                             InternalMoveNext(routineGraph);
+                            break;
+                        case YieldInstruction yieldInstruction:
+                            routineGraph.HeadNode = new RoutineNode(yieldInstruction, currentHeadNode);
+                            if (!routineGraph.HeadNode.IsWaitForFixedUpdate)
+                                InternalMoveNext(routineGraph);
+                            break;
+                        case Task task:
+                            routineGraph.HeadNode = new RoutineNode(task.GetAsIEnumerator(), currentHeadNode);
+                            InternalMoveNext(routineGraph);
+                            break;
+                        default:
+                            break;
                     }
                 }
                 else

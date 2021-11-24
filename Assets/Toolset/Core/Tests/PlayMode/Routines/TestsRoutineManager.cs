@@ -12,8 +12,7 @@ namespace Toolset.Core.Tests
     /// </summary>
     public class TestsRoutineManager
     {
-        private const string c_searchTargetName = "SearchTarget";
-        private const float c_expectedWaitSeconds = 1.5f;
+        private const float c_expectedWaitSeconds = 0.5f;
 
         [UnityTest]
         [Timeout(ToolsetTestingConstants.c_mediumTimeoutMilliseconds)]
@@ -41,7 +40,7 @@ namespace Toolset.Core.Tests
                 ExampleRoutineRunner runner = new ExampleRoutineRunner();
                 Assert.IsFalse(runner.IsNominalWaitFinished);
 
-                runner.WaitTime = c_expectedWaitSeconds;
+                runner.WaitTimeSeconds = c_expectedWaitSeconds;
                 RoutineManager.I.StartRoutine(runner.NominalWaitRootRoutine);
 
                 DateTime started = DateTime.Now;
@@ -51,7 +50,7 @@ namespace Toolset.Core.Tests
                 }
                 DateTime finished = DateTime.Now;
 
-                Assert.Greater((finished - started).TotalSeconds, 1.5 / timeScale);
+                Assert.Greater((finished - started).TotalSeconds, c_expectedWaitSeconds / timeScale);
             }
 
             yield return TestForTimeScale(2.0f);
@@ -70,7 +69,7 @@ namespace Toolset.Core.Tests
                 ExampleRoutineRunner runner = new ExampleRoutineRunner();
                 Assert.IsFalse(runner.IsWaitRealtimeFinished);
 
-                runner.WaitTime = c_expectedWaitSeconds;
+                runner.WaitTimeSeconds = c_expectedWaitSeconds;
                 RoutineManager.I.StartRoutine(runner.WaitRealtimeRoutine);
 
                 DateTime started = DateTime.Now;
@@ -115,7 +114,7 @@ namespace Toolset.Core.Tests
             Assert.IsFalse(runner.IsFaultyWaitFinished);
 
             bool exceptionOccurred = false;
-            runner.WaitTime = c_expectedWaitSeconds;
+            runner.WaitTimeSeconds = c_expectedWaitSeconds;
             RoutineManager.I.StartRoutine(runner.FaultyWaitRootRoutine, (exception) =>
             {
                 Assert.IsTrue(exception is InvalidOperationException);
@@ -156,7 +155,7 @@ namespace Toolset.Core.Tests
             Assert.IsFalse(runner.IsLoadExampleSceneFinished);
             Assert.IsFalse(runner.IsUnloadExampleSceneFinished);
 
-            GameObject searchTarget = GameObject.Find(c_searchTargetName);
+            GameObject searchTarget = GameObject.Find(ToolsetTestingConstants.c_searchTargetNameRoutines);
             Assert.IsNull(searchTarget);
 
             RoutineManager.I.StartRoutine(runner.LoadExampleSceneRoutine);
@@ -166,7 +165,7 @@ namespace Toolset.Core.Tests
                 yield return null;
             }
 
-            searchTarget = GameObject.Find(c_searchTargetName);
+            searchTarget = GameObject.Find(ToolsetTestingConstants.c_searchTargetNameRoutines);
             Assert.IsNotNull(searchTarget);
 
             RoutineManager.I.StartRoutine(runner.UnloadExampleSceneRoutine);
@@ -176,8 +175,28 @@ namespace Toolset.Core.Tests
                 yield return null;
             }
 
-            searchTarget = GameObject.Find(c_searchTargetName);
+            searchTarget = GameObject.Find(ToolsetTestingConstants.c_searchTargetNameRoutines);
             Assert.IsNull(searchTarget);
+        }
+
+        [UnityTest]
+        [Timeout(ToolsetTestingConstants.c_mediumTimeoutMilliseconds)]
+        public IEnumerator TestStartRoutineTask()
+        {
+            ExampleRoutineRunner runner = new ExampleRoutineRunner();
+            Assert.IsFalse(runner.IsTaskDelayFinished);
+
+            runner.WaitTimeSeconds = c_expectedWaitSeconds;
+            RoutineManager.I.StartRoutine(runner.TaskDelayRoutine);
+
+            DateTime started = DateTime.Now;
+            while (!runner.IsTaskDelayFinished)
+            {
+                yield return null;
+            }
+            DateTime finished = DateTime.Now;
+
+            Assert.Greater((finished - started).TotalSeconds, c_expectedWaitSeconds);
         }
     }
 }
