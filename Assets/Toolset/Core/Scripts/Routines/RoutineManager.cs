@@ -45,20 +45,26 @@ namespace Toolset.Core
                     case WaitForEndOfFrame waitForEndOfFrame:
                         Routine = WaitForEndOfFrameRoutine();
                         break;
+
                     case WaitForFixedUpdate waitForFixedUpdate:
                         Routine = WaitForFixedUpdateRoutine();
                         IsWaitForFixedUpdate = true;
                         break;
+
                     case ToolsetWaitForSeconds toolsetWaitForSeconds:
                         Routine = WaitForSecondsRoutine(toolsetWaitForSeconds.Seconds);
                         break;
+
                     case AsyncOperation asyncOperation:
                         Routine = asyncOperation.GetAsIEnumerator();
                         break;
+
                     case Coroutine coroutine:
                         break;
+
                     case WaitForSeconds waitForSeconds:
                         throw new InvalidOperationException("[Toolset.RoutineManager] The WaitForSeconds YieldInstruction is not properly supported by RoutineManager. Use ToolsetWaitForSeconds instead!");
+                    
                     default:
                         throw new InvalidOperationException("[Toolset.RoutineManager] Encountered YieldInstruction type that is not supported!");
                 }
@@ -182,6 +188,10 @@ namespace Toolset.Core
             try
             {
                 IEnumerator internalRoutine = currentHeadNode.Routine;
+
+                if (internalRoutine.Current is RoutineHandle preIterationHandle && !preIterationHandle.IsDone)
+                    return;
+
                 bool result = internalRoutine.MoveNext();
 
                 if (result)
@@ -191,18 +201,26 @@ namespace Toolset.Core
                         case IEnumerator headRoutine:
                             routineGraph.HeadNode = new RoutineNode(headRoutine, currentHeadNode);
                             InternalMoveNext(routineGraph);
-                            break;
+                            return;
+
                         case YieldInstruction yieldInstruction:
                             routineGraph.HeadNode = new RoutineNode(yieldInstruction, currentHeadNode);
                             if (!routineGraph.HeadNode.IsWaitForFixedUpdate)
                                 InternalMoveNext(routineGraph);
-                            break;
+                            return;
+
                         case Task task:
                             routineGraph.HeadNode = new RoutineNode(task.GetAsIEnumerator(), currentHeadNode);
                             InternalMoveNext(routineGraph);
-                            break;
+                            return;
+
+                        case RoutineHandle routineHandle:
+                            if (routineHandle.IsDone)
+                                InternalMoveNext(routineGraph);
+                            return;
+
                         default:
-                            break;
+                            return;
                     }
                 }
                 else

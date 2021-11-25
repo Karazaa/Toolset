@@ -285,5 +285,33 @@ namespace Toolset.Core.Tests
 
             yield break;
         }
+
+        [UnityTest]
+        [Timeout(ToolsetTestingConstants.c_mediumTimeoutMilliseconds)]
+        public IEnumerator TestStartRoutineRoutineHandle()
+        {
+            ExampleRoutineRunner runner = new ExampleRoutineRunner();
+
+            RoutineHandle routineHandle = RoutineManager.I.StartRoutine(runner.InifiniteRoutine);
+
+            IEnumerator YieldOnRoutineHandle()
+            {
+                yield return routineHandle;
+            }
+
+            RoutineHandle secondRoutineHandle = RoutineManager.I.StartRoutine(YieldOnRoutineHandle());
+
+            Assert.IsFalse(routineHandle.IsDone);
+            Assert.IsFalse(secondRoutineHandle.IsDone);
+
+            yield return null;
+
+            RoutineManager.I.StopRoutine(routineHandle);
+
+            yield return null;
+
+            Assert.IsTrue(routineHandle.IsDone);
+            Assert.IsTrue(secondRoutineHandle.IsDone);
+        }
     }
 }
