@@ -21,12 +21,14 @@ namespace Toolset.Core.Tests
             ExampleRoutineRunner runner = new ExampleRoutineRunner();
             Assert.IsFalse(runner.IsNominalFinished);
 
-            RoutineManager.I.StartRoutine(runner.NominalRootRoutine);
+            RoutineHandle routineHandle = RoutineManager.I.StartRoutine(runner.NominalRootRoutine);
 
+            Assert.IsFalse(routineHandle.IsDone);
             while (!runner.IsNominalFinished)
             {
                 yield return null;
             }
+            Assert.IsTrue(routineHandle.IsDone);
         }
 
         [UnityTest]
@@ -41,13 +43,17 @@ namespace Toolset.Core.Tests
                 Assert.IsFalse(runner.IsNominalWaitFinished);
 
                 runner.WaitTimeSeconds = c_expectedWaitSeconds;
-                RoutineManager.I.StartRoutine(runner.NominalWaitRootRoutine);
+                RoutineHandle routineHandle = RoutineManager.I.StartRoutine(runner.NominalWaitRootRoutine);
 
                 DateTime started = DateTime.Now;
+
+                Assert.IsFalse(routineHandle.IsDone);
                 while (!runner.IsNominalWaitFinished)
                 {
                     yield return null;
                 }
+                Assert.IsTrue(routineHandle.IsDone);
+
                 DateTime finished = DateTime.Now;
 
                 Assert.Greater((finished - started).TotalSeconds, c_expectedWaitSeconds / timeScale);
@@ -70,13 +76,17 @@ namespace Toolset.Core.Tests
                 Assert.IsFalse(runner.IsWaitRealtimeFinished);
 
                 runner.WaitTimeSeconds = c_expectedWaitSeconds;
-                RoutineManager.I.StartRoutine(runner.WaitRealtimeRoutine);
+                RoutineHandle routineHandle = RoutineManager.I.StartRoutine(runner.WaitRealtimeRoutine);
 
                 DateTime started = DateTime.Now;
+
+                Assert.IsFalse(routineHandle.IsDone);
                 while (!runner.IsWaitRealtimeFinished)
                 {
                     yield return null;
                 }
+                Assert.IsTrue(routineHandle.IsDone);
+
                 DateTime finished = DateTime.Now;
 
                 Assert.Greater((finished - started).TotalSeconds, c_expectedWaitSeconds);
@@ -95,15 +105,17 @@ namespace Toolset.Core.Tests
             Assert.IsFalse(runner.IsFaultyFinished);
 
             bool exceptionOccurred = false;
-            RoutineManager.I.StartRoutine(runner.FaultyRootRoutine, (exception) =>
+            RoutineHandle routineHandle = RoutineManager.I.StartRoutine(runner.FaultyRootRoutine, (exception) =>
             {
                 exceptionOccurred = true;
             });
 
+            Assert.IsFalse(routineHandle.IsDone);
             while (!runner.IsFaultyFinished || !exceptionOccurred)
             {
                 yield return null;
             }
+            Assert.IsTrue(routineHandle.IsDone);
         }
 
         [UnityTest]
@@ -115,16 +127,18 @@ namespace Toolset.Core.Tests
 
             bool exceptionOccurred = false;
             runner.WaitTimeSeconds = c_expectedWaitSeconds;
-            RoutineManager.I.StartRoutine(runner.FaultyWaitRootRoutine, (exception) =>
+            RoutineHandle routineHandle = RoutineManager.I.StartRoutine(runner.FaultyWaitRootRoutine, (exception) =>
             {
                 Assert.IsTrue(exception is InvalidOperationException);
                 exceptionOccurred = true;
             });
 
+            Assert.IsFalse(routineHandle.IsDone);
             while (!runner.IsFaultyFinished || !exceptionOccurred)
             {
                 yield return null;
             }
+            Assert.IsTrue(routineHandle.IsDone);
         }
 
         [UnityTest]
@@ -135,16 +149,18 @@ namespace Toolset.Core.Tests
             Assert.IsFalse(runner.IsFaultyYieldInstructionFinished);
 
             bool exceptionOccurred = false;
-            RoutineManager.I.StartRoutine(runner.FaultyRootRoutine, (exception) => 
+            RoutineHandle routineHandle = RoutineManager.I.StartRoutine(runner.FaultyRootRoutine, (exception) =>
             {
                 Assert.IsTrue(exception is InvalidOperationException);
                 exceptionOccurred = true;
             });
 
+            Assert.IsFalse(routineHandle.IsDone);
             while (!runner.IsFaultyFinished || !exceptionOccurred)
             {
                 yield return null;
             }
+            Assert.IsTrue(routineHandle.IsDone);
         }
 
         [UnityTest]
@@ -158,22 +174,26 @@ namespace Toolset.Core.Tests
             GameObject searchTarget = GameObject.Find(ToolsetTestingConstants.c_searchTargetNameRoutines);
             Assert.IsNull(searchTarget);
 
-            RoutineManager.I.StartRoutine(runner.LoadExampleSceneRoutine);
+            RoutineHandle routineHandle = RoutineManager.I.StartRoutine(runner.LoadExampleSceneRoutine);
 
+            Assert.IsFalse(routineHandle.IsDone);
             while (!runner.IsLoadExampleSceneFinished)
             {
                 yield return null;
             }
+            Assert.IsTrue(routineHandle.IsDone);
 
             searchTarget = GameObject.Find(ToolsetTestingConstants.c_searchTargetNameRoutines);
             Assert.IsNotNull(searchTarget);
 
-            RoutineManager.I.StartRoutine(runner.UnloadExampleSceneRoutine);
+            routineHandle = RoutineManager.I.StartRoutine(runner.UnloadExampleSceneRoutine);
 
+            Assert.IsFalse(routineHandle.IsDone);
             while (!runner.IsUnloadExampleSceneFinished)
             {
                 yield return null;
             }
+            Assert.IsTrue(routineHandle.IsDone);
 
             searchTarget = GameObject.Find(ToolsetTestingConstants.c_searchTargetNameRoutines);
             Assert.IsNull(searchTarget);
@@ -187,7 +207,7 @@ namespace Toolset.Core.Tests
             Assert.IsFalse(runner.IsTaskDelayFinished);
 
             runner.WaitTimeSeconds = c_expectedWaitSeconds;
-            RoutineManager.I.StartRoutine(runner.TaskDelayRoutine);
+            RoutineHandle routineHandle = RoutineManager.I.StartRoutine(runner.TaskDelayRoutine);
 
             DateTime started = DateTime.Now;
             while (!runner.IsTaskDelayFinished)
@@ -197,6 +217,73 @@ namespace Toolset.Core.Tests
             DateTime finished = DateTime.Now;
 
             Assert.Greater((finished - started).TotalSeconds, c_expectedWaitSeconds);
+            Assert.IsTrue(routineHandle.IsDone);
+        }
+
+        [UnityTest]
+        [Timeout(ToolsetTestingConstants.c_mediumTimeoutMilliseconds)]
+        public IEnumerator TestStopRoutine()
+        {
+            ExampleRoutineRunner runner = new ExampleRoutineRunner();
+
+            RoutineHandle routineHandle = RoutineManager.I.StartRoutine(runner.InifiniteRoutine);
+            RoutineHandle secondRoutineHandle = RoutineManager.I.StartRoutine(runner.InifiniteRoutine);
+
+            Assert.IsFalse(routineHandle.IsDone);
+            Assert.IsFalse(secondRoutineHandle.IsDone);
+
+            RoutineManager.I.StopRoutine(routineHandle);
+
+            Assert.IsTrue(routineHandle.IsDone);
+            Assert.IsFalse(secondRoutineHandle.IsDone);
+
+            RoutineManager.I.StopRoutine(secondRoutineHandle);
+
+            Assert.IsTrue(routineHandle.IsDone);
+            Assert.IsTrue(secondRoutineHandle.IsDone);
+
+            yield break;
+        }
+
+        [UnityTest]
+        [Timeout(ToolsetTestingConstants.c_mediumTimeoutMilliseconds)]
+        public IEnumerator TestStopAllRoutines()
+        {
+            ExampleRoutineRunner runner = new ExampleRoutineRunner();
+
+            RoutineHandle routineHandle = RoutineManager.I.StartRoutine(runner.InifiniteRoutine);
+            RoutineHandle secondRoutineHandle = RoutineManager.I.StartRoutine(runner.InifiniteRoutine);
+
+            Assert.IsFalse(routineHandle.IsDone);
+            Assert.IsFalse(secondRoutineHandle.IsDone);
+
+            RoutineManager.I.StopAllRoutines();
+
+            Assert.IsTrue(routineHandle.IsDone);
+            Assert.IsTrue(secondRoutineHandle.IsDone);
+
+            yield break;
+        }
+
+        [UnityTest]
+        [Timeout(ToolsetTestingConstants.c_mediumTimeoutMilliseconds)]
+        public IEnumerator TestStoppingAlreadyStoppedRoutine()
+        {
+            ExampleRoutineRunner runner = new ExampleRoutineRunner();
+
+            RoutineHandle routineHandle = RoutineManager.I.StartRoutine(runner.InifiniteRoutine);
+
+            Assert.IsFalse(routineHandle.IsDone);
+
+            RoutineManager.I.StopRoutine(routineHandle);
+
+            Assert.IsTrue(routineHandle.IsDone);
+
+            RoutineManager.I.StopRoutine(routineHandle);
+
+            Assert.IsTrue(routineHandle.IsDone);
+
+            yield break;
         }
     }
 }

@@ -112,6 +112,34 @@ namespace Toolset.Core
             return generatedRoutineHandle;
         }
 
+        /// <summary>
+        /// Stops the routine in the RoutineManager that is associated with the passed RoutineHandle.
+        /// </summary>
+        /// <param name="routineHandle">The handle object of the routine to stop.</param>
+        public void StopRoutine(RoutineHandle routineHandle)
+        {
+            int index = m_outstandingRoutines.FindIndex((routineGraph) => 
+            {
+                return routineGraph.RoutineHandle == routineHandle;
+            });
+
+            if (index == -1)
+                return;
+
+            StopRoutineInternal(index);
+        }
+
+        /// <summary>
+        /// Stops all currently running routines in the RoutineManager.
+        /// </summary>
+        public void StopAllRoutines()
+        {
+            for (int i = m_outstandingRoutines.Count - 1; i >= 0; --i)
+            {
+                StopRoutineInternal(i);
+            }
+        }
+
         private void Update()
         {
             for (int i = m_outstandingRoutines.Count - 1; i >= 0; --i)
@@ -135,10 +163,7 @@ namespace Toolset.Core
             InternalMoveNext(m_outstandingRoutines[index]);
 
             if (m_outstandingRoutines[index].HeadNode == null)
-            {
-
-                m_outstandingRoutines.RemoveAt(index);
-            }
+                StopRoutineInternal(index);
         }
 
         private void InternalMoveNext(RoutineGraph routineGraph)
@@ -190,6 +215,12 @@ namespace Toolset.Core
                 routineGraph.ExceptionHandler?.Invoke(exception);
                 RemoveHeadNode();
             }
+        }
+
+        private void StopRoutineInternal(int index)
+        {
+            m_outstandingRoutines[index].RoutineHandle.IsDone = true;
+            m_outstandingRoutines.RemoveAt(index);
         }
     }
 }

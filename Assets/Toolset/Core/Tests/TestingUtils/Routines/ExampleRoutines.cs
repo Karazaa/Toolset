@@ -49,6 +49,8 @@ namespace Toolset.Core.Tests
         public bool IsTaskDelayFinished { get; private set; }
         public IEnumerator TaskDelayRoutine => TaskDelay();
 
+        public IEnumerator InifiniteRoutine => Infinite();
+
         private enum States { Created, BeforeRootYield, AfterRootYield, BeforeNest1Yield, AfterNest1Yield, BeforeNest2Yield, AfterNest2Yield }
         private enum Events { BeforeYield1, AfterYield1, BeforeYield2, AfterYield2, BeforeYield3, AfterYield3 }
         private readonly StateMachine<States, Events> m_stateMachine = new StateMachine<States, Events>(States.Created);
@@ -219,6 +221,14 @@ namespace Toolset.Core.Tests
             yield return Task.Delay((int) (WaitTimeSeconds * 1000f));
 
             IsTaskDelayFinished = true;
+        }
+
+        private IEnumerator Infinite()
+        {
+            while (true)
+            {
+                yield return null;
+            }
         }
     }
 }

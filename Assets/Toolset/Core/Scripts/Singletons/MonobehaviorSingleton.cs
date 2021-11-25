@@ -21,7 +21,7 @@ namespace Toolset.Core
             {
                 if (s_instance == null)
                 {
-                    GameObject gameObject = new GameObject(nameof(T));
+                    GameObject gameObject = new GameObject(typeof(T).Name);
                     s_instance = gameObject.AddComponent<T>();
                     DontDestroyOnLoad(gameObject);
                 }
