@@ -14,13 +14,13 @@ namespace Toolset.Core
     {
         private class RoutineGraph
         {
-            public IEnumerator ParentRoutine { get; private set; }
+            public RoutineHandle RoutineHandle { get; private set; }
             public RoutineNode HeadNode { get; set; }
             public Action<Exception> ExceptionHandler { get; set; }
 
-            public RoutineGraph(IEnumerator parentRoutine, Action<Exception> exceptionHandler, RoutineNode headNode)
+            public RoutineGraph(RoutineHandle routineHandle, Action<Exception> exceptionHandler, RoutineNode headNode)
             {
-                ParentRoutine = parentRoutine;
+                RoutineHandle = routineHandle;
                 ExceptionHandler = exceptionHandler;
                 HeadNode = headNode;
             }
@@ -92,7 +92,6 @@ namespace Toolset.Core
         }
 
         private readonly List<RoutineGraph> m_outstandingRoutines = new List<RoutineGraph>();
-        private readonly HashSet<IEnumerator> m_activeParentRoutines = new HashSet<IEnumerator>();
 
         /// <summary>
         /// Runs the given IEnumerator as if it were a Unity Coroutine, but if an exceptionHandler
@@ -104,15 +103,13 @@ namespace Toolset.Core
         /// An optional exception handler which will be invoked when exceptions originating
         /// from the routine are caught by RoutineManager
         /// </param>
-        public void StartRoutine(IEnumerator routine, Action<Exception> exceptionHandler = null)
+        /// <returns>A RoutineHandle to track the state of the internal state of the Routine in the Routine Manager.</returns>
+        public RoutineHandle StartRoutine(IEnumerator routine, Action<Exception> exceptionHandler = null)
         {
-            if (!m_activeParentRoutines.Contains(routine))
-            {
-                m_activeParentRoutines.Add(routine);
-                m_outstandingRoutines.Add(new RoutineGraph(routine, exceptionHandler, new RoutineNode(routine, null)));
-            }
-            else
-                Debug.LogWarning("[Toolset.RoutineManager] Attempted to start a routine that is already running! Ignoring second StartRoutine call.");
+            RoutineHandle generatedRoutineHandle = new RoutineHandle();
+            m_outstandingRoutines.Add(new RoutineGraph(generatedRoutineHandle, exceptionHandler, new RoutineNode(routine, null)));
+
+            return generatedRoutineHandle;
         }
 
         private void Update()
@@ -139,7 +136,7 @@ namespace Toolset.Core
 
             if (m_outstandingRoutines[index].HeadNode == null)
             {
-                m_activeParentRoutines.Remove(m_outstandingRoutines[index].ParentRoutine);
+
                 m_outstandingRoutines.RemoveAt(index);
             }
         }
