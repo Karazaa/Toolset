@@ -25,10 +25,7 @@ namespace Toolset.Core
                 return;
             }
 
-            if (s_eventDictionary[eventType] == null)
-                throw new InvalidOperationException("[Toolset.EventManager] An entry exists in the event dictionary for type {0}, but the associated hash set is null.".StringBuilderFormat(eventType));
-
-            if (s_eventDictionary[eventType].Contains(handler))
+            if (IsSubscribedToEvent(handler))
                 return;
 
             s_eventDictionary[eventType].Add(handler);
@@ -43,10 +40,7 @@ namespace Toolset.Core
         {
             Type eventType = typeof(T);
 
-            if (!ValidateEntryAndHashSetExsist(eventType))
-                return;
-
-            if (!s_eventDictionary[eventType].Contains(handler))
+            if (!IsSubscribedToEvent(handler))
                 return;
 
             s_eventDictionary[eventType].Remove(handler);
@@ -73,14 +67,30 @@ namespace Toolset.Core
             }
         }
 
+        /// <summary>
+        /// Checks whether or not the passed handler is subscribed to the Event T.
+        /// </summary>
+        /// <typeparam name="T">The type of Event to check if subscribed to.</typeparam>
+        /// <param name="handler">The IEventHandler that is being checked for event subscription.</param>
+        /// <returns>Whether or not the IEventHandler is subscribed to Event T.</returns>
+        public static bool IsSubscribedToEvent<T> (IEventHandler<T> handler) where T : Event
+        {
+            Type eventType = typeof(T);
+
+            if (!ValidateEntryAndHashSetExsist(eventType))
+                return false;
+
+            if (!s_eventDictionary[eventType].Contains(handler))
+                return false;
+
+            return true;
+        }
+
         /// Validates that there is an entry for the event type and that there is a valid associated hash set with that event type.
         private static bool ValidateEntryAndHashSetExsist(Type eventType)
         {
             if (!s_eventDictionary.ContainsKey(eventType))
                 return false;
-
-            if (s_eventDictionary[eventType] == null)
-                throw new InvalidOperationException("[Toolset.EventManager] An entry exists in the event dictionary for type {0}, but the associated hash set is null.".StringBuilderFormat(eventType));
 
             return true;
         }
