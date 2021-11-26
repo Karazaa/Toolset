@@ -186,30 +186,27 @@ namespace Toolset.ProtocolBuffers
         /// </summary>
         /// <typeparam name="T">The type of class that has an instance serialized save file being deleted.</typeparam>
         /// <param name="fileName">The name of the file to delete.</param>
-        public static void DeleteModel<T>(string fileName) where T : class
+        public static bool DeleteModel<T>(string fileName) where T : class
         {
             ValidateAttribute<T>(nameof(DeleteModel));
             ValidateFileName(nameof(DeleteModel), fileName);
 
             string filePath = GetDataFilePathForType<T>(fileName);
 
-            if (!File.Exists(filePath))
-                return;
-
-            DeleteFileAndMeta(filePath);
+            return DeleteFileAndMeta(filePath);
         }
 
         /// <summary>
         /// Deletes all models of the given class type.
         /// </summary>
         /// <typeparam name="T">The type of class having all saved models deleted.</typeparam>
-        public static void DeleteModelsByType<T>() where T : class
+        public static bool DeleteModelsByType<T>() where T : class
         {
             ValidateAttribute<T>(nameof(DeleteModelsByType));
 
             string directoryPath = GetDataDirectoryPathForType<T>();
 
-            DeleteDirectoryAndMetaRecursively(directoryPath);
+            return DeleteDirectoryAndMetaRecursively(directoryPath);
         }
 
         /// <summary>
@@ -237,7 +234,7 @@ namespace Toolset.ProtocolBuffers
         /// Deletes the file specified by the path and any associated metafile.
         /// </summary>
         /// <param name="filePath">Path to the file to delete.</param>
-        public static void DeleteFileAndMeta(string filePath)
+        public static bool DeleteFileAndMeta(string filePath)
         {
             if (File.Exists(filePath))
             {
@@ -245,14 +242,17 @@ namespace Toolset.ProtocolBuffers
                 filePath += ".meta";
                 if (File.Exists(filePath))
                     File.Delete(filePath);
+
+                return true;
             }
+            return false;
         }
 
         /// <summary>
         /// Recursively deletes the directory specified by the path and any associated metafile.
         /// </summary>
         /// <param name="directoryPath">Path to the directory to delete.</param>
-        public static void DeleteDirectoryAndMetaRecursively(string directoryPath)
+        public static bool DeleteDirectoryAndMetaRecursively(string directoryPath)
         {
             if (Directory.Exists(directoryPath))
             {
@@ -260,7 +260,10 @@ namespace Toolset.ProtocolBuffers
                 directoryPath += ".meta";
                 if (File.Exists(directoryPath))
                     File.Delete(directoryPath);
+
+                return true;
             }
+            return false;
         }
 
 #if UNITY_EDITOR

@@ -100,11 +100,25 @@ namespace Toolset.Networking.Tests
 
         [UnityTest]
         [Timeout(ToolsetTestingConstants.c_longTimeoutMilliseconds)]
-        public IEnumerator TestTimeoutHttpRequest()
+        public IEnumerator TestTimeoutSilentRetryHttpRequest()
         {
             ExampleHttpTimeoutRequest getRequest = new ExampleHttpTimeoutRequest(new HttpRequestSettings()
             {
                 SilentRetryInitialWaitMilliseconds = 100
+            });
+            yield return getRequest.Send();
+
+            Assert.IsFalse(getRequest.IsCompletedSuccessfully);
+            Assert.AreEqual((new HttpRequestSettings()).MaximumAttemptCount, getRequest.AttemptCount);
+        }
+
+        [UnityTest]
+        [Timeout(ToolsetTestingConstants.c_longTimeoutMilliseconds)]
+        public IEnumerator TestTimeoutPromptRetryHttpRequest()
+        {
+            ExampleHttpTimeoutRequest getRequest = new ExampleHttpTimeoutRequest(new HttpRequestSettings()
+            {
+                RetryPolicy = RequestRetryPolicy.Prompt
             });
             yield return getRequest.Send();
 

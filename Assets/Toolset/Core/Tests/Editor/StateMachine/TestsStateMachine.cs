@@ -105,6 +105,20 @@ namespace Toolset.Core.Tests
             Assert.AreEqual(m_stateMachine.CurrentState, States.A);
         }
 
+        [Test]
+        public void TestFireEventWithNoTransitions()
+        {
+            Assert.AreEqual(m_stateMachine.CurrentState, States.A);
+
+            m_stateMachine.ForceState(States.Empty);
+
+            Assert.AreEqual(m_stateMachine.CurrentState, States.Empty);
+
+            m_stateMachine.Fire(Events.Empty);
+
+            Assert.AreEqual(m_stateMachine.CurrentState, States.Empty);
+        }
+
         private void AssertCallbackFired(bool onEnter)
         {
             StateMachine<States, Events> stateMachine = new StateMachine<States, Events>(States.A);

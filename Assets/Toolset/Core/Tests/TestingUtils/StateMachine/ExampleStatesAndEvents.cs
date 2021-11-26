@@ -6,7 +6,7 @@ namespace Toolset.Core.Tests
     /// </summary>
     public enum ExampleStateMachineStates
     {
-        A, B, C, D
+        A, B, C, D, Empty
     }
 
 
@@ -16,6 +16,6 @@ namespace Toolset.Core.Tests
     /// </summary>
     public enum ExampleStateMachineEvents
     {
-        AToB, BToC, CToD, DToA
+        AToB, BToC, CToD, DToA, Empty
     }
 }

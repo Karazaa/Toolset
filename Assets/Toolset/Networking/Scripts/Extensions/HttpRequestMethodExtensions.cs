@@ -18,25 +18,32 @@ namespace Toolset.Networking
         /// <returns>The string method name formatted in the manner UnityWebRequest is expecting.</returns>
         public static string GetMethodAsString(this HttpRequestMethod method)
         {
+            string output = string.Empty;
             switch (method)
             {
                 case HttpRequestMethod.Delete:
-                    return UnityWebRequest.kHttpVerbDELETE;
+                    output = UnityWebRequest.kHttpVerbDELETE;
+                    break;
                 case HttpRequestMethod.Get:
-                    return UnityWebRequest.kHttpVerbGET;
+                    output = UnityWebRequest.kHttpVerbGET;
+                    break;
                 case HttpRequestMethod.Head:
-                    return UnityWebRequest.kHttpVerbHEAD;
+                    output = UnityWebRequest.kHttpVerbHEAD;
+                    break;
                 case HttpRequestMethod.Options:
-                    return c_httpVerbOptions;
+                    output = c_httpVerbOptions;
+                    break;
                 case HttpRequestMethod.Patch:
-                    return c_httpVerbPatch;
+                    output = c_httpVerbPatch;
+                    break;
                 case HttpRequestMethod.Post:
-                    return UnityWebRequest.kHttpVerbPOST;
+                    output = UnityWebRequest.kHttpVerbPOST;
+                    break;
                 case HttpRequestMethod.Put:
-                    return UnityWebRequest.kHttpVerbPUT;
-                default:
-                    throw new InvalidOperationException("[Toolset.HttpRequestMethod] Could not parse Http method!");
+                    output = UnityWebRequest.kHttpVerbPUT;
+                    break;
             }
+            return output;
         }
     }
 }

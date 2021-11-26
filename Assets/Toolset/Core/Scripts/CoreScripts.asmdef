@@ -1,6 +1,6 @@
 {
     "name": "CoreScripts",
-    "rootNamespace": "",
+    "rootNamespace": "Toolset.Core",
     "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],

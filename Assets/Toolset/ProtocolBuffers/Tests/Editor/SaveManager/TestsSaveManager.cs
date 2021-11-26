@@ -12,19 +12,13 @@ namespace Toolset.ProtocolBuffers.Tests
     /// </summary>
     public class TestsSaveManager
     {
-        private Random m_random;
         private readonly string m_pathToProtoSourceDirectory = UnityEngine.Application.dataPath + "/Toolset/ProtocolBuffers/Tests/TestingUtils/ProtoFiles";
         private readonly string m_pathToProtoGeneratedDirectory = UnityEngine.Application.dataPath + "/Toolset/ProtocolBuffers/Tests/TestingUtils/Generated";
 
         private const string c_exampleProtoFileName = "addressbook";
         private const string c_expectedGeneratedCSharpFileName = "addressbook.cs";
         private const string c_secondExpectedGeneratedCSharpFileName = "exampleproto.cs";
-
-        [SetUp]
-        public void SetUp()
-        {
-            m_random = new Random();
-        }
+        private const string c_metaSuffix = ".meta";
 
         [Test]
         public void TestLoadWithoutSaveFile()
@@ -62,6 +56,20 @@ namespace Toolset.ProtocolBuffers.Tests
         }
 
         [Test]
+        public void TestLoadModelsByTypeWithoutDirectory()
+        {
+            Dictionary<string, ExampleProtoBufModel> emptyDict = SaveManager.LoadModelsByType<ExampleProtoBufModel>();
+
+            Assert.AreEqual(0, emptyDict.Count);
+        }
+
+        [Test]
+        public void TestDeleteWithoutSaveFile()
+        {
+            Assert.IsFalse(SaveManager.DeleteModel<ExampleProtoBufModel>("somefakefilepath"));
+        }
+
+        [Test]
         public void TestDeleteFaultyProtobufModel()
         {
             ToolsetAssert.Throws<InvalidOperationException>(() =>
@@ -77,6 +85,12 @@ namespace Toolset.ProtocolBuffers.Tests
             {
                 SaveManager.DeleteModelsByType<ExampleFaultyProtoBufModel>();
             });
+        }
+
+        [Test]
+        public void TestDeleteModelsByTypeWithoutDirectory()
+        {
+            Assert.IsFalse(SaveManager.DeleteModelsByType<ExampleProtoBufModel>());
         }
 
         [Test]
@@ -215,18 +229,28 @@ namespace Toolset.ProtocolBuffers.Tests
             SaveManager.SaveModel(ProtoTestingUtils.m_batchModelNames[0], ProtoTestingUtils.GenerateRandomValidProtobuf());
 
             string filePath = SaveManager.GetDataFilePathForType<ExampleProtoBufModel>(ProtoTestingUtils.m_batchModelNames[0]);
-            Assert.IsTrue(File.Exists(filePath));
+            string metaPath = filePath + c_metaSuffix;
+            File.Create(metaPath).Close();
 
-            SaveManager.DeleteModel<ExampleProtoBufModel>(ProtoTestingUtils.m_batchModelNames[0]);
+            Assert.IsTrue(File.Exists(filePath));
+            Assert.IsTrue(File.Exists(metaPath));
+
+            Assert.IsTrue(SaveManager.DeleteModel<ExampleProtoBufModel>(ProtoTestingUtils.m_batchModelNames[0]));
             Assert.IsFalse(File.Exists(filePath));
+            Assert.IsFalse(File.Exists(metaPath));
 
             SaveManager.SaveModel(ProtoTestingUtils.m_batchModelNamesWithSubdirectory[0], ProtoTestingUtils.GenerateRandomPersistentProto());
 
             string persistentFilePath = SaveManager.GetDataFilePathForType<ExamplePersistentProto>(ProtoTestingUtils.m_batchModelNamesWithSubdirectory[0]);
-            Assert.IsTrue(File.Exists(persistentFilePath));
+            string persistentMetaPath = persistentFilePath + c_metaSuffix;
+            File.Create(persistentMetaPath).Close();
 
-            SaveManager.DeleteModel<ExamplePersistentProto>(ProtoTestingUtils.m_batchModelNamesWithSubdirectory[0]);
+            Assert.IsTrue(File.Exists(persistentFilePath));
+            Assert.IsTrue(File.Exists(persistentMetaPath));
+
+            Assert.IsTrue(SaveManager.DeleteModel<ExamplePersistentProto>(ProtoTestingUtils.m_batchModelNamesWithSubdirectory[0]));
             Assert.IsFalse(File.Exists(persistentFilePath));
+            Assert.IsFalse(File.Exists(persistentMetaPath));
         }
 
         [Test]
@@ -238,12 +262,17 @@ namespace Toolset.ProtocolBuffers.Tests
                 Assert.IsTrue(File.Exists(SaveManager.GetDataFilePathForType<ExampleProtoBufModel>(ProtoTestingUtils.m_batchModelNames[i])));
             }
 
-            SaveManager.DeleteModelsByType<ExampleProtoBufModel>();
+            string directoryMeta = SaveManager.GetDataDirectoryPathForType<ExampleProtoBufModel>() + c_metaSuffix;
+            File.Create(directoryMeta).Close();
+            Assert.IsTrue(File.Exists(directoryMeta));
+
+            Assert.IsTrue(SaveManager.DeleteModelsByType<ExampleProtoBufModel>());
 
             for (int i = 0; i < ProtoTestingUtils.m_batchModelNames.Count; ++i)
             {
                 Assert.IsFalse(File.Exists(SaveManager.GetDataFilePathForType<ExampleProtoBufModel>(ProtoTestingUtils.m_batchModelNames[i])));
             }
+            Assert.IsFalse(File.Exists(directoryMeta));
 
             for (int i = 0; i < ProtoTestingUtils.m_batchModelNamesWithSubdirectory.Count; ++i)
             {
@@ -251,25 +280,30 @@ namespace Toolset.ProtocolBuffers.Tests
                 Assert.IsTrue(File.Exists(SaveManager.GetDataFilePathForType<ExamplePersistentProto>(ProtoTestingUtils.m_batchModelNamesWithSubdirectory[i])));
             }
 
-            SaveManager.DeleteModelsByType<ExamplePersistentProto>();
+            string persistentDirectoryMeta = SaveManager.GetDataDirectoryPathForType<ExamplePersistentProto>() + c_metaSuffix;
+            File.Create(persistentDirectoryMeta).Close();
+            Assert.IsTrue(File.Exists(persistentDirectoryMeta));
+
+            Assert.IsTrue(SaveManager.DeleteModelsByType<ExamplePersistentProto>());
 
             for (int i = 0; i < ProtoTestingUtils.m_batchModelNamesWithSubdirectory.Count; ++i)
             {
                 Assert.IsFalse(File.Exists(SaveManager.GetDataFilePathForType<ExamplePersistentProto>(ProtoTestingUtils.m_batchModelNamesWithSubdirectory[i])));
             }
+            Assert.IsFalse(File.Exists(persistentDirectoryMeta));
         }
 
         [Test]
         public void TestGenerateSingleCSharpFromProto()
         {
-            SaveManager.GenerateSingleCSharpFromProto(m_pathToProtoSourceDirectory, m_pathToProtoGeneratedDirectory, c_exampleProtoFileName, false);
+            SaveManager.GenerateSingleCSharpFromProto(m_pathToProtoSourceDirectory, m_pathToProtoGeneratedDirectory, c_exampleProtoFileName);
             Assert.IsTrue(File.Exists(Path.Combine(m_pathToProtoGeneratedDirectory, c_expectedGeneratedCSharpFileName)));
         }
 
         [Test]
         public void TestGenerateCSharpFromProto()
         {
-            SaveManager.GenerateCSharpFromProto(m_pathToProtoSourceDirectory, m_pathToProtoGeneratedDirectory, false);
+            SaveManager.GenerateCSharpFromProto(m_pathToProtoSourceDirectory, m_pathToProtoGeneratedDirectory);
             Assert.IsTrue(File.Exists(Path.Combine(m_pathToProtoGeneratedDirectory, c_expectedGeneratedCSharpFileName)));
             Assert.IsTrue(File.Exists(Path.Combine(m_pathToProtoGeneratedDirectory, c_secondExpectedGeneratedCSharpFileName)));
         }

@@ -1,6 +1,6 @@
 {
     "name": "GlobalTestingUtils",
-    "rootNamespace": "",
+    "rootNamespace": "Toolset.Global.Utils",
     "references": [
         "GUID:7c346a50f859b834cb499c8009f0f597"
     ],
