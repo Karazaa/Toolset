@@ -20,9 +20,13 @@ namespace Toolset.Core.Tests
         public IEnumerator TestGetAsIEnumerator()
         {
             long timeStarted = DateTimeExtensions.MillisecondsSinceUnixEpoch(DateTime.Now);
-            yield return TaskToYieldOn().GetAsIEnumerator();
+
+            Task taskToYieldOn = TaskToYieldOn();
+            yield return taskToYieldOn.GetAsIEnumerator();
+
             long timeFinished = DateTimeExtensions.MillisecondsSinceUnixEpoch(DateTime.Now);
 
+            Assert.IsTrue(taskToYieldOn.IsCompleted);
             Assert.GreaterOrEqual(timeFinished - timeStarted, c_lengthDelay);
         }
 
@@ -37,8 +41,25 @@ namespace Toolset.Core.Tests
 
             long timeFinished = DateTimeExtensions.MillisecondsSinceUnixEpoch(DateTime.Now);
 
+            Assert.IsTrue(returnTypeTask.IsCompleted);
             Assert.GreaterOrEqual(timeFinished - timeStarted, c_lengthDelay);
             Assert.AreEqual(c_returnValue, returnTypeTask.Result);
+        }
+
+        [UnityTest]
+        [Timeout(ToolsetTestingConstants.c_mediumTimeoutMilliseconds)]
+        public IEnumerator TestResetDoesNothing()
+        {
+            Task taskToYieldOn = TaskToYieldOn();
+            TaskEnumerator taskAsEnumerator = taskToYieldOn.GetAsIEnumerator() as TaskEnumerator;
+
+            yield return taskAsEnumerator;
+
+            Assert.IsTrue(taskToYieldOn.IsCompleted);
+
+            taskAsEnumerator.Reset();
+
+            Assert.IsTrue(taskToYieldOn.IsCompleted);
         }
 
         private async Task TaskToYieldOn()

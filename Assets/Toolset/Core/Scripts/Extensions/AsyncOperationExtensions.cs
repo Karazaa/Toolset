@@ -15,7 +15,7 @@ namespace Toolset.Core
         /// <returns>The operation in IEnumerator form.</returns>
         public static IEnumerator GetAsIEnumerator(this AsyncOperation operationToConvert)
         {
-            return new AsyncOperationIEnumerator(operationToConvert);
+            return new AsyncOperationEnumerator(operationToConvert);
         }
     }
 
@@ -23,11 +23,11 @@ namespace Toolset.Core
     /// Class that implements IEnumerator that AsyncOperations get converted into when
     /// GetAsIEnumerator is invoked.
     /// </summary>
-    public class AsyncOperationIEnumerator : IEnumerator
+    public class AsyncOperationEnumerator : IEnumerator
     {
         private AsyncOperation m_operation;
 
-        public AsyncOperationIEnumerator(AsyncOperation operationToConvert)
+        public AsyncOperationEnumerator(AsyncOperation operationToConvert)
         {
             m_operation = operationToConvert;
         }
@@ -44,6 +44,7 @@ namespace Toolset.Core
 
         public void Reset()
         {
+            Debug.LogWarning("[Toolset.AsyncOperationEnumerator] Calling reset on an AsyncOperationEnumerator does nothing since AsyncOperations can not automatically be reset without getting recreated.");
         }
     }
 }

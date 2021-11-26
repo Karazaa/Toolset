@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace Toolset.Core
 {
@@ -44,6 +45,7 @@ namespace Toolset.Core
 
         public void Reset()
         {
+            Debug.LogWarning("[Toolset.TaskEnumerator] Calling reset on a TaskEnumerator does nothing since Tasks can not automatically be reset without getting recreated.");
         }
     }
 }

@@ -24,10 +24,33 @@ namespace Toolset.Core.Tests
             searchTarget = GameObject.Find(ToolsetTestingConstants.c_searchTargetNameRoutines);
             Assert.IsNotNull(searchTarget);
 
-            yield return SceneManager.UnloadSceneAsync(ToolsetTestingConstants.c_exampleSceneNameRoutines);
+            yield return SceneManager.UnloadSceneAsync(ToolsetTestingConstants.c_exampleSceneNameRoutines).GetAsIEnumerator();
 
             searchTarget = GameObject.Find(ToolsetTestingConstants.c_searchTargetNameRoutines);
             Assert.IsNull(searchTarget);
+        }
+
+        [UnityTest]
+        [Timeout(ToolsetTestingConstants.c_mediumTimeoutMilliseconds)]
+        public IEnumerator TestResetDoesNothing()
+        {
+            AsyncOperation loadOperationToYieldOn = SceneManager.LoadSceneAsync(ToolsetTestingConstants.c_exampleSceneNameRoutines, LoadSceneMode.Additive);
+            AsyncOperationEnumerator loadOperationAsEnumerator = loadOperationToYieldOn.GetAsIEnumerator() as AsyncOperationEnumerator;
+
+            yield return loadOperationAsEnumerator;
+
+            Assert.IsTrue(loadOperationToYieldOn.isDone);
+            loadOperationAsEnumerator.Reset();
+            Assert.IsTrue(loadOperationToYieldOn.isDone);
+
+            AsyncOperation unloadOperationToYieldOn = SceneManager.UnloadSceneAsync(ToolsetTestingConstants.c_exampleSceneNameRoutines);
+            AsyncOperationEnumerator unloadOperationAsEnumerator = unloadOperationToYieldOn.GetAsIEnumerator() as AsyncOperationEnumerator;
+
+            yield return unloadOperationAsEnumerator;
+
+            Assert.IsTrue(unloadOperationToYieldOn.isDone);
+            unloadOperationAsEnumerator.Reset();
+            Assert.IsTrue(unloadOperationToYieldOn.isDone);
         }
     }
 }
