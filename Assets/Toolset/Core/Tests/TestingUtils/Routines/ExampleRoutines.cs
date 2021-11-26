@@ -50,6 +50,7 @@ namespace Toolset.Core.Tests
         public IEnumerator TaskDelayRoutine => TaskDelay();
 
         public IEnumerator InifiniteRoutine => Infinite();
+        public IEnumerator UnknownYieldInstructionRoutine => UnknownYieldInstruction();
 
         private enum States { Created, BeforeRootYield, AfterRootYield, BeforeNest1Yield, AfterNest1Yield, BeforeNest2Yield, AfterNest2Yield }
         private enum Events { BeforeYield1, AfterYield1, BeforeYield2, AfterYield2, BeforeYield3, AfterYield3 }
@@ -229,6 +230,12 @@ namespace Toolset.Core.Tests
             {
                 yield return null;
             }
+        }
+
+        private class WeirdInstruction : YieldInstruction { }
+        private IEnumerator UnknownYieldInstruction()
+        {
+            yield return new WeirdInstruction();
         }
     }
 }

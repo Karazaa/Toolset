@@ -47,7 +47,7 @@ namespace Toolset.Core
                         break;
 
                     case WaitForFixedUpdate waitForFixedUpdate:
-                        Routine = WaitForFixedUpdateRoutine();
+                        Routine = null;
                         IsWaitForFixedUpdate = true;
                         break;
 
@@ -60,7 +60,7 @@ namespace Toolset.Core
                         break;
 
                     case Coroutine coroutine:
-                        break;
+                        throw new InvalidOperationException("[Toolset.RoutineManager] The Coroutine YieldInstruction is not properly supported by RoutineManager. Use RoutineHandles instead!");
 
                     case WaitForSeconds waitForSeconds:
                         throw new InvalidOperationException("[Toolset.RoutineManager] The WaitForSeconds YieldInstruction is not properly supported by RoutineManager. Use ToolsetWaitForSeconds instead!");
@@ -71,14 +71,11 @@ namespace Toolset.Core
                 ParentNode = parentNode;
             }
 
+            // NOTE: Since WaitForEndOfFrame is not supported when the UnityEditor is run in batch mode, Toolset
+            // will convert any instances of WaitForEndOfFrame to 'yield return null' when encountered in the RoutineManager.
             private IEnumerator WaitForEndOfFrameRoutine()
             {
                 yield return null;
-            }
-
-            private IEnumerator WaitForFixedUpdateRoutine()
-            {
-                yield break;
             }
 
             private IEnumerator WaitForSecondsRoutine(float seconds)
@@ -160,7 +157,10 @@ namespace Toolset.Core
             for (int i = m_outstandingRoutines.Count - 1; i >= 0; --i)
             {
                 if (m_outstandingRoutines[i].HeadNode.IsWaitForFixedUpdate)
+                {
+                    RemoveHeadNode(m_outstandingRoutines[i]);
                     IterateListRoutineAtIndex(i);
+                }
             }
         }
 
@@ -177,40 +177,28 @@ namespace Toolset.Core
             if (routineGraph.HeadNode == null)
                 return;
 
-            RoutineNode currentHeadNode = routineGraph.HeadNode;
-
-            void RemoveHeadNode()
-            {
-                routineGraph.HeadNode = currentHeadNode.ParentNode;
-                InternalMoveNext(routineGraph);
-            }
-
             try
             {
-                IEnumerator internalRoutine = currentHeadNode.Routine;
-
-                if (internalRoutine.Current is RoutineHandle preIterationHandle && !preIterationHandle.IsDone)
+                if (ShouldSkipIteration(routineGraph))
                     return;
 
-                bool result = internalRoutine.MoveNext();
-
-                if (result)
+                if (routineGraph.HeadNode.Routine.MoveNext())
                 {
-                    switch (internalRoutine.Current)
+                    switch (routineGraph.HeadNode.Routine.Current)
                     {
                         case IEnumerator headRoutine:
-                            routineGraph.HeadNode = new RoutineNode(headRoutine, currentHeadNode);
+                            routineGraph.HeadNode = new RoutineNode(headRoutine, routineGraph.HeadNode);
                             InternalMoveNext(routineGraph);
                             return;
 
                         case YieldInstruction yieldInstruction:
-                            routineGraph.HeadNode = new RoutineNode(yieldInstruction, currentHeadNode);
+                            routineGraph.HeadNode = new RoutineNode(yieldInstruction, routineGraph.HeadNode);
                             if (!routineGraph.HeadNode.IsWaitForFixedUpdate)
                                 InternalMoveNext(routineGraph);
                             return;
 
                         case Task task:
-                            routineGraph.HeadNode = new RoutineNode(task.GetAsIEnumerator(), currentHeadNode);
+                            routineGraph.HeadNode = new RoutineNode(task.GetAsIEnumerator(), routineGraph.HeadNode);
                             InternalMoveNext(routineGraph);
                             return;
 
@@ -225,14 +213,26 @@ namespace Toolset.Core
                 }
                 else
                 {
-                    RemoveHeadNode();
+                    RemoveHeadNode(routineGraph);
+                    InternalMoveNext(routineGraph);
                 }
             }
             catch (Exception exception)
             {
                 routineGraph.ExceptionHandler?.Invoke(exception);
-                RemoveHeadNode();
+                RemoveHeadNode(routineGraph);
+                InternalMoveNext(routineGraph);
             }
+        }
+
+        private bool ShouldSkipIteration(RoutineGraph routineGraph)
+        {
+            return routineGraph.HeadNode.Routine.Current is RoutineHandle preIterationHandle && !preIterationHandle.IsDone;
+        }
+
+        private void RemoveHeadNode(RoutineGraph routineGraph)
+        {
+            routineGraph.HeadNode = routineGraph.HeadNode.ParentNode;
         }
 
         private void StopRoutineInternal(int index)
