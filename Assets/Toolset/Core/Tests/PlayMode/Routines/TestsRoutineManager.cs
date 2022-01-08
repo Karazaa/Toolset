@@ -117,7 +117,6 @@ namespace Toolset.Core.Tests
                 exceptionOccurred = true;
             });
 
-            Assert.IsFalse(routineHandle.IsDone);
             while (!exceptionOccurred)
             {
                 yield return null;
@@ -139,7 +138,6 @@ namespace Toolset.Core.Tests
                 exceptionOccurred = true;
             });
 
-            Assert.IsFalse(routineHandle.IsDone);
             while (!exceptionOccurred)
             {
                 yield return null;
@@ -160,7 +158,6 @@ namespace Toolset.Core.Tests
                 exceptionOccurred = true;
             });
 
-            Assert.IsFalse(routineHandle.IsDone);
             while (!exceptionOccurred)
             {
                 yield return null;
@@ -180,7 +177,6 @@ namespace Toolset.Core.Tests
 
             RoutineHandle routineHandle = RoutineManager.I.StartRoutine(m_routineRunner.LoadExampleSceneRoutine);
 
-            Assert.IsFalse(routineHandle.IsDone);
             while (!m_routineRunner.IsLoadExampleSceneFinished)
             {
                 yield return null;
@@ -192,7 +188,6 @@ namespace Toolset.Core.Tests
 
             routineHandle = RoutineManager.I.StartRoutine(m_routineRunner.UnloadExampleSceneRoutine);
 
-            Assert.IsFalse(routineHandle.IsDone);
             while (!m_routineRunner.IsUnloadExampleSceneFinished)
             {
                 yield return null;
@@ -351,7 +346,8 @@ namespace Toolset.Core.Tests
                 yield return null;
             }
 
-            Assert.AreEqual(exampleMonoBehavior.UpdateCount, 1);
+            Assert.GreaterOrEqual(exampleMonoBehavior.UpdateCount, 1);
+            Assert.LessOrEqual(exampleMonoBehavior.UpdateCount, 2);
 
             yield return UnloadExampleScene();
         }

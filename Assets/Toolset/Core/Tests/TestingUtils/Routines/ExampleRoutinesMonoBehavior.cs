@@ -33,6 +33,7 @@ namespace Toolset.Core.Tests
             m_shouldBeCounting = true;
 
             yield return new WaitForEndOfFrame();
+            yield return new WaitForEndOfFrame();
 
             m_shouldBeCounting = false;
         }

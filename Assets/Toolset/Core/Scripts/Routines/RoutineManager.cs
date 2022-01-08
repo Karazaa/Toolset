@@ -111,6 +111,7 @@ namespace Toolset.Core
         {
             RoutineHandle generatedRoutineHandle = new RoutineHandle();
             m_outstandingRoutines.Add(new RoutineGraph(generatedRoutineHandle, exceptionHandler, new RoutineNode(routine, null)));
+            InternalMoveNext(m_outstandingRoutines[m_outstandingRoutines.Count - 1]);
 
             return generatedRoutineHandle;
         }
@@ -129,7 +130,7 @@ namespace Toolset.Core
             if (index == -1)
                 return;
 
-            StopRoutineInternal(index);
+            MarkRoutineStopped(m_outstandingRoutines[index]);
         }
 
         /// <summary>
@@ -139,7 +140,7 @@ namespace Toolset.Core
         {
             for (int i = m_outstandingRoutines.Count - 1; i >= 0; --i)
             {
-                StopRoutineInternal(i);
+                MarkRoutineStopped(m_outstandingRoutines[i]);
             }
         }
 
@@ -147,8 +148,8 @@ namespace Toolset.Core
         {
             for (int i = m_outstandingRoutines.Count - 1; i >= 0; --i)
             {
-                if (!m_outstandingRoutines[i].HeadNode.IsWaitForFixedUpdate)
-                    IterateListRoutineAtIndex(i);
+                if (m_outstandingRoutines[i].HeadNode != null && !m_outstandingRoutines[i].HeadNode.IsWaitForFixedUpdate)
+                    InternalMoveNext(m_outstandingRoutines[i]);
             }
         }
 
@@ -156,20 +157,21 @@ namespace Toolset.Core
         {
             for (int i = m_outstandingRoutines.Count - 1; i >= 0; --i)
             {
-                if (m_outstandingRoutines[i].HeadNode.IsWaitForFixedUpdate)
+                if (m_outstandingRoutines[i].HeadNode != null && m_outstandingRoutines[i].HeadNode.IsWaitForFixedUpdate)
                 {
                     RemoveHeadNode(m_outstandingRoutines[i]);
-                    IterateListRoutineAtIndex(i);
+                    InternalMoveNext(m_outstandingRoutines[i]);
                 }
             }
         }
 
-        private void IterateListRoutineAtIndex(int index)
+        private void LateUpdate()
         {
-            InternalMoveNext(m_outstandingRoutines[index]);
-
-            if (m_outstandingRoutines[index].HeadNode == null)
-                StopRoutineInternal(index);
+            for (int i = m_outstandingRoutines.Count - 1; i >= 0; --i)
+            {
+                if (m_outstandingRoutines[i].HeadNode == null)
+                    m_outstandingRoutines.RemoveAt(i);
+            }
         }
 
         private void InternalMoveNext(RoutineGraph routineGraph)
@@ -233,12 +235,15 @@ namespace Toolset.Core
         private void RemoveHeadNode(RoutineGraph routineGraph)
         {
             routineGraph.HeadNode = routineGraph.HeadNode.ParentNode;
+
+            if (routineGraph.HeadNode == null)
+                routineGraph.RoutineHandle.IsDone = true;
         }
 
-        private void StopRoutineInternal(int index)
+        private void MarkRoutineStopped(RoutineGraph routineGraph)
         {
-            m_outstandingRoutines[index].RoutineHandle.IsDone = true;
-            m_outstandingRoutines.RemoveAt(index);
+            routineGraph.HeadNode = null;
+            routineGraph.RoutineHandle.IsDone = true;
         }
     }
 }
