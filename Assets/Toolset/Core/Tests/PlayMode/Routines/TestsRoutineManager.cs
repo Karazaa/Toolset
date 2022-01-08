@@ -8,18 +8,18 @@ using Toolset.Global.Utils;
 namespace Toolset.Core.Tests
 {
     /// <summary>
-    /// Integrtion tests to validate the RoutineManager class.
+    /// Integrtion tests to validate the RoutineRunner class.
     /// </summary>
     public class TestsRoutineManager
     {
         private const float c_expectedWaitSeconds = 0.5f;
 
-        private ExampleRoutineRunner m_routineRunner;
+        private ExampleRoutines m_exampleRoutines;
 
         [UnitySetUp]
         public IEnumerator SetUp()
         {
-            m_routineRunner = new ExampleRoutineRunner();
+            m_exampleRoutines = new ExampleRoutines();
             yield break;
         }
 
@@ -27,12 +27,12 @@ namespace Toolset.Core.Tests
         [Timeout(ToolsetTestingConstants.c_mediumTimeoutMilliseconds)]
         public IEnumerator TestStartRoutineNominal()
         {
-            Assert.IsFalse(m_routineRunner.IsNominalFinished);
+            Assert.IsFalse(m_exampleRoutines.IsNominalFinished);
 
-            RoutineHandle routineHandle = RoutineManager.I.StartRoutine(m_routineRunner.NominalRootRoutine);
+            RoutineHandle routineHandle = RoutineManager.I.StartRoutine(m_exampleRoutines.NominalRootRoutine);
 
             Assert.IsFalse(routineHandle.IsDone);
-            while (!m_routineRunner.IsNominalFinished)
+            while (!m_exampleRoutines.IsNominalFinished)
             {
                 yield return null;
             }
@@ -47,16 +47,16 @@ namespace Toolset.Core.Tests
             {
                 Time.timeScale = timeScale;
 
-                m_routineRunner = new ExampleRoutineRunner();
-                Assert.IsFalse(m_routineRunner.IsNominalWaitFinished);
+                m_exampleRoutines = new ExampleRoutines();
+                Assert.IsFalse(m_exampleRoutines.IsNominalWaitFinished);
 
-                m_routineRunner.WaitTimeSeconds = c_expectedWaitSeconds;
-                RoutineHandle routineHandle = RoutineManager.I.StartRoutine(m_routineRunner.NominalWaitRootRoutine);
+                m_exampleRoutines.WaitTimeSeconds = c_expectedWaitSeconds;
+                RoutineHandle routineHandle = RoutineManager.I.StartRoutine(m_exampleRoutines.NominalWaitRootRoutine);
 
                 DateTime started = DateTime.Now;
 
                 Assert.IsFalse(routineHandle.IsDone);
-                while (!m_routineRunner.IsNominalWaitFinished)
+                while (!m_exampleRoutines.IsNominalWaitFinished)
                 {
                     yield return null;
                 }
@@ -80,16 +80,16 @@ namespace Toolset.Core.Tests
             {
                 Time.timeScale = timeScale;
 
-                m_routineRunner = new ExampleRoutineRunner();
-                Assert.IsFalse(m_routineRunner.IsWaitRealtimeFinished);
+                m_exampleRoutines = new ExampleRoutines();
+                Assert.IsFalse(m_exampleRoutines.IsWaitRealtimeFinished);
 
-                m_routineRunner.WaitTimeSeconds = c_expectedWaitSeconds;
-                RoutineHandle routineHandle = RoutineManager.I.StartRoutine(m_routineRunner.WaitRealtimeRoutine);
+                m_exampleRoutines.WaitTimeSeconds = c_expectedWaitSeconds;
+                RoutineHandle routineHandle = RoutineManager.I.StartRoutine(m_exampleRoutines.WaitRealtimeRoutine);
 
                 DateTime started = DateTime.Now;
 
                 Assert.IsFalse(routineHandle.IsDone);
-                while (!m_routineRunner.IsWaitRealtimeFinished)
+                while (!m_exampleRoutines.IsWaitRealtimeFinished)
                 {
                     yield return null;
                 }
@@ -109,10 +109,10 @@ namespace Toolset.Core.Tests
         [Timeout(ToolsetTestingConstants.c_mediumTimeoutMilliseconds)]
         public IEnumerator TestStartRoutineFaulty()
         {
-            Assert.IsFalse(m_routineRunner.IsFaultyFinished);
+            Assert.IsFalse(m_exampleRoutines.IsFaultyFinished);
 
             bool exceptionOccurred = false;
-            RoutineHandle routineHandle = RoutineManager.I.StartRoutine(m_routineRunner.FaultyRootRoutine, (exception) =>
+            RoutineHandle routineHandle = RoutineManager.I.StartRoutine(m_exampleRoutines.FaultyRootRoutine, (exception) =>
             {
                 exceptionOccurred = true;
             });
@@ -128,11 +128,11 @@ namespace Toolset.Core.Tests
         [Timeout(ToolsetTestingConstants.c_mediumTimeoutMilliseconds)]
         public IEnumerator TestStartRoutineWaitFaulty()
         {
-            Assert.IsFalse(m_routineRunner.IsFaultyWaitFinished);
+            Assert.IsFalse(m_exampleRoutines.IsFaultyWaitFinished);
 
             bool exceptionOccurred = false;
-            m_routineRunner.WaitTimeSeconds = c_expectedWaitSeconds;
-            RoutineHandle routineHandle = RoutineManager.I.StartRoutine(m_routineRunner.FaultyWaitRootRoutine, (exception) =>
+            m_exampleRoutines.WaitTimeSeconds = c_expectedWaitSeconds;
+            RoutineHandle routineHandle = RoutineManager.I.StartRoutine(m_exampleRoutines.FaultyWaitRootRoutine, (exception) =>
             {
                 Assert.IsTrue(exception is InvalidOperationException);
                 exceptionOccurred = true;
@@ -149,10 +149,10 @@ namespace Toolset.Core.Tests
         [Timeout(ToolsetTestingConstants.c_mediumTimeoutMilliseconds)]
         public IEnumerator TestStartRoutineYieldInstructionFaulty()
         {
-            Assert.IsFalse(m_routineRunner.IsFaultyYieldInstructionFinished);
+            Assert.IsFalse(m_exampleRoutines.IsFaultyYieldInstructionFinished);
 
             bool exceptionOccurred = false;
-            RoutineHandle routineHandle = RoutineManager.I.StartRoutine(m_routineRunner.FaultyRootRoutine, (exception) =>
+            RoutineHandle routineHandle = RoutineManager.I.StartRoutine(m_exampleRoutines.FaultyRootRoutine, (exception) =>
             {
                 Assert.IsTrue(exception is InvalidOperationException);
                 exceptionOccurred = true;
@@ -169,15 +169,15 @@ namespace Toolset.Core.Tests
         [Timeout(ToolsetTestingConstants.c_mediumTimeoutMilliseconds)]
         public IEnumerator TestStartRoutineAsyncOperation()
         {
-            Assert.IsFalse(m_routineRunner.IsLoadExampleSceneFinished);
-            Assert.IsFalse(m_routineRunner.IsUnloadExampleSceneFinished);
+            Assert.IsFalse(m_exampleRoutines.IsLoadExampleSceneFinished);
+            Assert.IsFalse(m_exampleRoutines.IsUnloadExampleSceneFinished);
 
             GameObject searchTarget = GameObject.Find(ToolsetTestingConstants.c_searchTargetNameRoutines);
             Assert.IsNull(searchTarget);
 
-            RoutineHandle routineHandle = RoutineManager.I.StartRoutine(m_routineRunner.LoadExampleSceneRoutine);
+            RoutineHandle routineHandle = RoutineManager.I.StartRoutine(m_exampleRoutines.LoadExampleSceneRoutine);
 
-            while (!m_routineRunner.IsLoadExampleSceneFinished)
+            while (!m_exampleRoutines.IsLoadExampleSceneFinished)
             {
                 yield return null;
             }
@@ -186,9 +186,9 @@ namespace Toolset.Core.Tests
             searchTarget = GameObject.Find(ToolsetTestingConstants.c_searchTargetNameRoutines);
             Assert.IsNotNull(searchTarget);
 
-            routineHandle = RoutineManager.I.StartRoutine(m_routineRunner.UnloadExampleSceneRoutine);
+            routineHandle = RoutineManager.I.StartRoutine(m_exampleRoutines.UnloadExampleSceneRoutine);
 
-            while (!m_routineRunner.IsUnloadExampleSceneFinished)
+            while (!m_exampleRoutines.IsUnloadExampleSceneFinished)
             {
                 yield return null;
             }
@@ -202,19 +202,19 @@ namespace Toolset.Core.Tests
         [Timeout(ToolsetTestingConstants.c_mediumTimeoutMilliseconds)]
         public IEnumerator TestStartRoutineTask()
         {
-            Assert.IsFalse(m_routineRunner.IsTaskDelayFinished);
+            Assert.IsFalse(m_exampleRoutines.IsTaskDelayFinished);
 
-            m_routineRunner.WaitTimeSeconds = c_expectedWaitSeconds;
-            RoutineHandle routineHandle = RoutineManager.I.StartRoutine(m_routineRunner.TaskDelayRoutine);
+            m_exampleRoutines.WaitTimeSeconds = c_expectedWaitSeconds;
+            RoutineHandle routineHandle = RoutineManager.I.StartRoutine(m_exampleRoutines.TaskDelayRoutine);
 
             DateTime started = DateTime.Now;
-            while (!m_routineRunner.IsTaskDelayFinished)
+            while (!m_exampleRoutines.IsTaskDelayFinished)
             {
                 yield return null;
             }
             DateTime finished = DateTime.Now;
 
-            Assert.GreaterOrEqual((finished - started).TotalSeconds, c_expectedWaitSeconds);
+            Assert.GreaterOrEqual((finished - started).TotalSeconds, c_expectedWaitSeconds - 0.001f);
             Assert.IsTrue(routineHandle.IsDone);
         }
 
@@ -222,8 +222,8 @@ namespace Toolset.Core.Tests
         [Timeout(ToolsetTestingConstants.c_mediumTimeoutMilliseconds)]
         public IEnumerator TestStopRoutine()
         {
-            RoutineHandle routineHandle = RoutineManager.I.StartRoutine(m_routineRunner.InifiniteRoutine);
-            RoutineHandle secondRoutineHandle = RoutineManager.I.StartRoutine(m_routineRunner.InifiniteRoutine);
+            RoutineHandle routineHandle = RoutineManager.I.StartRoutine(m_exampleRoutines.InifiniteRoutine);
+            RoutineHandle secondRoutineHandle = RoutineManager.I.StartRoutine(m_exampleRoutines.InifiniteRoutine);
 
             Assert.IsFalse(routineHandle.IsDone);
             Assert.IsFalse(secondRoutineHandle.IsDone);
@@ -245,8 +245,8 @@ namespace Toolset.Core.Tests
         [Timeout(ToolsetTestingConstants.c_mediumTimeoutMilliseconds)]
         public IEnumerator TestStopAllRoutines()
         {
-            RoutineHandle routineHandle = RoutineManager.I.StartRoutine(m_routineRunner.InifiniteRoutine);
-            RoutineHandle secondRoutineHandle = RoutineManager.I.StartRoutine(m_routineRunner.InifiniteRoutine);
+            RoutineHandle routineHandle = RoutineManager.I.StartRoutine(m_exampleRoutines.InifiniteRoutine);
+            RoutineHandle secondRoutineHandle = RoutineManager.I.StartRoutine(m_exampleRoutines.InifiniteRoutine);
 
             Assert.IsFalse(routineHandle.IsDone);
             Assert.IsFalse(secondRoutineHandle.IsDone);
@@ -263,7 +263,7 @@ namespace Toolset.Core.Tests
         [Timeout(ToolsetTestingConstants.c_mediumTimeoutMilliseconds)]
         public IEnumerator TestStoppingAlreadyStoppedRoutine()
         {
-            RoutineHandle routineHandle = RoutineManager.I.StartRoutine(m_routineRunner.InifiniteRoutine);
+            RoutineHandle routineHandle = RoutineManager.I.StartRoutine(m_exampleRoutines.InifiniteRoutine);
 
             Assert.IsFalse(routineHandle.IsDone);
 
@@ -282,7 +282,7 @@ namespace Toolset.Core.Tests
         [Timeout(ToolsetTestingConstants.c_mediumTimeoutMilliseconds)]
         public IEnumerator TestStartRoutineRoutineHandle()
         {
-            RoutineHandle routineHandle = RoutineManager.I.StartRoutine(m_routineRunner.InifiniteRoutine);
+            RoutineHandle routineHandle = RoutineManager.I.StartRoutine(m_exampleRoutines.InifiniteRoutine);
 
             IEnumerator YieldOnRoutineHandle()
             {
@@ -381,7 +381,7 @@ namespace Toolset.Core.Tests
         public IEnumerator TestStartRoutineUnknownYieldInstruction()
         {
             bool exceptionOccurred = false;
-            RoutineHandle routineHandle = RoutineManager.I.StartRoutine(m_routineRunner.UnknownYieldInstructionRoutine, (exception) => 
+            RoutineHandle routineHandle = RoutineManager.I.StartRoutine(m_exampleRoutines.UnknownYieldInstructionRoutine, (exception) => 
             {
                 Assert.IsTrue(exception is InvalidOperationException);
                 exceptionOccurred = true;
@@ -395,8 +395,8 @@ namespace Toolset.Core.Tests
 
         private IEnumerator LoadExampleScene()
         {
-            RoutineManager.I.StartRoutine(m_routineRunner.LoadExampleSceneRoutine);
-            while (!m_routineRunner.IsLoadExampleSceneFinished)
+            RoutineManager.I.StartRoutine(m_exampleRoutines.LoadExampleSceneRoutine);
+            while (!m_exampleRoutines.IsLoadExampleSceneFinished)
             {
                 yield return null;
             }
@@ -404,8 +404,8 @@ namespace Toolset.Core.Tests
 
         private IEnumerator UnloadExampleScene()
         {
-            RoutineManager.I.StartRoutine(m_routineRunner.UnloadExampleSceneRoutine);
-            while (!m_routineRunner.IsUnloadExampleSceneFinished)
+            RoutineManager.I.StartRoutine(m_exampleRoutines.UnloadExampleSceneRoutine);
+            while (!m_exampleRoutines.IsUnloadExampleSceneFinished)
             {
                 yield return null;
             }

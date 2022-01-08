@@ -3,7 +3,7 @@ using UnityEngine;
 namespace Toolset.Core
 {
     /// <summary>
-    /// This is the RoutineManager compliant equivalent to the WaitForSeconds YieldInstruction in
+    /// This is the RoutineRunner compliant equivalent to the WaitForSeconds YieldInstruction in
     /// Unity. Unity's Time Scale is applied! The reason this class is required is because the number of seconds a WaitForSeconds waits for
     /// is not publically accessible post instantiation. 
     /// </summary>

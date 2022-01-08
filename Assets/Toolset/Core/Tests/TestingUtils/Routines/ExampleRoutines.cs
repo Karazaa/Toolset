@@ -8,9 +8,9 @@ using Toolset.Global.Utils;
 namespace Toolset.Core.Tests
 {
     /// <summary>
-    /// Class used to test the RoutineManager class.
+    /// Class used to test the RoutineRunner class.
     /// </summary>
-    public class ExampleRoutineRunner
+    public class ExampleRoutines
     {
         public bool IsNominalFinished => m_stateMachine.CurrentState == States.AfterRootYield;
         public IEnumerator NominalRootRoutine => NominalRootLayer();
@@ -59,7 +59,7 @@ namespace Toolset.Core.Tests
         private bool m_wasFaultyNest1AfterInvoked = false;
         private bool m_wasFaultyNest2AfterInvoked = false;
 
-        public ExampleRoutineRunner()
+        public ExampleRoutines()
         {
             m_stateMachine.OnEventGoto(States.Created, Events.BeforeYield1, States.BeforeRootYield);
             m_stateMachine.OnEventGoto(States.BeforeRootYield, Events.BeforeYield2, States.BeforeNest1Yield);
