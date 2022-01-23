@@ -1,31 +1,56 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace Toolset.Core
 {
-    public class Scope
+    public static class ScopeUtils
     {
+        public static Scope CurrentScope { get; private set; }
+
+        public static IEnumerator CreateScope<TScope>() 
+            where TScope : Scope, new()
+        {
+            Scope scope = new TScope();
+            CurrentScope = scope;
+
+            yield return scope.SetUpScope();
+        }
+
+        public static IEnumerator DestroyScope()
+        {
+            Scope parentScope = CurrentScope.ParentScope;
+
+            yield return CurrentScope.TearDownScope();
+
+            CurrentScope = parentScope;
+        }
+    }
+
+    public abstract class Scope
+    {
+        public Scope ParentScope { get; private set; }
         private Dictionary<Type, IInjectable> m_dependencies = new Dictionary<Type, IInjectable>();
 
-        public void Register<TType>(TType objectToRegister) where TType : IInjectable
+        public Scope ()
+        {
+            ParentScope = ScopeUtils.CurrentScope;
+        }
+
+        protected void Register<TType>(TType objectToRegister) where TType : IInjectable
         {
             m_dependencies.Add(typeof(TType), objectToRegister);
             objectToRegister.Inject(this);
         }
 
-        public void Resolve<TType>(ref TType objectToResolve) where TType : IInjectable
+        protected void Resolve<TType>(ref TType objectToResolve) where TType : IInjectable
         {
             objectToResolve = (TType) m_dependencies[typeof(TType)];
         }
 
-        protected virtual IEnumerator SetUpScope()
-        {
-            yield break;
-        }
+        public abstract IEnumerator SetUpScope();
 
-        protected virtual IEnumerator TearDownScope()
+        public virtual IEnumerator TearDownScope()
         {
             foreach (KeyValuePair<Type, IInjectable> pair in m_dependencies)
             {
