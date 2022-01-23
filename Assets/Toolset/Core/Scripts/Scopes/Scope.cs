@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 namespace Toolset.Core
 {
@@ -60,6 +61,8 @@ namespace Toolset.Core
         /// The scope that encompases this scope.
         /// </summary>
         public Scope ParentScope { get; private set; }
+        protected virtual string AssociatedScenePath { get; set; }
+
         private Dictionary<Type, IInjectable> m_dependencies = new Dictionary<Type, IInjectable>();
 
         public Scope ()
@@ -91,7 +94,11 @@ namespace Toolset.Core
         /// Stands up the scope which entails resolving dependencies and registering new services to the scope.
         /// </summary>
         /// <returns>The SetUpScope routine.</returns>
-        public abstract IEnumerator SetUpScope();
+        public virtual IEnumerator SetUpScope()
+        {
+            if (!AssociatedScenePath.IsNullOrWhiteSpace())
+                yield return SceneManager.LoadSceneAsync(AssociatedScenePath, LoadSceneMode.Additive);
+        }
 
         /// <summary>
         /// Tears down the scope which entails disposing all registered services.
@@ -106,7 +113,8 @@ namespace Toolset.Core
 
             m_dependencies.Clear();
 
-            yield break;
+            if (!AssociatedScenePath.IsNullOrWhiteSpace())
+                yield return SceneManager.UnloadSceneAsync(AssociatedScenePath, UnloadSceneOptions.UnloadAllEmbeddedSceneObjects);
         }
     }
 }

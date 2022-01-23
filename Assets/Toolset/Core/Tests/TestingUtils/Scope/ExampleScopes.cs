@@ -1,4 +1,5 @@
 using System.Collections;
+using UnityEngine;
 
 namespace Toolset.Core.Tests
 {
@@ -32,11 +33,11 @@ namespace Toolset.Core.Tests
 
         public override IEnumerator SetUpScope()
         {
+            yield return base.SetUpScope();
+
             Resolve(ref m_routineManagerService);
 
             Register<IGameObjectPoolManagerService>(GameObjectPoolManager.I);
-
-            yield break;
         }
     }
 
@@ -47,10 +48,10 @@ namespace Toolset.Core.Tests
     {
         public override IEnumerator SetUpScope()
         {
-            Register<IGameObjectPoolManagerService>(GameObjectPoolManager.I);
-            Register<IGameObjectPoolManagerService>(GameObjectPoolManager.I);
+            yield return base.SetUpScope();
 
-            yield break;
+            Register<IGameObjectPoolManagerService>(GameObjectPoolManager.I);
+            Register<IGameObjectPoolManagerService>(GameObjectPoolManager.I);
         }
     }
 
@@ -62,8 +63,28 @@ namespace Toolset.Core.Tests
         private IGameObjectPoolManagerService m_gameObjectPoolManagerService;
         public override IEnumerator SetUpScope()
         {
+            yield return base.SetUpScope();
+
             Resolve(ref m_gameObjectPoolManagerService);
-            yield break;
+        }
+    }
+
+    /// <summary>
+    /// Example class used to validate Scope class through unit tests.
+    /// </summary>
+    public class ExampleSceneScope : Scope
+    {
+        protected override string AssociatedScenePath => "ExampleSceneScopes";
+
+        private IGameObjectPoolManagerService m_gameObjectPoolManagerService;
+        public IGameObjectPoolManagerService GameObjectPoolManagerService => m_gameObjectPoolManagerService;
+
+        public override IEnumerator SetUpScope()
+        {
+            yield return base.SetUpScope();
+
+            Register<IGameObjectPoolManagerService>(GameObject.Find("ScopedGameObjectPoolManager").GetComponent<GameObjectPoolManager>());
+            Resolve(ref m_gameObjectPoolManagerService);
         }
     }
 }

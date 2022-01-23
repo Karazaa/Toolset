@@ -11,6 +11,12 @@ namespace Toolset.Core
     {
         private static T s_instance;
 
+        private void Awake()
+        {
+            if (s_instance == null)
+                s_instance = gameObject.GetComponent<T>();
+        }
+
         /// <summary>
         /// Returns an instance of the MonoBehaviour singleton if it exists already. If not, it creates a new game object flagged DontDestroyOnLoad,
         /// sets it as the instance, and returns it.

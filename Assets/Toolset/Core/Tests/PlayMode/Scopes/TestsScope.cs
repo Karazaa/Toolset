@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using UnityEngine;
 using UnityEngine.TestTools;
 using NUnit.Framework;
 using Toolset.Global.Utils;
@@ -62,6 +63,19 @@ namespace Toolset.Core.Tests
             Assert.IsNotNull((ScopeUtils.CurrentScope as ExampleChildScope).RoutineManagerService);
 
             yield return ScopeUtils.DestroyAllScopes();
+        }
+
+        [UnityTest]
+        [Timeout(ToolsetTestingConstants.c_mediumTimeoutMilliseconds)]
+        public IEnumerator TestScopeWithScene()
+        {
+            yield return ScopeUtils.CreateScope<ExampleSceneScope>();
+
+            Assert.IsNotNull((ScopeUtils.CurrentScope as ExampleSceneScope).GameObjectPoolManagerService);
+
+            yield return ScopeUtils.DestroyAllScopes();
+
+            Assert.IsNull(GameObject.Find("ScopedGameObjectPoolManager"));
         }
 
         [UnityTest]
