@@ -221,8 +221,8 @@ namespace Toolset.Core
             }
             catch (Exception exception)
             {
-                routineGraph.ExceptionHandler?.Invoke(exception);
                 RemoveHeadNode(routineGraph);
+                routineGraph.ExceptionHandler?.Invoke(exception);
                 InternalMoveNext(routineGraph);
             }
         }

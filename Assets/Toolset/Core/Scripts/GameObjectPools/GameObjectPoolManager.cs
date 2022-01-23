@@ -37,8 +37,11 @@ namespace Toolset.Core
 
         public override void Dispose()
         {
-            Destroy(ActiveRoot);
-            Destroy(InactiveRoot);
+            if (ActiveRoot != null)
+                Destroy(ActiveRoot.gameObject);
+
+            if (InactiveRoot != null)
+                Destroy(InactiveRoot.gameObject);
 
             base.Dispose();
         }
