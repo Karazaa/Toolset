@@ -29,13 +29,13 @@ namespace Toolset.ECS.Examples
         {
             m_jobHandle.Complete();
 
-            MovementJob movementJob = new MovementJob
+            RotationJob rotationJob = new RotationJob
             {
                 DeltaTime = Time.deltaTime,
                 RotationSpeed = 100.0f
             };
 
-            m_jobHandle = movementJob.Schedule(m_transformAccessArray);
+            m_jobHandle = rotationJob.Schedule(m_transformAccessArray);
 
             JobHandle.ScheduleBatchedJobs();
         }

@@ -1,7 +1,9 @@
 {
     "name": "ECSExamples",
     "rootNamespace": "Toolset.ECS.Examples",
-    "references": [],
+    "references": [
+        "GUID:734d92eba21c94caba915361bd5ac177"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

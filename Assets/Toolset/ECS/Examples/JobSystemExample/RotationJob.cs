@@ -4,7 +4,7 @@ using UnityEngine.Jobs;
 
 namespace Toolset.ECS.Examples
 {
-    public struct MovementJob : IJobParallelForTransform
+    public struct RotationJob : IJobParallelForTransform
     {
         public float RotationSpeed { get; set; }
         public float DeltaTime { get; set; }
