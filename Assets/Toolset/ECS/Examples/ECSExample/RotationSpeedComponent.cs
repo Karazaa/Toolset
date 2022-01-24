@@ -4,7 +4,7 @@ using Unity.Entities;
 
 namespace Toolset.ECS.Examples
 {
-    [Serializable]
+    [GenerateAuthoringComponent]
     public struct RotationSpeed : IComponentData
     {
         public float Value { get; set; }
