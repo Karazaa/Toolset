@@ -1,12 +1,12 @@
 namespace Toolset.Core
 {
     /// <summary>
-    /// A base class that all future event classes should inherit from. Provides a single utility method for quickly
+    /// An interface that all future event classes should implement from. Provides a single utility method for quickly
     /// firing an event.
     /// </summary>
-    public abstract class Event
+    public interface IEvent
     {
-        public abstract void Fire();
+        public void Fire();
     }
 }
 

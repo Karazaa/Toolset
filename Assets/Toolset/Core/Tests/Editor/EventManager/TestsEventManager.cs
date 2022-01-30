@@ -16,13 +16,13 @@ namespace Toolset.Core.Tests
             ExampleEventHandler1 eventHandler = new ExampleEventHandler1();
             eventHandler.Subscribe();
 
-            (new ExampleEvent1() { m_passedIntValue = c_dummyValue1 }).Fire();
+            (new ExampleEvent1() { PassedIntValue = c_dummyValue1 }).Fire();
 
             Assert.AreEqual(c_dummyValue1, eventHandler.ExampleValue);
 
             eventHandler.Unsubscribe();
 
-            (new ExampleEvent1() { m_passedIntValue = c_dummyValue2 }).Fire();
+            (new ExampleEvent1() { PassedIntValue = c_dummyValue2 }).Fire();
 
             Assert.AreNotEqual(c_dummyValue2, eventHandler.ExampleValue);
         }
@@ -35,14 +35,14 @@ namespace Toolset.Core.Tests
             eventHandler1.Subscribe();
             eventHandler2.Subscribe();
 
-            (new ExampleEvent1() { m_passedIntValue = c_dummyValue1 }).Fire();
+            (new ExampleEvent1() { PassedIntValue = c_dummyValue1 }).Fire();
 
             Assert.AreEqual(c_dummyValue1, eventHandler1.ExampleValue);
             Assert.AreEqual(c_dummyValue1, eventHandler2.ExampleValue);
 
             eventHandler1.Unsubscribe();
 
-            (new ExampleEvent1() { m_passedIntValue = c_dummyValue2 }).Fire();
+            (new ExampleEvent1() { PassedIntValue = c_dummyValue2 }).Fire();
 
             Assert.AreNotEqual(c_dummyValue2, eventHandler1.ExampleValue);
             Assert.AreEqual(c_dummyValue2, eventHandler2.ExampleValue);
@@ -58,14 +58,14 @@ namespace Toolset.Core.Tests
             eventHandler1.Subscribe();
             eventHandler2.Subscribe();
 
-            (new ExampleEvent1() { m_passedIntValue = c_dummyValue1 }).Fire();
+            (new ExampleEvent1() { PassedIntValue = c_dummyValue1 }).Fire();
 
             Assert.AreEqual(c_dummyValue1, eventHandler1.ExampleValue);
             Assert.AreNotEqual(c_dummyValue1, eventHandler2.ExampleValue);
 
             eventHandler1.Unsubscribe();
 
-            (new ExampleEvent2() { m_passedIntValue = c_dummyValue2 }).Fire();
+            (new ExampleEvent2() { PassedIntValue = c_dummyValue2 }).Fire();
 
             Assert.AreNotEqual(c_dummyValue2, eventHandler1.ExampleValue);
             Assert.AreEqual(c_dummyValue2, eventHandler2.ExampleValue);
@@ -80,7 +80,7 @@ namespace Toolset.Core.Tests
             eventHandler.Subscribe();
             eventHandler.Subscribe();
 
-            (new ExampleEvent1() { m_passedIntValue = c_dummyValue1 }).Fire();
+            (new ExampleEvent1() { PassedIntValue = c_dummyValue1 }).Fire();
 
             Assert.AreEqual(c_dummyValue1, eventHandler.ExampleValue);
 
@@ -92,7 +92,7 @@ namespace Toolset.Core.Tests
         {
             ExampleEventHandler1 eventHandler = new ExampleEventHandler1();
 
-            (new ExampleEvent1() { m_passedIntValue = c_dummyValue1 }).Fire();
+            (new ExampleEvent1() { PassedIntValue = c_dummyValue1 }).Fire();
 
             Assert.IsFalse(EventManager.IsSubscribedToEvent(eventHandler));
             Assert.AreNotEqual(c_dummyValue1, eventHandler.ExampleValue);

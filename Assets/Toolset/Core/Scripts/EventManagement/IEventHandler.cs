@@ -5,7 +5,7 @@ namespace Toolset.Core
     /// a single method for handling the event.
     /// </summary>
     /// <typeparam name="T">The type of event this handler is responsible for handling.</typeparam>
-    public interface IEventHandler<T> : IBaseEventHandler where T : Event
+    public interface IEventHandler<T> : IBaseEventHandler where T : IEvent
     {
         /// <summary>
         /// Invoked by the EventManager when a corresponding event is fired. That event object is then

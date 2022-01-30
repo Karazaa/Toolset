@@ -15,7 +15,7 @@ namespace Toolset.Core
         /// </summary>
         /// <typeparam name="T">The type of event that is being subscribed to.</typeparam>
         /// <param name="handler">The desired handler for the event that is being subscribed to.</param>
-        public static void Subscribe<T>(IEventHandler<T> handler) where T : Event
+        public static void Subscribe<T>(IEventHandler<T> handler) where T : IEvent
         {
             Type eventType = typeof(T);
 
@@ -36,7 +36,7 @@ namespace Toolset.Core
         /// </summary>
         /// <typeparam name="T">The type of event that is being unsubscribed from.</typeparam>
         /// <param name="handler">The handler that is being removed as a subscriber from the event.</param>
-        public static void Unsubscribe<T>(IEventHandler<T> handler) where T : Event
+        public static void Unsubscribe<T>(IEventHandler<T> handler) where T : IEvent
         {
             Type eventType = typeof(T);
 
@@ -54,7 +54,7 @@ namespace Toolset.Core
         /// </summary>
         /// <typeparam name="T">The type of event that is being fired.</typeparam>
         /// <param name="eventToFire">The specific instance of the event that will be passed to all handlers.</param>
-        public static void Fire<T>(T eventToFire) where T : Event
+        public static void Fire<T>(T eventToFire) where T : IEvent
         {
             Type eventType = typeof(T);
 
@@ -63,7 +63,7 @@ namespace Toolset.Core
 
             foreach (IBaseEventHandler handler in s_eventDictionary[eventType])
             {
-                (handler as IEventHandler<T>).HandleEvent(eventToFire);
+                (handler as IEventHandler<T>)?.HandleEvent(eventToFire);
             }
         }
 
@@ -73,7 +73,7 @@ namespace Toolset.Core
         /// <typeparam name="T">The type of Event to check if subscribed to.</typeparam>
         /// <param name="handler">The IEventHandler that is being checked for event subscription.</param>
         /// <returns>Whether or not the IEventHandler is subscribed to Event T.</returns>
-        public static bool IsSubscribedToEvent<T> (IEventHandler<T> handler) where T : Event
+        public static bool IsSubscribedToEvent<T> (IEventHandler<T> handler) where T : IEvent
         {
             Type eventType = typeof(T);
 

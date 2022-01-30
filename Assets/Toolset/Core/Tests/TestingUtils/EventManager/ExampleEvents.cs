@@ -3,11 +3,11 @@ namespace Toolset.Core.Tests
     /// <summary>
     /// Example event used to validate EventManager class through unit tests.
     /// </summary>
-    public class ExampleEvent1 : Event
+    public struct ExampleEvent1 : IEvent
     {
-        public int m_passedIntValue;
+        public int PassedIntValue { get; set; }
 
-        public override void Fire()
+        public void Fire()
         {
             EventManager.Fire(this);
         }
@@ -16,11 +16,11 @@ namespace Toolset.Core.Tests
     /// <summary>
     /// Example event used to validate EventManager class through unit tests.
     /// </summary>
-    public class ExampleEvent2 : Event
+    public struct ExampleEvent2 : IEvent
     {
-        public int m_passedIntValue;
+        public int PassedIntValue { get; set; }
 
-        public override void Fire()
+        public void Fire()
         {
             EventManager.Fire(this);
         }

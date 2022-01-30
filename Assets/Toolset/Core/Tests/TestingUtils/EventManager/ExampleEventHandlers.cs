@@ -27,7 +27,7 @@ namespace Toolset.Core.Tests
 
         public void HandleEvent(ExampleEvent1 exampleEvent)
         {
-            ExampleValue = exampleEvent.m_passedIntValue;
+            ExampleValue = exampleEvent.PassedIntValue;
         }
     }
 
@@ -48,7 +48,7 @@ namespace Toolset.Core.Tests
 
         public void HandleEvent(ExampleEvent2 exampleEvent)
         {
-            ExampleValue = exampleEvent.m_passedIntValue;
+            ExampleValue = exampleEvent.PassedIntValue;
         }
     }
 
@@ -69,7 +69,7 @@ namespace Toolset.Core.Tests
 
         public void HandleEvent(ExampleEvent1 exampleEvent)
         {
-            ExampleValue += exampleEvent.m_passedIntValue;
+            ExampleValue += exampleEvent.PassedIntValue;
         }
     }
 }
