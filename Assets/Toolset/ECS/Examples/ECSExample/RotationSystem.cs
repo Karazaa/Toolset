@@ -9,18 +9,16 @@ using UnityEngine.Jobs;
 
 namespace Toolset.ECS.Examples
 {
-    public class RotationSystem : SystemBase
+    public class RotationSystem : JobComponentSystem
     {
-        protected override void OnUpdate()
+        protected override JobHandle OnUpdate(JobHandle inputDeps)
         {
             float deltaTime = Time.DeltaTime;
 
-            Entities.ForEach((ref Rotation rotation, ref RotationSpeed rotationSpeed) =>
+            return Entities.ForEach((ref Rotation rotation, ref RotationSpeed rotationSpeed) =>
             {
                 rotation.Value = math.mul(rotation.Value, quaternion.RotateY(deltaTime * rotationSpeed.value));
-            }).ScheduleParallel();
-
-            JobHandle.ScheduleBatchedJobs();
+            }).Schedule(inputDeps);
         }
     }
 }
