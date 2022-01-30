@@ -6,7 +6,6 @@ using Unity.Transforms;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Jobs;
-using Toolset.Core;
 
 namespace Toolset.ECS.Examples
 {
