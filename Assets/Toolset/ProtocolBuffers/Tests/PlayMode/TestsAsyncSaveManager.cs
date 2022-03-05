@@ -23,21 +23,21 @@ namespace Toolset.ProtocolBuffers.Tests
             // this saved model has different values from the ones in TestOverwriteAndLoadAsync. Although generating these models
             // randomly has an exteremely low chance to populate the same values, it is best to avoid any potential false
             // fail edge case in these tests.
-            yield return SaveManager.SaveModelAsync(ProtoTestingUtils.m_batchModelNames[0], ProtoTestingUtils.m_staticModel1).GetAsIEnumerator();
+            yield return SaveManager.SaveModelInstanceAsync(ProtoTestingUtils.m_batchModelNames[0], ProtoTestingUtils.m_staticModel1).GetAsIEnumerator();
 
-            Assert.IsTrue(File.Exists(SaveManager.GetDataFilePathForType<ExampleProtoBufModel>(ProtoTestingUtils.m_batchModelNames[0])));
+            Assert.IsTrue(File.Exists(SaveManager.GetDataFilePathForModelType<ExampleProtoBufModel>(ProtoTestingUtils.m_batchModelNames[0])));
 
-            Task<ExampleProtoBufModel> loadTask1 = SaveManager.LoadModelAsync<ExampleProtoBufModel>(ProtoTestingUtils.m_batchModelNames[0]);
+            Task<ExampleProtoBufModel> loadTask1 = SaveManager.LoadModelInstanceAsync<ExampleProtoBufModel>(ProtoTestingUtils.m_batchModelNames[0]);
             yield return loadTask1.GetAsIEnumerator();
             ExampleProtoBufModel modelToLoad = loadTask1.Result;
 
             ProtoTestingUtils.AssertModelsAreEqual(ProtoTestingUtils.m_staticModel1, modelToLoad);
 
-            yield return SaveManager.SaveModelAsync(ProtoTestingUtils.m_batchModelNamesWithSubdirectory[0], ProtoTestingUtils.m_staticGeneratedModel1).GetAsIEnumerator();
+            yield return SaveManager.SaveModelInstanceAsync(ProtoTestingUtils.m_batchModelNamesWithSubdirectory[0], ProtoTestingUtils.m_staticGeneratedModel1).GetAsIEnumerator();
 
-            Assert.IsTrue(File.Exists(SaveManager.GetDataFilePathForType<ExamplePersistentProto>(ProtoTestingUtils.m_batchModelNamesWithSubdirectory[0])));
+            Assert.IsTrue(File.Exists(SaveManager.GetDataFilePathForModelType<ExamplePersistentProto>(ProtoTestingUtils.m_batchModelNamesWithSubdirectory[0])));
 
-            Task<ExamplePersistentProto> loadTask2 = SaveManager.LoadModelAsync<ExamplePersistentProto>(ProtoTestingUtils.m_batchModelNamesWithSubdirectory[0]);
+            Task<ExamplePersistentProto> loadTask2 = SaveManager.LoadModelInstanceAsync<ExamplePersistentProto>(ProtoTestingUtils.m_batchModelNamesWithSubdirectory[0]);
             yield return loadTask2.GetAsIEnumerator();
             ExamplePersistentProto generatedModelToLoad = loadTask2.Result;
 
@@ -54,21 +54,21 @@ namespace Toolset.ProtocolBuffers.Tests
             // this saved model has different values from the ones in TestSaveAndLoadAsync. Although generating these models
             // randomly has an exteremely low chance to populate the same values, it is best to avoid any potential false
             // fail edge case in these tests.
-            Task<ExampleProtoBufModel> loadTask1 = SaveManager.LoadModelAsync<ExampleProtoBufModel>(ProtoTestingUtils.m_batchModelNames[0]);
+            Task<ExampleProtoBufModel> loadTask1 = SaveManager.LoadModelInstanceAsync<ExampleProtoBufModel>(ProtoTestingUtils.m_batchModelNames[0]);
             yield return loadTask1.GetAsIEnumerator();
             ExampleProtoBufModel preSaveLoadedModel = loadTask1.Result;
 
-            Task<ExamplePersistentProto> loadTask2 = SaveManager.LoadModelAsync<ExamplePersistentProto>(ProtoTestingUtils.m_batchModelNamesWithSubdirectory[0]);
+            Task<ExamplePersistentProto> loadTask2 = SaveManager.LoadModelInstanceAsync<ExamplePersistentProto>(ProtoTestingUtils.m_batchModelNamesWithSubdirectory[0]);
             yield return loadTask2.GetAsIEnumerator();
             ExamplePersistentProto preSaveGeneratedLoadedModel = loadTask2.Result;
 
             ProtoTestingUtils.AssertModelsAreNotEqual(ProtoTestingUtils.m_staticModel2, preSaveLoadedModel);
 
-            yield return SaveManager.SaveModelAsync(ProtoTestingUtils.m_batchModelNames[0], ProtoTestingUtils.m_staticModel2).GetAsIEnumerator();
+            yield return SaveManager.SaveModelInstanceAsync(ProtoTestingUtils.m_batchModelNames[0], ProtoTestingUtils.m_staticModel2).GetAsIEnumerator();
 
-            Assert.IsTrue(File.Exists(SaveManager.GetDataFilePathForType<ExampleProtoBufModel>(ProtoTestingUtils.m_batchModelNames[0])));
+            Assert.IsTrue(File.Exists(SaveManager.GetDataFilePathForModelType<ExampleProtoBufModel>(ProtoTestingUtils.m_batchModelNames[0])));
 
-            loadTask1 = SaveManager.LoadModelAsync<ExampleProtoBufModel>(ProtoTestingUtils.m_batchModelNames[0]);
+            loadTask1 = SaveManager.LoadModelInstanceAsync<ExampleProtoBufModel>(ProtoTestingUtils.m_batchModelNames[0]);
             yield return loadTask1.GetAsIEnumerator();
             ExampleProtoBufModel modelToLoad = loadTask1.Result;
 
@@ -76,11 +76,11 @@ namespace Toolset.ProtocolBuffers.Tests
 
             ProtoTestingUtils.AssertGeneratedModelsAreNotEqual(ProtoTestingUtils.m_staticGeneratedModel2, preSaveGeneratedLoadedModel);
 
-            yield return SaveManager.SaveModelAsync(ProtoTestingUtils.m_batchModelNamesWithSubdirectory[0], ProtoTestingUtils.m_staticGeneratedModel2).GetAsIEnumerator();
+            yield return SaveManager.SaveModelInstanceAsync(ProtoTestingUtils.m_batchModelNamesWithSubdirectory[0], ProtoTestingUtils.m_staticGeneratedModel2).GetAsIEnumerator();
 
-            Assert.IsTrue(File.Exists(SaveManager.GetDataFilePathForType<ExamplePersistentProto>(ProtoTestingUtils.m_batchModelNamesWithSubdirectory[0])));
+            Assert.IsTrue(File.Exists(SaveManager.GetDataFilePathForModelType<ExamplePersistentProto>(ProtoTestingUtils.m_batchModelNamesWithSubdirectory[0])));
 
-            loadTask2 = SaveManager.LoadModelAsync<ExamplePersistentProto>(ProtoTestingUtils.m_batchModelNamesWithSubdirectory[0]);
+            loadTask2 = SaveManager.LoadModelInstanceAsync<ExamplePersistentProto>(ProtoTestingUtils.m_batchModelNamesWithSubdirectory[0]);
             yield return loadTask2.GetAsIEnumerator();
             ExamplePersistentProto generatedModelToLoad = loadTask2.Result;
 
@@ -98,14 +98,14 @@ namespace Toolset.ProtocolBuffers.Tests
                 modelsToSave.Add(ProtoTestingUtils.m_batchModelNames[i], ProtoTestingUtils.GenerateRandomValidProtobuf());
             }
 
-            yield return SaveManager.SaveModelsByTypeAsync(modelsToSave).GetAsIEnumerator();
+            yield return SaveManager.SaveModelInstancesByTypeAsync(modelsToSave).GetAsIEnumerator();
 
             foreach (KeyValuePair<string, ExampleProtoBufModel> pair in modelsToSave)
             {
-                Assert.IsTrue(File.Exists(SaveManager.GetDataFilePathForType<ExampleProtoBufModel>(pair.Key)));
+                Assert.IsTrue(File.Exists(SaveManager.GetDataFilePathForModelType<ExampleProtoBufModel>(pair.Key)));
             }
 
-            Task<Dictionary<string, ExampleProtoBufModel>> loadTask1 = SaveManager.LoadModelsByTypeAsync<ExampleProtoBufModel>();
+            Task<Dictionary<string, ExampleProtoBufModel>> loadTask1 = SaveManager.LoadModelInstancesByTypeAsync<ExampleProtoBufModel>();
             yield return loadTask1.GetAsIEnumerator();
             Dictionary<string, ExampleProtoBufModel>  loadedModels = loadTask1.Result;
 
@@ -121,14 +121,14 @@ namespace Toolset.ProtocolBuffers.Tests
                 generatedModelsToSave.Add(ProtoTestingUtils.m_batchModelNamesWithSubdirectory[i], ProtoTestingUtils.GenerateRandomPersistentProto());
             }
 
-            yield return SaveManager.SaveModelsByTypeAsync(generatedModelsToSave).GetAsIEnumerator();
+            yield return SaveManager.SaveModelInstancesByTypeAsync(generatedModelsToSave).GetAsIEnumerator();
 
             foreach (KeyValuePair<string, ExamplePersistentProto> pair in generatedModelsToSave)
             {
-                Assert.IsTrue(File.Exists(SaveManager.GetDataFilePathForType<ExamplePersistentProto>(pair.Key)));
+                Assert.IsTrue(File.Exists(SaveManager.GetDataFilePathForModelType<ExamplePersistentProto>(pair.Key)));
             }
 
-            Task<Dictionary<string, ExamplePersistentProto>> loadTask2 = SaveManager.LoadModelsByTypeAsync<ExamplePersistentProto>();
+            Task<Dictionary<string, ExamplePersistentProto>> loadTask2 = SaveManager.LoadModelInstancesByTypeAsync<ExamplePersistentProto>();
             yield return loadTask2.GetAsIEnumerator();
             Dictionary<string, ExamplePersistentProto> generatedLoadedModels = loadTask2.Result;
 
@@ -141,13 +141,13 @@ namespace Toolset.ProtocolBuffers.Tests
         [Test]
         public async void TestSaveAsyncFaultyProtobufModel()
         {
-            await ToolsetAssert.ThrowsAsync<InvalidOperationException>(SaveManager.SaveModelAsync("Faulty", new ExampleFaultyProtoBufModel()));
+            await ToolsetAssert.ThrowsAsync<InvalidOperationException>(SaveManager.SaveModelInstanceAsync("Faulty", new ExampleFaultyProtoBufModel()));
         }
 
         [Test]
         public async void TestLoadAsyncFaultyProtobufModel()
         {
-            await ToolsetAssert.ThrowsAsync<InvalidOperationException>(SaveManager.LoadModelAsync<ExampleFaultyProtoBufModel>("Faulty"));
+            await ToolsetAssert.ThrowsAsync<InvalidOperationException>(SaveManager.LoadModelInstanceAsync<ExampleFaultyProtoBufModel>("Faulty"));
         }
 
         [Test]
@@ -165,18 +165,18 @@ namespace Toolset.ProtocolBuffers.Tests
         [TearDown]
         public void TearDown()
         {
-            SaveManager.DeleteModelsByType<ExampleProtoBufModel>();
-            SaveManager.DeleteModelsByType<ExamplePersistentProto>();
+            SaveManager.DeleteModelInstancesByType<ExampleProtoBufModel>();
+            SaveManager.DeleteModelInstancesByType<ExamplePersistentProto>();
         }
 
         private async Task SaveAsyncWrapper(string filename)
         {
-            await SaveManager.SaveModelAsync(filename, new ExamplePersistentProto());
+            await SaveManager.SaveModelInstanceAsync(filename, new ExamplePersistentProto());
         }
 
         private async Task LoadAsyncWrapper(string filename)
         {
-            await SaveManager.LoadModelAsync<ExamplePersistentProto>(filename);
+            await SaveManager.LoadModelInstanceAsync<ExamplePersistentProto>(filename);
         }
     }
 }

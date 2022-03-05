@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using UnityEngine;
 using ProtoBuf;
 using ProtoBuf.Reflection;
@@ -31,10 +32,10 @@ namespace Toolset.ProtocolBuffers
         /// <typeparam name="T">The class type to save. Files are saved in subdirectories grouped by type.</typeparam>
         /// <param name="fileName">The name of the file.</param>
         /// <param name="modelToSave">The instance of the class to save.</param>
-        public static void SaveModel<T>(string fileName, T modelToSave) where T : class
+        public static void SaveModelInstance<T>(string fileName, T modelToSave) where T : class
         {
-            ValidateFileName(nameof(SaveModel), fileName);
-            ValidateAttribute<T>(nameof(SaveModel));
+            ValidateFileName(nameof(SaveModelInstance), fileName);
+            ValidateAttribute<T>(nameof(SaveModelInstance));
 
             InternalSaveModel(fileName, modelToSave);
         }
@@ -47,10 +48,10 @@ namespace Toolset.ProtocolBuffers
         /// <param name="fileName">The name of the file.</param>
         /// <param name="modelToSave">The instance of the class to save.</param>
         /// <returns>A task that can be awaited or converted to an IEnumerator.</returns>
-        public static async Task SaveModelAsync<T>(string fileName, T modelToSave) where T : class
+        public static async Task SaveModelInstanceAsync<T>(string fileName, T modelToSave) where T : class
         {
-            ValidateFileName(nameof(SaveModelAsync), fileName);
-            ValidateAttribute<T>(nameof(SaveModelAsync));
+            ValidateFileName(nameof(SaveModelInstanceAsync), fileName);
+            ValidateAttribute<T>(nameof(SaveModelInstanceAsync));
 
             await InternalSaveModelAsync(fileName, modelToSave);
         }
@@ -60,13 +61,13 @@ namespace Toolset.ProtocolBuffers
         /// </summary>
         /// <typeparam name="T">The protobuf serializable class<./typeparam>
         /// <param name="dataToSave">The dictionary mapping desired file names to objects to save.</param>
-        public static void SaveModelsByType<T>(Dictionary<string, T> dataToSave) where T : class
+        public static void SaveModelInstancesByType<T>(Dictionary<string, T> dataToSave) where T : class
         {
-            ValidateAttribute<T>(nameof(SaveModelAsync));
+            ValidateAttribute<T>(nameof(SaveModelInstanceAsync));
 
             foreach (KeyValuePair<string, T> pair in dataToSave)
             {
-                ValidateFileName(nameof(SaveModelAsync), pair.Key);
+                ValidateFileName(nameof(SaveModelInstanceAsync), pair.Key);
                 InternalSaveModel(pair.Key, pair.Value);
             }
         }
@@ -76,13 +77,13 @@ namespace Toolset.ProtocolBuffers
         /// </summary>
         /// <typeparam name="T">The protobuf serializable class.</typeparam>
         /// <param name="dataToSave">The dictionary mapping desired file names to objects to save.</param>
-        public static async Task SaveModelsByTypeAsync<T>(Dictionary<string, T> dataToSave) where T : class
+        public static async Task SaveModelInstancesByTypeAsync<T>(Dictionary<string, T> dataToSave) where T : class
         {
-            ValidateAttribute<T>(nameof(SaveModelAsync));
+            ValidateAttribute<T>(nameof(SaveModelInstanceAsync));
 
             foreach (KeyValuePair<string, T> pair in dataToSave)
             {
-                ValidateFileName(nameof(SaveModelAsync), pair.Key);
+                ValidateFileName(nameof(SaveModelInstanceAsync), pair.Key);
                 await InternalSaveModelAsync(pair.Key, pair.Value);
             }
         }
@@ -94,12 +95,12 @@ namespace Toolset.ProtocolBuffers
         /// <typeparam name="T">The class type to load. Files are saved in subdirectories grouped by type.</typeparam>
         /// <param name="fileName">The name of the file.</param>
         /// <returns>An instance of the class that has been loaded.</returns>
-        public static T LoadModel<T>(string fileName) where T : class
+        public static T LoadModelInstance<T>(string fileName) where T : class
         {
-            ValidateFileName(nameof(LoadModel), fileName);
-            ValidateAttribute<T>(nameof(LoadModel));
+            ValidateFileName(nameof(LoadModelInstance), fileName);
+            ValidateAttribute<T>(nameof(LoadModelInstance));
 
-            string filePath = GetDataFilePathForType<T>(fileName);
+            string filePath = GetDataFilePathForModelType<T>(fileName);
 
             if (!File.Exists(filePath))
                 return null;
@@ -114,12 +115,12 @@ namespace Toolset.ProtocolBuffers
         /// <typeparam name="T">The class type to load. Files are saved in subdirectories grouped by type.</typeparam>
         /// <param name="fileName">The name of the file.</param>
         /// <returns>A task that can be awaited with a reult that contains an instance of the class that has been loaded.</returns>
-        public static async Task<T> LoadModelAsync<T>(string fileName) where T : class
+        public static async Task<T> LoadModelInstanceAsync<T>(string fileName) where T : class
         {
-            ValidateFileName(nameof(LoadModelAsync), fileName);
-            ValidateAttribute<T>(nameof(LoadModelAsync));
+            ValidateFileName(nameof(LoadModelInstanceAsync), fileName);
+            ValidateAttribute<T>(nameof(LoadModelInstanceAsync));
 
-            string filePath = GetDataFilePathForType<T>(fileName);
+            string filePath = GetDataFilePathForModelType<T>(fileName);
 
             if (!File.Exists(filePath))
                 return null;
@@ -135,11 +136,11 @@ namespace Toolset.ProtocolBuffers
         /// </summary>
         /// <typeparam name="T">The class type to load. Files are saved in subdirectories grouped by type.</typeparam>
         /// <returns>A dictionary of filepath to loaded instance of the class.</returns>
-        public static Dictionary<string, T> LoadModelsByType<T>() where T : class
+        public static Dictionary<string, T> LoadModelInstanceByType<T>() where T : class
         {
-            ValidateAttribute<T>(nameof(LoadModelsByType));
+            ValidateAttribute<T>(nameof(LoadModelInstanceByType));
 
-            string directoryPath = GetDataDirectoryPathForType<T>();
+            string directoryPath = GetDataDirectoryPathForModelType<T>();
 
             Dictionary<string, T> output = new Dictionary<string, T>();
             if (!Directory.Exists(directoryPath))
@@ -160,11 +161,11 @@ namespace Toolset.ProtocolBuffers
         /// </summary>
         /// <typeparam name="T">The class type to load. Files are saved in subdirectories grouped by type.</typeparam>
         /// <returns>A Task with a resulting dictionary of filepath to loaded instance of the class.</returns>
-        public static async Task<Dictionary<string, T>> LoadModelsByTypeAsync<T>() where T : class
+        public static async Task<Dictionary<string, T>> LoadModelInstancesByTypeAsync<T>() where T : class
         {
-            ValidateAttribute<T>(nameof(LoadModelsByTypeAsync));
+            ValidateAttribute<T>(nameof(LoadModelInstancesByTypeAsync));
 
-            string directoryPath = GetDataDirectoryPathForType<T>();
+            string directoryPath = GetDataDirectoryPathForModelType<T>();
 
             Dictionary<string, T> output = new Dictionary<string, T>();
             if (!Directory.Exists(directoryPath))
@@ -186,12 +187,12 @@ namespace Toolset.ProtocolBuffers
         /// </summary>
         /// <typeparam name="T">The type of class that has an instance serialized save file being deleted.</typeparam>
         /// <param name="fileName">The name of the file to delete.</param>
-        public static bool DeleteModel<T>(string fileName) where T : class
+        public static bool DeleteModelInstance<T>(string fileName) where T : class
         {
-            ValidateAttribute<T>(nameof(DeleteModel));
-            ValidateFileName(nameof(DeleteModel), fileName);
+            ValidateAttribute<T>(nameof(DeleteModelInstance));
+            ValidateFileName(nameof(DeleteModelInstance), fileName);
 
-            string filePath = GetDataFilePathForType<T>(fileName);
+            string filePath = GetDataFilePathForModelType<T>(fileName);
 
             return DeleteFileAndMeta(filePath);
         }
@@ -200,11 +201,11 @@ namespace Toolset.ProtocolBuffers
         /// Deletes all models of the given class type.
         /// </summary>
         /// <typeparam name="T">The type of class having all saved models deleted.</typeparam>
-        public static bool DeleteModelsByType<T>() where T : class
+        public static bool DeleteModelInstancesByType<T>() where T : class
         {
-            ValidateAttribute<T>(nameof(DeleteModelsByType));
+            ValidateAttribute<T>(nameof(DeleteModelInstancesByType));
 
-            string directoryPath = GetDataDirectoryPathForType<T>();
+            string directoryPath = GetDataDirectoryPathForModelType<T>();
 
             return DeleteDirectoryAndMetaRecursively(directoryPath);
         }
@@ -214,7 +215,7 @@ namespace Toolset.ProtocolBuffers
         /// </summary>
         /// <typeparam name="T">The type of class to find a subdirectory for.</typeparam>
         /// <returns>A path to the subdirectory for the given type of class.</returns>
-        public static string GetDataDirectoryPathForType<T>() where T : class
+        public static string GetDataDirectoryPathForModelType<T>() where T : class
         {
             return Path.Combine(Application.dataPath, typeof(T).Name);
         }
@@ -225,9 +226,9 @@ namespace Toolset.ProtocolBuffers
         /// <typeparam name="T">The type of class to find a path for.</typeparam>
         /// <param name="fileName">The filename to find a path for.</param>
         /// <returns>The full file path to the given file.</returns>
-        public static string GetDataFilePathForType<T>(string fileName) where T : class
+        public static string GetDataFilePathForModelType<T>(string fileName) where T : class
         {
-            return c_tsoFileFormat.StringBuilderFormat(GetDataDirectoryPathForType<T>(), fileName);
+            return c_tsoFileFormat.StringBuilderFormat(GetDataDirectoryPathForModelType<T>(), fileName);
         }
 
         /// <summary>
@@ -266,6 +267,31 @@ namespace Toolset.ProtocolBuffers
             return false;
         }
 
+        public static List<string> LoadAllFileContentsFromDirectory(string directoryPath, string searchPattern)
+        {
+            List<string> fileContents = new List<string>();
+            if (!Directory.Exists(directoryPath))
+                return fileContents;
+
+            IEnumerable<string> filePaths = Directory.EnumerateFiles(directoryPath, searchPattern);
+            foreach (string filePath in filePaths)
+            {
+                fileContents.Add(File.ReadAllText(filePath));
+            }
+
+            return fileContents;
+        }
+
+        public static void SerializeObjectAsJsonAndSave(string fileName, string directoryPath, object objectToSerialized)
+        {
+            Directory.CreateDirectory(directoryPath);
+            string fullFileName = Path.Combine(directoryPath, fileName);
+
+            string jsonContent = JsonConvert.SerializeObject(objectToSerialized, Formatting.Indented);
+            
+            File.WriteAllText(fullFileName, jsonContent);
+        }
+
 #if UNITY_EDITOR
         /// <summary>
         /// Compiles the specified .proto file within a directory into a C# script. Can only be used in Unity Editor. 
@@ -291,19 +317,27 @@ namespace Toolset.ProtocolBuffers
         /// <param name="protoDirectoryPath">Path to the directory that contains the .proto files to generate.</param>
         /// <param name="generatedDirectoryPath">Path to the directory that will contain the generated .cs files.</param>
         /// <param name="refreshAndRecompile">Whether or not the Unity Editor should immediately force an AssetDatabase refresh and recompilation.</param>
-        public static void GenerateCSharpFromProto(string protoDirectoryPath, string generatedDirectoryPath, bool refreshAndRecompile = true)
+        public static CompilerResult GenerateCSharpFromProto(string protoDirectoryPath, string generatedDirectoryPath, bool refreshAndRecompile = true)
         {
             Directory.CreateDirectory(generatedDirectoryPath);
 
             string[] files = Directory.GetFiles(protoDirectoryPath, c_protoSearchPattern);
+            
+            List<CodeFile> codeFiles = new List<CodeFile>();
             for (int i = 0; i < files.Length; ++i)
             {
                 string protoContents = File.ReadAllText(c_protoFileFormat.StringBuilderFormat(protoDirectoryPath, Path.GetFileNameWithoutExtension(files[i])));
-                CompilerResult compilerResult = CSharpCodeGenerator.Default.Compile(new CodeFile(Path.GetFileName(files[i]), protoContents));
+                codeFiles.Add(new CodeFile(Path.GetFileName(files[i]), protoContents));
+            }
+            
+            CompilerResult compilerResult = CSharpCodeGenerator.Default.Compile(codeFiles.ToArray());
+            for (int i = 0; i < compilerResult.Files.Length; ++i)
+            {
                 File.WriteAllText(Path.Combine(generatedDirectoryPath, compilerResult.Files[0].Name), compilerResult.Files[0].Text);
             }
 
             RefreshAndRecompileIfAllowed(refreshAndRecompile);
+            return compilerResult;
         }
 
         private static void RefreshAndRecompileIfAllowed(bool isAllowed)
@@ -332,8 +366,8 @@ namespace Toolset.ProtocolBuffers
 
         private static void InternalSaveModel<T>(string fileName, T modelToSave) where T : class
         {
-            string filePath = GetDataFilePathForType<T>(fileName);
-            Directory.CreateDirectory(Path.Combine(GetDataDirectoryPathForType<T>(), Path.GetDirectoryName(fileName)));
+            string filePath = GetDataFilePathForModelType<T>(fileName);
+            Directory.CreateDirectory(Path.Combine(GetDataDirectoryPathForModelType<T>(), Path.GetDirectoryName(fileName)));
 
             using (FileStream fileStream = File.Create(filePath))
             {
@@ -343,8 +377,8 @@ namespace Toolset.ProtocolBuffers
 
         private static async Task InternalSaveModelAsync<T>(string fileName, T modelToSave) where T : class
         {
-            string filePath = GetDataFilePathForType<T>(fileName);
-            Directory.CreateDirectory(Path.Combine(GetDataDirectoryPathForType<T>(), Path.GetDirectoryName(fileName)));
+            string filePath = GetDataFilePathForModelType<T>(fileName);
+            Directory.CreateDirectory(Path.Combine(GetDataDirectoryPathForModelType<T>(), Path.GetDirectoryName(fileName)));
 
             using (MemoryStream memoryStream = new MemoryStream())
             {

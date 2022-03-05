@@ -26,6 +26,9 @@ namespace Toolset.ProtocolBuffers.Tests
         [global::ProtoBuf.ProtoMember(3, DataFormat = global::ProtoBuf.DataFormat.WellKnown)]
         public global::System.DateTime? LastUpdated { get; set; }
 
+        [global::ProtoBuf.ProtoMember(4)]
+        public int AnotherInt { get; set; }
+
     }
 
 }

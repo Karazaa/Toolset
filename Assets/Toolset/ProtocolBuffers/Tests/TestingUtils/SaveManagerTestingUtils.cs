@@ -17,9 +17,7 @@ namespace Toolset.ProtocolBuffers.Tests
         [MenuItem("Toolset/Testing/Generate Persistent Proto")]
         public static void GeneratePersistentProto()
         {
-            string pathToPersistentProtoSourceDirectory = UnityEngine.Application.dataPath + "/Toolset/ProtocolBuffers/Tests/TestingUtils/PersistentTesting/ProtoFiles";
-            string pathToPersistentProtoGeneratedDirectory = UnityEngine.Application.dataPath + "/Toolset/ProtocolBuffers/Tests/TestingUtils/PersistentTesting/Generated";
-            SaveManager.GenerateCSharpFromProto(pathToPersistentProtoSourceDirectory, pathToPersistentProtoGeneratedDirectory);
+            SaveManager.GenerateCSharpFromProto(ToolsetTestingConstants.s_pathToTestingProtoModelSourceDirectory, ToolsetTestingConstants.s_pathToTestingProtoModelGeneratedDirectory);
         }
 
         /// <summary>
@@ -59,7 +57,7 @@ namespace Toolset.ProtocolBuffers.Tests
         /// </summary>
         /// <param name="asyncOperationToTest">The async operation to test.</param>
         /// <returns>A task that can be awaited on.</returns>
-        public async static Task AssertExceptionsOnInvalidFileNamesAsync(Func<string, Task> asyncOperationToTest)
+        public static async Task AssertExceptionsOnInvalidFileNamesAsync(Func<string, Task> asyncOperationToTest)
         {
             char[] invalidPathChars = Path.GetInvalidPathChars();
 

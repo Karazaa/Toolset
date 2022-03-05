@@ -1,6 +1,6 @@
 {
     "name": "ProtobufScripts",
-    "rootNamespace": "",
+    "rootNamespace": "Toolset.ProtocolBuffers",
     "references": [
         "GUID:7c346a50f859b834cb499c8009f0f597"
     ],

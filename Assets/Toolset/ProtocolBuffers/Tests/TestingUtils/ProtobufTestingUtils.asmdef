@@ -15,7 +15,8 @@
         "nunit.framework.dll",
         "protobuf-net.dll",
         "System.Memory.dll",
-        "protobuf-net.Core.dll"
+        "protobuf-net.Core.dll",
+        "protobuf-net.Reflection.dll"
     ],
     "autoReferenced": true,
     "defineConstraints": [],
