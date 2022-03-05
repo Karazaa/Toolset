@@ -25,13 +25,18 @@ namespace Toolset.ProtocolBuffers
                 ProtoJsonConverter.GeneratePersistentProto();
             }
 
+            bool dirty = false;
             for (int i = 0; i < ProtoJsonConverter.CompiledClassNames.Count; ++i)
             {
                 if (GUILayout.Button("Create new ".StringBuilderAppend(ProtoJsonConverter.CompiledClassNames[i])))
                 {
                     ProtoJsonConverter.SerializeGenerateModelToJson(ProtoJsonConverter.CompiledClassNames[i]);
+                    dirty = true;
                 }
             }
+            
+            if (dirty)
+                AssetDatabase.Refresh();
         }
     }
 }
