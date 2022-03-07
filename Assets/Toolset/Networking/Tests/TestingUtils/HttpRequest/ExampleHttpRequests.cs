@@ -1,5 +1,7 @@
 using System;
+using Toolset.Core;
 using Toolset.ProtocolBuffers.Tests;
+using Toolset.Global.Utils;
 
 namespace Toolset.Networking.Tests
 {
@@ -9,8 +11,8 @@ namespace Toolset.Networking.Tests
     public class ExampleHttpDeleteRequest : HttpRequest<NoData, NoData>
     {
         protected override HttpRequestMethod HttpRequestMethod => HttpRequestMethod.Delete;
-
-        protected override Uri Url => new Uri("https://localhost:44345/ExampleDelete");
+        
+        protected override Uri Url => new Uri(ToolsetTestingConstants.c_remoteTestingUrl.StringBuilderAppend("ExampleDelete"));
     }
 
     /// <summary>
@@ -20,7 +22,7 @@ namespace Toolset.Networking.Tests
     {
         protected override HttpRequestMethod HttpRequestMethod => HttpRequestMethod.Get;
 
-        protected override Uri Url => new Uri("https://localhost:44345/ExampleGet");
+        protected override Uri Url => new Uri(ToolsetTestingConstants.c_remoteTestingUrl.StringBuilderAppend("ExampleGet"));
     }
 
     /// <summary>
@@ -30,7 +32,7 @@ namespace Toolset.Networking.Tests
     {
         protected override HttpRequestMethod HttpRequestMethod => HttpRequestMethod.Head;
 
-        protected override Uri Url => new Uri("https://localhost:44345/ExampleHead");
+        protected override Uri Url => new Uri(ToolsetTestingConstants.c_remoteTestingUrl.StringBuilderAppend("ExampleHead"));
     }
 
     /// <summary>
@@ -40,7 +42,7 @@ namespace Toolset.Networking.Tests
     {
         protected override HttpRequestMethod HttpRequestMethod => HttpRequestMethod.Options;
 
-        protected override Uri Url => new Uri("https://localhost:44345/ExampleOptions");
+        protected override Uri Url => new Uri(ToolsetTestingConstants.c_remoteTestingUrl.StringBuilderAppend("ExampleOptions"));
     }
 
     /// <summary>
@@ -54,7 +56,7 @@ namespace Toolset.Networking.Tests
 
         protected override HttpRequestMethod HttpRequestMethod => HttpRequestMethod.Patch;
 
-        protected override Uri Url => new Uri("https://localhost:44345/ExamplePatch");
+        protected override Uri Url => new Uri(ToolsetTestingConstants.c_remoteTestingUrl.StringBuilderAppend("ExamplePatch"));
     }
 
     /// <summary>
@@ -68,7 +70,7 @@ namespace Toolset.Networking.Tests
 
         protected override HttpRequestMethod HttpRequestMethod => HttpRequestMethod.Post;
 
-        protected override Uri Url => new Uri("https://localhost:44345/ExamplePost");
+        protected override Uri Url => new Uri(ToolsetTestingConstants.c_remoteTestingUrl.StringBuilderAppend("ExamplePost"));
     }
 
     /// <summary>
@@ -82,7 +84,7 @@ namespace Toolset.Networking.Tests
 
         protected override HttpRequestMethod HttpRequestMethod => HttpRequestMethod.Put;
 
-        protected override Uri Url => new Uri("https://localhost:44345/ExamplePut");
+        protected override Uri Url => new Uri(ToolsetTestingConstants.c_remoteTestingUrl.StringBuilderAppend("ExamplePut"));
     }
 
     public class ExampleHttpTimeoutRequest : HttpRequest<NoData, NoData>
