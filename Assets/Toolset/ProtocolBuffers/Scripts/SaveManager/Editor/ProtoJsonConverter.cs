@@ -53,6 +53,24 @@ namespace Toolset.ProtocolBuffers
 
             SaveManager.SerializeObjectAsJsonAndSave(classNameWithSuffix, directoryPath, instance);
         }
+        
+        public static List<TType> DeserializeJsonModelsOfType<TType>() where TType : ProtoBuf.IExtensible
+        {
+            string directoryPath = ToolsetConstants.s_pathToJsonInstanceDirectory.StringBuilderAppend("/", typeof(TType).Name);
+
+            if (!Directory.Exists(directoryPath))
+                return null;
+            
+            IEnumerable<string> filePaths = Directory.EnumerateFiles(directoryPath, "*.json");
+
+            List<TType> output = new List<TType>();
+            foreach (string filePath in filePaths)
+            {
+                output.Add(SaveManager.DeserializeObjectFromJson<TType>(filePath));
+            }
+
+            return output;
+        }
 
         private static List<string> GetAllClassNamesForFile(string rawText, List<string> classNames)
         {

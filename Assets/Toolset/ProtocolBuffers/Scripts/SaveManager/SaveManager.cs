@@ -292,6 +292,14 @@ namespace Toolset.ProtocolBuffers
             File.WriteAllText(fullFileName, jsonContent);
         }
 
+        public static TType DeserializeObjectFromJson<TType>(string fileName)
+        {
+            if (!File.Exists(fileName))
+                return default;
+            
+            return JsonConvert.DeserializeObject<TType>(File.ReadAllText(fileName));
+        }
+
 #if UNITY_EDITOR
         /// <summary>
         /// Compiles the specified .proto file within a directory into a C# script. Can only be used in Unity Editor. 
@@ -333,7 +341,7 @@ namespace Toolset.ProtocolBuffers
             CompilerResult compilerResult = CSharpCodeGenerator.Default.Compile(codeFiles.ToArray());
             for (int i = 0; i < compilerResult.Files.Length; ++i)
             {
-                File.WriteAllText(Path.Combine(generatedDirectoryPath, compilerResult.Files[0].Name), compilerResult.Files[0].Text);
+                File.WriteAllText(Path.Combine(generatedDirectoryPath, compilerResult.Files[i].Name), compilerResult.Files[i].Text);
             }
 
             RefreshAndRecompileIfAllowed(refreshAndRecompile);
