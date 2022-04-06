@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using UnityEngine;
@@ -22,8 +23,6 @@ namespace Toolset.ProtocolBuffers
         private const string c_protoSearchPattern = "*.proto";
 
         private const int c_asyncBufferSize = 4096;
-
-        private static readonly List<char> s_invalidPathCharacters = new List<char>();
 
         /// <summary>
         /// Saves the instance of a class to a specific filename.
@@ -291,6 +290,24 @@ namespace Toolset.ProtocolBuffers
             
             File.WriteAllText(fullFileName, jsonContent);
         }
+        
+        public static void SerializeGeneratedModelToJson(string className)
+        {
+            Type generatedType = Type.GetType(className);
+            if (generatedType == null)
+                return;
+            
+            var instance = Activator.CreateInstance(generatedType);
+
+            string directoryPath = ToolsetConstants.s_pathToJsonInstanceDirectory.StringBuilderAppend("/", className);
+
+            Directory.CreateDirectory(directoryPath);
+            IEnumerable<string> filePaths = Directory.EnumerateFiles(directoryPath, "*.json");
+
+            string classNameWithSuffix = className.StringBuilderAppend("_", filePaths.Count(), ".json");
+
+            SerializeObjectAsJsonAndSave(classNameWithSuffix, directoryPath, instance);
+        }
 
         public static TType DeserializeObjectFromJson<TType>(string fileName)
         {
@@ -298,6 +315,24 @@ namespace Toolset.ProtocolBuffers
                 return default;
             
             return JsonConvert.DeserializeObject<TType>(File.ReadAllText(fileName));
+        }
+        
+        public static List<TType> DeserializeJsonModelsOfType<TType>() where TType : ProtoBuf.IExtensible
+        {
+            string directoryPath = ToolsetConstants.s_pathToJsonInstanceDirectory.StringBuilderAppend("/", typeof(TType).Name);
+
+            if (!Directory.Exists(directoryPath))
+                return null;
+            
+            IEnumerable<string> filePaths = Directory.EnumerateFiles(directoryPath, "*.json");
+
+            List<TType> output = new List<TType>();
+            foreach (string filePath in filePaths)
+            {
+                output.Add(DeserializeObjectFromJson<TType>(filePath));
+            }
+
+            return output;
         }
 
 #if UNITY_EDITOR

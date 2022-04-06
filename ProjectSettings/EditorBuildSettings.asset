@@ -9,12 +9,12 @@ EditorBuildSettings:
     path: Assets/Scenes/Main.unity
     guid: 9fc0d4010bbf28b4594072e72b8655ab
   - enabled: 1
-    path: Assets/Toolset/Core/Tests/TestingUtils/Routines/ExampleSceneRoutines.unity
+    path: Assets/Toolset/Core/Tests/TestingUtils/Editor/Routines/ExampleSceneRoutines.unity
     guid: 5ea3b0a61ebd79246b9388526f427c18
   - enabled: 1
-    path: Assets/Toolset/Core/Tests/TestingUtils/GameObjectPools/ExampleSceneGameObjectPools.unity
+    path: Assets/Toolset/Core/Tests/TestingUtils/Editor/GameObjectPools/ExampleSceneGameObjectPools.unity
     guid: 20fe7d5238dda1342af20e642ab76e60
   - enabled: 1
-    path: Assets/Toolset/Core/Tests/TestingUtils/Scope/ExampleSceneScopes.unity
+    path: Assets/Toolset/Core/Tests/TestingUtils/Editor/Scope/ExampleSceneScopes.unity
     guid: 3b787220cc8e28242803113042fe41a9
   m_configObjects: {}

@@ -30,7 +30,7 @@ namespace Toolset.ProtocolBuffers
             {
                 if (GUILayout.Button("Create new ".StringBuilderAppend(ProtoJsonConverter.CompiledClassNames[i])))
                 {
-                    ProtoJsonConverter.SerializeGenerateModelToJson(ProtoJsonConverter.CompiledClassNames[i]);
+                    SaveManager.SerializeGeneratedModelToJson(ProtoJsonConverter.CompiledClassNames[i]);
                     dirty = true;
                 }
             }

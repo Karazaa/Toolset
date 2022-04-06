@@ -1,0 +1,21 @@
+{
+    "name": "NetworkingTestingUtils",
+    "rootNamespace": "Toolset.Networking.Tests",
+    "references": [
+        "GUID:7c346a50f859b834cb499c8009f0f597",
+        "GUID:e90593f91fae23c498b90bd6c0405521",
+        "GUID:0eb7a52b90b68e14997bfb3b51d3bdc3",
+        "GUID:79b4f3fa33d8eae4a9cad543b4bb2454"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

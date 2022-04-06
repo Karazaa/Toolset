@@ -1,11 +1,5 @@
-using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using ProtoBuf.Reflection;
 using Toolset.Core;
-using UnityEditor;
 using UnityEditor.Callbacks;
 
 namespace Toolset.ProtocolBuffers
@@ -34,42 +28,6 @@ namespace Toolset.ProtocolBuffers
             {
                 CompiledClassNames = GetAllClassNamesForFile(modelContents[i], CompiledClassNames);
             }
-        }
-        
-        public static void SerializeGenerateModelToJson(string className)
-        {
-            Type generatedType = Type.GetType(className);
-            if (generatedType == null)
-                return;
-            
-            var instance = Activator.CreateInstance(generatedType);
-
-            string directoryPath = ToolsetConstants.s_pathToJsonInstanceDirectory.StringBuilderAppend("/", className);
-
-            Directory.CreateDirectory(directoryPath);
-            IEnumerable<string> filePaths = Directory.EnumerateFiles(directoryPath, "*.json");
-
-            string classNameWithSuffix = className.StringBuilderAppend("_", filePaths.Count(), ".json");
-
-            SaveManager.SerializeObjectAsJsonAndSave(classNameWithSuffix, directoryPath, instance);
-        }
-        
-        public static List<TType> DeserializeJsonModelsOfType<TType>() where TType : ProtoBuf.IExtensible
-        {
-            string directoryPath = ToolsetConstants.s_pathToJsonInstanceDirectory.StringBuilderAppend("/", typeof(TType).Name);
-
-            if (!Directory.Exists(directoryPath))
-                return null;
-            
-            IEnumerable<string> filePaths = Directory.EnumerateFiles(directoryPath, "*.json");
-
-            List<TType> output = new List<TType>();
-            foreach (string filePath in filePaths)
-            {
-                output.Add(SaveManager.DeserializeObjectFromJson<TType>(filePath));
-            }
-
-            return output;
         }
 
         private static List<string> GetAllClassNamesForFile(string rawText, List<string> classNames)
