@@ -19,12 +19,12 @@ namespace Toolset.Core.Tests
             GameObject searchTarget = GameObject.Find(ToolsetTestingConstants.c_searchTargetNameRoutines);
             Assert.IsNull(searchTarget);
 
-            yield return SceneManager.LoadSceneAsync(ToolsetTestingConstants.c_exampleSceneNameRoutines, LoadSceneMode.Additive).GetAsIEnumerator();
+            yield return SceneManager.LoadSceneAsync(ExampleRoutines.c_exampleSceneNameRoutines, LoadSceneMode.Additive).GetAsIEnumerator();
 
             searchTarget = GameObject.Find(ToolsetTestingConstants.c_searchTargetNameRoutines);
             Assert.IsNotNull(searchTarget);
 
-            yield return SceneManager.UnloadSceneAsync(ToolsetTestingConstants.c_exampleSceneNameRoutines).GetAsIEnumerator();
+            yield return SceneManager.UnloadSceneAsync(ExampleRoutines.c_exampleSceneNameRoutines).GetAsIEnumerator();
 
             searchTarget = GameObject.Find(ToolsetTestingConstants.c_searchTargetNameRoutines);
             Assert.IsNull(searchTarget);
@@ -34,7 +34,7 @@ namespace Toolset.Core.Tests
         [Timeout(ToolsetTestingConstants.c_mediumTimeoutMilliseconds)]
         public IEnumerator TestResetDoesNothing()
         {
-            AsyncOperation loadOperationToYieldOn = SceneManager.LoadSceneAsync(ToolsetTestingConstants.c_exampleSceneNameRoutines, LoadSceneMode.Additive);
+            AsyncOperation loadOperationToYieldOn = SceneManager.LoadSceneAsync(ExampleRoutines.c_exampleSceneNameRoutines, LoadSceneMode.Additive);
             AsyncOperationEnumerator loadOperationAsEnumerator = loadOperationToYieldOn.GetAsIEnumerator() as AsyncOperationEnumerator;
 
             yield return loadOperationAsEnumerator;
@@ -43,7 +43,7 @@ namespace Toolset.Core.Tests
             loadOperationAsEnumerator.Reset();
             Assert.IsTrue(loadOperationToYieldOn.isDone);
 
-            AsyncOperation unloadOperationToYieldOn = SceneManager.UnloadSceneAsync(ToolsetTestingConstants.c_exampleSceneNameRoutines);
+            AsyncOperation unloadOperationToYieldOn = SceneManager.UnloadSceneAsync(ExampleRoutines.c_exampleSceneNameRoutines);
             AsyncOperationEnumerator unloadOperationAsEnumerator = unloadOperationToYieldOn.GetAsIEnumerator() as AsyncOperationEnumerator;
 
             yield return unloadOperationAsEnumerator;

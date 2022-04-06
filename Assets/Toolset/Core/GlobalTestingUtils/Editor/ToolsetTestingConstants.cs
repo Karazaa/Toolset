@@ -7,9 +7,8 @@ namespace Toolset.Global.Utils
     {
         public const int c_mediumTimeoutMilliseconds = 10000;
         public const int c_longTimeoutMilliseconds = 30000;
-        public const string c_exampleSceneNameRoutines = "ExampleSceneRoutines";
         public const string c_searchTargetNameRoutines = "SearchTarget";
-        public const string c_remoteTestingUrl = "https://toolset-backend.conveyor.cloud/";
+        public const string c_remoteTestingUrl = "https://localhost:44345/";
         public static readonly string s_pathToTestingProtoModelSourceDirectory = UnityEngine.Application.dataPath + "/Toolset/ProtocolBuffers/Tests/TestingUtils/Editor/PersistentTesting/ProtoFiles";
         public static readonly string s_pathToTestingProtoModelGeneratedDirectory = UnityEngine.Application.dataPath + "/Toolset/ProtocolBuffers/Tests/TestingUtils/Editor/PersistentTesting/Generated";
     }

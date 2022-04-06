@@ -3,7 +3,6 @@ using System;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using Toolset.Global.Utils;
 
 namespace Toolset.Core.Tests
 {
@@ -12,6 +11,7 @@ namespace Toolset.Core.Tests
     /// </summary>
     public class ExampleRoutines
     {
+        public const string c_exampleSceneNameRoutines = "ExampleSceneRoutines";
         public bool IsNominalFinished => m_stateMachine.CurrentState == States.AfterRootYield;
         public IEnumerator NominalRootRoutine => NominalRootLayer();
 
@@ -192,7 +192,7 @@ namespace Toolset.Core.Tests
         {
             IsLoadExampleSceneFinished = false;
 
-            yield return SceneManager.LoadSceneAsync(ToolsetTestingConstants.c_exampleSceneNameRoutines, LoadSceneMode.Additive);
+            yield return SceneManager.LoadSceneAsync(c_exampleSceneNameRoutines, LoadSceneMode.Additive);
 
             IsLoadExampleSceneFinished = true;
         }
@@ -201,7 +201,7 @@ namespace Toolset.Core.Tests
         {
             IsUnloadExampleSceneFinished = false;
 
-            yield return SceneManager.UnloadSceneAsync(ToolsetTestingConstants.c_exampleSceneNameRoutines);
+            yield return SceneManager.UnloadSceneAsync(c_exampleSceneNameRoutines);
 
             IsUnloadExampleSceneFinished = true;
         }

@@ -14,7 +14,7 @@ namespace Toolset.Core.Tests
     /// </summary>
     public class TestsGameObjectPools
     {
-        private const string c_exampleScenePath = "Assets/Toolset/Core/Tests/TestingUtils/GameObjectPools/ExampleSceneGameObjectPools.unity";
+        private const string c_exampleScenePath = "Assets/Toolset/Core/Tests/TestingUtils/MonoBehaviors/GameObjectPools/ExampleSceneGameObjectPools.unity";
 
         [UnitySetUp]
         public IEnumerator SetUp()
