@@ -12,8 +12,8 @@ namespace Toolset.ProtocolBuffers.Tests
     /// </summary>
     public class TestsSaveManager
     {
-        private readonly string m_pathToProtoSourceDirectory = UnityEngine.Application.dataPath + "/Toolset/ProtocolBuffers/Tests/TestingUtils/ProtoFiles";
-        private readonly string m_pathToProtoGeneratedDirectory = UnityEngine.Application.dataPath + "/Toolset/ProtocolBuffers/Tests/TestingUtils/Generated";
+        private readonly string m_pathToProtoSourceDirectory = UnityEngine.Application.dataPath + "/Toolset/ProtocolBuffers/Tests/TestingUtils/Editor/ProtoFiles";
+        private readonly string m_pathToProtoGeneratedDirectory = UnityEngine.Application.dataPath + "/Toolset/ProtocolBuffers/Tests/TestingUtils/Editor/Generated";
 
         private const string c_exampleProtoFileName = "addressbook";
         private const string c_expectedGeneratedCSharpFileName = "addressbook.cs";

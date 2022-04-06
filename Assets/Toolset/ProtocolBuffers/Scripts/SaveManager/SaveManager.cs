@@ -280,6 +280,36 @@ namespace Toolset.ProtocolBuffers
 
             return fileContents;
         }
+        
+        public static void CopyDirectory(string sourceDirectory, string destinationDirectory, bool isRecursive)
+        {
+            DirectoryInfo directoryInfo = new DirectoryInfo(sourceDirectory);
+
+            if (!directoryInfo.Exists)
+                return;
+
+            // Cache directories before we start copying
+            DirectoryInfo[] directoryInfos = directoryInfo.GetDirectories();
+            
+            Directory.CreateDirectory(destinationDirectory);
+
+            // Get the files in the source directory and copy to the destination directory
+            foreach (FileInfo file in directoryInfo.GetFiles())
+            {
+                string targetFilePath = Path.Combine(destinationDirectory, file.Name);
+                file.CopyTo(targetFilePath, true);
+            }
+
+            // If recursive and copying subdirectories, recursively call this method
+            if (isRecursive)
+            {
+                foreach (DirectoryInfo subDirectory in directoryInfos)
+                {
+                    string newDestinationDir = Path.Combine(destinationDirectory, subDirectory.Name);
+                    CopyDirectory(subDirectory.FullName, newDestinationDir, true);
+                }
+            }
+        }
 
         public static void SerializeObjectAsJsonAndSave(string fileName, string directoryPath, object objectToSerialized)
         {
@@ -289,9 +319,10 @@ namespace Toolset.ProtocolBuffers
             string jsonContent = JsonConvert.SerializeObject(objectToSerialized, Formatting.Indented);
             
             File.WriteAllText(fullFileName, jsonContent);
+            Debug.Log("Writing JSON file: ".StringBuilderAppend(fileName));
         }
         
-        public static void SerializeGeneratedModelToJson(string className)
+        public static void SerializeGeneratedModelToJson(string className, string directoryPath)
         {
             Type generatedType = Type.GetType(className);
             if (generatedType == null)
@@ -299,7 +330,7 @@ namespace Toolset.ProtocolBuffers
             
             var instance = Activator.CreateInstance(generatedType);
 
-            string directoryPath = ToolsetConstants.s_pathToJsonInstanceDirectory.StringBuilderAppend("/", className);
+            directoryPath = directoryPath.StringBuilderAppend("/", className);
 
             Directory.CreateDirectory(directoryPath);
             IEnumerable<string> filePaths = Directory.EnumerateFiles(directoryPath, "*.json");
@@ -317,9 +348,9 @@ namespace Toolset.ProtocolBuffers
             return JsonConvert.DeserializeObject<TType>(File.ReadAllText(fileName));
         }
         
-        public static List<TType> DeserializeJsonModelsOfType<TType>() where TType : ProtoBuf.IExtensible
+        public static List<TType> DeserializeJsonModelsOfType<TType>(string directoryPath) where TType : ProtoBuf.IExtensible
         {
-            string directoryPath = ToolsetConstants.s_pathToJsonInstanceDirectory.StringBuilderAppend("/", typeof(TType).Name);
+            directoryPath = directoryPath.StringBuilderAppend("/", typeof(TType).Name);
 
             if (!Directory.Exists(directoryPath))
                 return null;
@@ -350,6 +381,7 @@ namespace Toolset.ProtocolBuffers
             string protoContents = File.ReadAllText(c_protoFileFormat.StringBuilderFormat(protoDirectoryPath, protoFileName));
             CompilerResult compilerResult = CSharpCodeGenerator.Default.Compile(new CodeFile(protoFileName, protoContents));
             File.WriteAllText(Path.Combine(generatedDirectoryPath, compilerResult.Files[0].Name), compilerResult.Files[0].Text);
+            Debug.Log("Generated file: ".StringBuilderAppend(compilerResult.Files[0].Name));
 
             RefreshAndRecompileIfAllowed(refreshAndRecompile);
         }
@@ -377,6 +409,7 @@ namespace Toolset.ProtocolBuffers
             for (int i = 0; i < compilerResult.Files.Length; ++i)
             {
                 File.WriteAllText(Path.Combine(generatedDirectoryPath, compilerResult.Files[i].Name), compilerResult.Files[i].Text);
+                Debug.Log("Generated file: ".StringBuilderAppend(compilerResult.Files[i].Name));
             }
 
             RefreshAndRecompileIfAllowed(refreshAndRecompile);

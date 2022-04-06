@@ -1,6 +1,6 @@
 {
-    "name": "ProtoJsonEditor",
-    "rootNamespace": "Toolset.ProtocolBuffers.ProtoJsonEditor",
+    "name": "StaticDataEditor",
+    "rootNamespace": "Toolset.ProtocolBuffers.StaticDataEditor",
     "references": [
         "GUID:7c346a50f859b834cb499c8009f0f597",
         "GUID:ae1cfedc4f1d6d046b6007e2d607f9da"

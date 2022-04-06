@@ -10,7 +10,7 @@ namespace Toolset.Global.Utils
         public const string c_exampleSceneNameRoutines = "ExampleSceneRoutines";
         public const string c_searchTargetNameRoutines = "SearchTarget";
         public const string c_remoteTestingUrl = "https://toolset-backend.conveyor.cloud/";
-        public static readonly string s_pathToTestingProtoModelSourceDirectory = UnityEngine.Application.dataPath + "/Toolset/ProtocolBuffers/Tests/TestingUtils/PersistentTesting/ProtoFiles";
-        public static readonly string s_pathToTestingProtoModelGeneratedDirectory = UnityEngine.Application.dataPath + "/Toolset/ProtocolBuffers/Tests/TestingUtils/PersistentTesting/Generated";
+        public static readonly string s_pathToTestingProtoModelSourceDirectory = UnityEngine.Application.dataPath + "/Toolset/ProtocolBuffers/Tests/TestingUtils/Editor/PersistentTesting/ProtoFiles";
+        public static readonly string s_pathToTestingProtoModelGeneratedDirectory = UnityEngine.Application.dataPath + "/Toolset/ProtocolBuffers/Tests/TestingUtils/Editor/PersistentTesting/Generated";
     }
 }
