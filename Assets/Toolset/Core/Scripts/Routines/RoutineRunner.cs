@@ -80,16 +80,10 @@ namespace Toolset.Core
 
             private IEnumerator WaitForSecondsRoutine(float seconds)
             {
-                float secondsRemaining = seconds;
-
-                DateTime lastIterationTime;
-                DateTime currentIterationTime;
-                while (secondsRemaining > 0.0f)
+                float finalTime = Time.time + seconds;
+                while (Time.time < finalTime)
                 {
-                    lastIterationTime = DateTime.Now;
                     yield return null;
-                    currentIterationTime = DateTime.Now;
-                    secondsRemaining -= ((float)(currentIterationTime - lastIterationTime).TotalSeconds) * Time.timeScale;
                 }
             }
         }
@@ -122,15 +116,14 @@ namespace Toolset.Core
         /// <param name="routineHandle">The handle object of the routine to stop.</param>
         public void StopRoutine(RoutineHandle routineHandle)
         {
-            int index = m_outstandingRoutines.FindIndex((routineGraph) => 
+            for (int i = 0; i < m_outstandingRoutines.Count; ++i)
             {
-                return routineGraph.RoutineHandle == routineHandle;
-            });
-
-            if (index == -1)
-                return;
-
-            MarkRoutineStopped(m_outstandingRoutines[index]);
+                if (m_outstandingRoutines[i].RoutineHandle == routineHandle)
+                {
+                    MarkRoutineStopped(m_outstandingRoutines[i]);
+                    return;
+                }
+            }
         }
 
         /// <summary>
