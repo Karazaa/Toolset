@@ -12,7 +12,7 @@ namespace Toolset.ProtocolBuffers.StaticDataEditor
         private const float c_spacingValue = 10f;
         
         /// <summary>
-        /// Opens the Proto Editor Window.
+        /// Opens the Static Data Control Window.
         /// </summary>
         [MenuItem("Toolset/Data/Open Static Data Control Window")]
         public static void OpenProtoJsonConverterWindow()
@@ -22,7 +22,7 @@ namespace Toolset.ProtocolBuffers.StaticDataEditor
 
         public void OnGUI()
         {
-            GUILayout.Label("Global Controls");
+            GUILayout.Label("Global Controls", EditorStyles.boldLabel);
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("Generate Proto Models"))
             {
@@ -37,7 +37,7 @@ namespace Toolset.ProtocolBuffers.StaticDataEditor
             
             GUILayout.Space(c_spacingValue);
             
-            GUILayout.Label("Create JSON Model Instances");
+            GUILayout.Label("Create JSON Model Instances", EditorStyles.boldLabel);
             bool dirty = false;
             for (int i = 0; i < StaticDataControlUtils.CompiledClassNames.Count; ++i)
             {
