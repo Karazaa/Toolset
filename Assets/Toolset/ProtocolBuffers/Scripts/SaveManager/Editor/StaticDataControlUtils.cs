@@ -13,6 +13,9 @@ namespace Toolset.ProtocolBuffers.StaticDataEditor
         public static List<string> CompiledClassNames = new List<string>();
         private const string c_classIdentifier = "public partial class ";
 
+        /// <summary>
+        /// Generates CSharp files from proto definitions
+        /// </summary>
         public static void GenerateProto()
         {
             SaveManager.GenerateCSharpFromProto(ToolsetEditorConstants.s_pathToProtoDataDirectory, ToolsetEditorConstants.s_pathToProtoModelGeneratedDirectory);
@@ -31,6 +34,10 @@ namespace Toolset.ProtocolBuffers.StaticDataEditor
             }
         }
 
+        /// <summary>
+        /// Copies JSON record files from the data directory specified in ToolsetRuntimeConstants into the
+        /// StreamingAssets folder so they can be accessed at runtime in builds if needed.
+        /// </summary>
         public static void CopyDataJsonIntoStreamingAssets()
         {
             SaveManager.CopyDirectory(ToolsetEditorConstants.s_pathToJsonDataDirectory, ToolsetRuntimeConstants.s_pathToJsonStreamingAssetsDirectory, true);
