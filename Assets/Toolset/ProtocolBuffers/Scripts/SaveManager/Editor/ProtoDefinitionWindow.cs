@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Toolset.Core;
 using UnityEditor;
 using UnityEngine;
 
@@ -8,7 +9,7 @@ namespace Toolset.ProtocolBuffers.StaticDataEditor
 {
     public class ProtoDefinitionWindow : EditorWindow
     {
-        private List<ProtoDefinitionListItem> m_protoDefinitionListItems = new List<ProtoDefinitionListItem>();
+        private readonly List<ProtoDefinitionListItem> m_protoDefinitionListItems = new List<ProtoDefinitionListItem>();
         private Vector2 m_scrollPosition = Vector2.zero;
         
         /// <summary>
@@ -42,6 +43,17 @@ namespace Toolset.ProtocolBuffers.StaticDataEditor
                 m_protoDefinitionListItems.RemoveAt(m_protoDefinitionListItems.Count - 1);
             }
             EditorGUILayout.EndHorizontal();
+            
+            EditorGUILayout.Space();
+            if (GUILayout.Button("Create and Save Proto Files"))
+            {
+                foreach (ProtoDefinitionListItem listItem in m_protoDefinitionListItems)
+                {
+                    string fileName = listItem.GetProtoFileName();
+                    SaveManager.SaveContentsToFile(fileName, ToolsetEditorConstants.s_pathToProtoDataDirectory, listItem.GetProtoFileContents());
+                    Debug.Log("Saved new Proto Definition: ".StringBuilderAppend(fileName));
+                }
+            }
         }
     }
 }

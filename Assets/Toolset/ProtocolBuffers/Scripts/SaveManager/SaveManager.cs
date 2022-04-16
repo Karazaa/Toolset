@@ -313,13 +313,8 @@ namespace Toolset.ProtocolBuffers
 
         public static void SerializeObjectAsJsonAndSave(string fileName, string directoryPath, object objectToSerialized)
         {
-            Directory.CreateDirectory(directoryPath);
-            string fullFileName = Path.Combine(directoryPath, fileName);
-
-            string jsonContent = JsonConvert.SerializeObject(objectToSerialized, Formatting.Indented);
-            
-            File.WriteAllText(fullFileName, jsonContent);
-            Debug.Log("Writing JSON file: ".StringBuilderAppend(fileName));
+            SaveContentsToFile(fileName, directoryPath, JsonConvert.SerializeObject(objectToSerialized, Formatting.Indented));
+            Debug.Log("Saved new JSON instance: ".StringBuilderAppend(fileName));
         }
         
         public static void SerializeGeneratedModelToJson(string className, string directoryPath)
@@ -364,6 +359,13 @@ namespace Toolset.ProtocolBuffers
             }
 
             return output;
+        }
+
+        public static void SaveContentsToFile(string fileName, string directoryPath, string rawContent)
+        {
+            Directory.CreateDirectory(directoryPath);
+            string fullFileName = Path.Combine(directoryPath, fileName);
+            File.WriteAllText(fullFileName, rawContent);
         }
 
 #if UNITY_EDITOR
