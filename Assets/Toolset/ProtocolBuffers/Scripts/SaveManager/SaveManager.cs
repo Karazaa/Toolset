@@ -1,13 +1,13 @@
+using Newtonsoft.Json;
+using ProtoBuf;
+using ProtoBuf.Reflection;
 using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using UnityEngine;
-using ProtoBuf;
-using ProtoBuf.Reflection;
 using Toolset.Core;
+using UnityEngine;
 
 namespace Toolset.ProtocolBuffers
 {
@@ -266,6 +266,13 @@ namespace Toolset.ProtocolBuffers
             return false;
         }
 
+        /// <summary>
+        /// Loads all file contents in the given directory into a list of strings. Each
+        /// string represents the contents of a single file.
+        /// </summary>
+        /// <param name="directoryPath">The path to the directory where content is being loaded from.</param>
+        /// <param name="searchPattern">The search pattern to use for finding files in the directory.</param>
+        /// <returns>A list of strings each representing the contents of a single file.</returns>
         public static List<string> LoadAllFileContentsFromDirectory(string directoryPath, string searchPattern)
         {
             List<string> fileContents = new List<string>();
@@ -281,6 +288,13 @@ namespace Toolset.ProtocolBuffers
             return fileContents;
         }
         
+        /// <summary>
+        /// Copies all of the contents from a directory into another directory.
+        /// Can either be recursive or not recursive.
+        /// </summary>
+        /// <param name="sourceDirectory">The path to the directory where contents are being copied from.</param>
+        /// <param name="destinationDirectory">The path to the directory where contents are being copied to.</param>
+        /// <param name="isRecursive">Whether or not to invoke this method recursively for subdirectories.</param>
         public static void CopyDirectory(string sourceDirectory, string destinationDirectory, bool isRecursive)
         {
             DirectoryInfo directoryInfo = new DirectoryInfo(sourceDirectory);
@@ -311,12 +325,23 @@ namespace Toolset.ProtocolBuffers
             }
         }
 
+        /// <summary>
+        /// Serializes the passed in object to JSON and saves that to the specified file path.
+        /// </summary>
+        /// <param name="fileName">The name of the resulting JSON file.</param>
+        /// <param name="directoryPath">The path to the directory where the JSON file should be saved.</param>
+        /// <param name="objectToSerialized">The object that should be converted to JSON and saved.</param>
         public static void SerializeObjectAsJsonAndSave(string fileName, string directoryPath, object objectToSerialized)
         {
             SaveContentsToFile(fileName, directoryPath, JsonConvert.SerializeObject(objectToSerialized, Formatting.Indented));
             Debug.Log("Saved new JSON instance: ".StringBuilderAppend(fileName));
         }
         
+        /// <summary>
+        /// Serializes a specific Proto Generated data Model to a JSON file that is then saved.
+        /// </summary>
+        /// <param name="className">The name of the Model class to save as JSON.</param>
+        /// <param name="directoryPath">The path to the data directory where the JSON files should be saved.</param>
         public static void SerializeGeneratedModelToJson(string className, string directoryPath)
         {
             Type generatedType = Type.GetType(className);
@@ -335,6 +360,12 @@ namespace Toolset.ProtocolBuffers
             SerializeObjectAsJsonAndSave(classNameWithSuffix, directoryPath, instance);
         }
 
+        /// <summary>
+        /// Deserializes a JSON file into an instance of its original C# class type.
+        /// </summary>
+        /// <param name="fileName">The file name to deserialize.</param>
+        /// <typeparam name="TType">The type of object to deserialize the JSON into.</typeparam>
+        /// <returns>An instance of TType populated with data from the JSON file.</returns>
         public static TType DeserializeObjectFromJson<TType>(string fileName)
         {
             if (!File.Exists(fileName))
@@ -343,6 +374,13 @@ namespace Toolset.ProtocolBuffers
             return JsonConvert.DeserializeObject<TType>(File.ReadAllText(fileName));
         }
         
+        /// <summary>
+        /// Deserializes a directory of data Models saved as JSON files into a List of instances of TType containing
+        /// the deserialized data.
+        /// </summary>
+        /// <param name="directoryPath">The path to the data Model JSON instances directory.</param>
+        /// <typeparam name="TType">The type of object to deserialize the JSON into.</typeparam>
+        /// <returns>A list of instances of TType populated with data from the directory of JSON files.</returns>
         public static List<TType> DeserializeJsonModelsOfType<TType>(string directoryPath) where TType : ProtoBuf.IExtensible
         {
             directoryPath = directoryPath.StringBuilderAppend("/", typeof(TType).Name);
@@ -361,6 +399,12 @@ namespace Toolset.ProtocolBuffers
             return output;
         }
 
+        /// <summary>
+        /// Saves the contents of a file to the specified file path.
+        /// </summary>
+        /// <param name="fileName">The file name to save (including extension).</param>
+        /// <param name="directoryPath">The path to the directory the file will be saved in.</param>
+        /// <param name="rawContent">The raw contents of the file.</param>
         public static void SaveContentsToFile(string fileName, string directoryPath, string rawContent)
         {
             Directory.CreateDirectory(directoryPath);

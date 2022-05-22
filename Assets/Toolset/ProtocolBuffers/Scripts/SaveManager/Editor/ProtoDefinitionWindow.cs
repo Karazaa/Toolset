@@ -1,5 +1,3 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using Toolset.Core;
 using UnityEditor;
@@ -7,6 +5,10 @@ using UnityEngine;
 
 namespace Toolset.ProtocolBuffers.StaticDataEditor
 {
+    /// <summary>
+    /// A custom editor that allows developers to define/edit new proto records. This makes it so that
+    /// users don't have to memorize Proto3 syntax and can instead have an easier way of making proto records.
+    /// </summary>
     public class ProtoDefinitionWindow : EditorWindow
     {
         private readonly List<ProtoDefinitionListItem> m_protoDefinitionListItems = new List<ProtoDefinitionListItem>();

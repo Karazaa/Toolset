@@ -1,15 +1,17 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
 namespace Toolset.ProtocolBuffers.StaticDataEditor
 {
+    /// <summary>
+    /// A struct that defines field name and field type for a proto field.
+    /// </summary>
     public class ProtoField
     {
         public string FieldName { get; set; } = "NewFieldName";
         public ProtoFieldEnum FieldType { get; set; }
     }
     
+    /// <summary>
+    /// An enum that defines all possible proto types in the Proto3 syntax
+    /// </summary>
     public enum ProtoFieldEnum
     {
         String,
@@ -29,6 +31,9 @@ namespace Toolset.ProtocolBuffers.StaticDataEditor
         SFixed64,
     }
 
+    /// <summary>
+    /// Extensions for converting ProtoFieldEnum values into proper string representations.
+    /// </summary>
     public static class ProtoFieldExtensions
     {
         public static string GetAsProtoTypeString(this ProtoFieldEnum enumValue)

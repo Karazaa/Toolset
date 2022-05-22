@@ -1,10 +1,11 @@
-using System.Collections;
 using System.Collections.Generic;
 using Toolset.Core;
-using UnityEngine;
 
 namespace Toolset.ProtocolBuffers.StaticDataEditor
 {
+    /// <summary>
+    /// An abstract class representing some proto definition file. Implemented by proto definition editors.
+    /// </summary>
     public abstract class ProtoWriteable
     {
         protected string ClassName { get; set; } = "NewProtoDefinition";
@@ -15,11 +16,19 @@ namespace Toolset.ProtocolBuffers.StaticDataEditor
         private const string c_protoField = "  {0} {1} = {2};\n";
         private const string c_protoFileFooter = "}";
 
+        /// <summary>
+        /// Gets the file name for the proto definition.
+        /// </summary>
+        /// <returns>The .proto file name.</returns>
         public virtual string GetProtoFileName()
         {
             return c_protoFileName.StringBuilderFormat(ClassName);
         }
         
+        /// <summary>
+        /// Gets all of the contents of the proto file as a single string for writing to disk.
+        /// </summary>
+        /// <returns>All of the contents of a single proto file.</returns>
         public virtual string GetProtoFileContents()
         {
             string contents = c_protoFileHeader.StringBuilderFormat(ClassName, "{\n");

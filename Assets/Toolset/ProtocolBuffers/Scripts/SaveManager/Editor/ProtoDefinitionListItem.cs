@@ -1,10 +1,12 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
 namespace Toolset.ProtocolBuffers.StaticDataEditor
 {
+    /// <summary>
+    /// A list item that is rendered in the ProtoDefinitionWindow custom editor. Used to display
+    /// a single proto file, it just implements an OnGui() method.
+    /// </summary>
     public class ProtoDefinitionListItem : ProtoWriteable
     {
         private bool m_showContent;
