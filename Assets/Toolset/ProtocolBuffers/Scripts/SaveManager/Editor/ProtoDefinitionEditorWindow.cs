@@ -16,7 +16,7 @@ namespace Toolset.ProtocolBuffers.StaticDataEditor
         private Vector2 m_scrollPosition = Vector2.zero;
         
         /// <summary>
-        /// Opens the Proto Definition Window.
+        /// Opens the Proto Definition Editor Window.
         /// </summary>
         [MenuItem("Toolset/Static Data/Proto Definition Editor")]
         public static void OpenProtoJsonConverterWindow()
@@ -80,7 +80,7 @@ namespace Toolset.ProtocolBuffers.StaticDataEditor
         {
             m_protoDefinitionListItems.Clear();
             
-            List<string> fileContents = SaveManager.LoadAllFileContentsFromDirectory(ToolsetEditorConstants.s_pathToProtoDataDirectory, ToolsetEditorConstants.s_protoFileSearchPattern);
+            List<string> fileContents = SaveManager.LoadAllFileContentsFromDirectory(ToolsetEditorConstants.s_pathToProtoDataDirectory, ToolsetRuntimeConstants.c_protoSearchPattern);
             foreach (string fileContent in fileContents)
             {
                 if (!fileContent.StartsWith(c_editorOptOutToken))

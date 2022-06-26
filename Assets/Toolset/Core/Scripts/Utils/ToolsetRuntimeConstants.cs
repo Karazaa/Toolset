@@ -5,6 +5,13 @@ namespace Toolset.Core
     /// </summary>
     public static class ToolsetRuntimeConstants
     {
+        public const string c_tsoFileFormat = "{0}/{1}.tso";
+        public const string c_tsoSearchPattern = "*.tso";
+        public const string c_protoFileFormat = "{0}/{1}.proto";
+        public const string c_protoSearchPattern = "*.proto";
+        public const string c_jsonSearchPattern = "*.json";
+        public const string c_jsonFileExtension = ".json";
+        
         public static readonly string s_pathToJsonStreamingAssetsDirectory = UnityEngine.Application.dataPath + "/StreamingAssets/JSON";
     }
 }

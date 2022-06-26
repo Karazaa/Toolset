@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Toolset.Core;
 using UnityEditor;
 using UnityEngine;
@@ -10,14 +11,20 @@ namespace Toolset.ProtocolBuffers.StaticDataEditor
     public class RecordEditorWindow : EditorWindow
     {
         private const float c_spacingValue = 10f;
+        private List<RecordCategoryListItem> m_recordCategories = new List<RecordCategoryListItem>();
         
         /// <summary>
-        /// Opens the Static Data Control Window.
+        /// Opens the Record Editor Window.
         /// </summary>
         [MenuItem("Toolset/Static Data/Record Editor")]
         public static void OpenProtoJsonConverterWindow()
         {
             GetWindow<RecordEditorWindow>("Records");
+        }
+        
+        public void OnEnable()
+        {
+            PopulateWindow();
         }
 
         public void OnGUI()
@@ -31,19 +38,20 @@ namespace Toolset.ProtocolBuffers.StaticDataEditor
 
             GUILayout.Space(c_spacingValue);
             
-            GUILayout.Label("Create JSON Model Instances", EditorStyles.boldLabel);
-            bool dirty = false;
-            for (int i = 0; i < StaticDataControlUtils.CompiledClassNames.Count; ++i)
+            GUILayout.Label("Edit Records", EditorStyles.boldLabel);
+            foreach (RecordCategoryListItem listItem in m_recordCategories)
             {
-                if (GUILayout.Button("Create new ".StringBuilderAppend(StaticDataControlUtils.CompiledClassNames[i])))
-                {
-                    SaveManager.SerializeGeneratedModelToJson(StaticDataControlUtils.CompiledClassNames[i], ToolsetEditorConstants.s_pathToJsonDataDirectory);
-                    dirty = true;
-                }
+                listItem.OnGui();
             }
-            
-            if (dirty)
-                AssetDatabase.Refresh();
+        }
+
+        private void PopulateWindow()
+        {
+            m_recordCategories.Clear();
+            foreach (string className in StaticDataControlUtils.CompiledClassNames)
+            {
+                m_recordCategories.Add(new RecordCategoryListItem(className));
+            }
         }
     }
 }

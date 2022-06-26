@@ -17,10 +17,7 @@ namespace Toolset.ProtocolBuffers
     public static class SaveManager
     {
         // Note: Toolset saves all protobuf serialized files as .tso which stands for Toolset Serialized Object
-        private const string c_tsoFileFormat = "{0}/{1}.tso";
-        private const string c_tsoSearchPattern = "*.tso";
-        private const string c_protoFileFormat = "{0}/{1}.proto";
-        private const string c_protoSearchPattern = "*.proto";
+
 
         private const int c_asyncBufferSize = 4096;
 
@@ -145,7 +142,7 @@ namespace Toolset.ProtocolBuffers
             if (!Directory.Exists(directoryPath))
                 return output;
 
-            IEnumerable<string> filePaths = Directory.EnumerateFiles(directoryPath, c_tsoSearchPattern);
+            IEnumerable<string> filePaths = Directory.EnumerateFiles(directoryPath, ToolsetRuntimeConstants.c_tsoSearchPattern);
             foreach (string filePath in filePaths)
             {
                 output.Add(filePath, InternalLoadModel<T>(filePath));
@@ -170,7 +167,7 @@ namespace Toolset.ProtocolBuffers
             if (!Directory.Exists(directoryPath))
                 return output;
 
-            IEnumerable<string> filePaths = Directory.EnumerateFiles(directoryPath, c_tsoSearchPattern);
+            IEnumerable<string> filePaths = Directory.EnumerateFiles(directoryPath, ToolsetRuntimeConstants.c_tsoSearchPattern);
             foreach (string filePath in filePaths)
             {
                 Task<T> internalWaitTask = InternalLoadModelAsync<T>(filePath);
@@ -227,7 +224,7 @@ namespace Toolset.ProtocolBuffers
         /// <returns>The full file path to the given file.</returns>
         public static string GetDataFilePathForModelType<T>(string fileName) where T : class
         {
-            return c_tsoFileFormat.StringBuilderFormat(GetDataDirectoryPathForModelType<T>(), fileName);
+            return ToolsetRuntimeConstants.c_tsoFileFormat.StringBuilderFormat(GetDataDirectoryPathForModelType<T>(), fileName);
         }
 
         /// <summary>
@@ -353,9 +350,9 @@ namespace Toolset.ProtocolBuffers
             directoryPath = directoryPath.StringBuilderAppend("/", className);
 
             Directory.CreateDirectory(directoryPath);
-            IEnumerable<string> filePaths = Directory.EnumerateFiles(directoryPath, "*.json");
+            IEnumerable<string> filePaths = Directory.EnumerateFiles(directoryPath, ToolsetRuntimeConstants.c_jsonSearchPattern);
 
-            string classNameWithSuffix = className.StringBuilderAppend("_", filePaths.Count(), ".json");
+            string classNameWithSuffix = className.StringBuilderAppend("_", filePaths.Count(), ToolsetRuntimeConstants.c_jsonFileExtension);
 
             SerializeObjectAsJsonAndSave(classNameWithSuffix, directoryPath, instance);
         }
@@ -424,7 +421,7 @@ namespace Toolset.ProtocolBuffers
         {
             Directory.CreateDirectory(generatedDirectoryPath);
 
-            string protoContents = File.ReadAllText(c_protoFileFormat.StringBuilderFormat(protoDirectoryPath, protoFileName));
+            string protoContents = File.ReadAllText(ToolsetRuntimeConstants.c_protoFileFormat.StringBuilderFormat(protoDirectoryPath, protoFileName));
             CompilerResult compilerResult = CSharpCodeGenerator.Default.Compile(new CodeFile(protoFileName, protoContents));
             File.WriteAllText(Path.Combine(generatedDirectoryPath, compilerResult.Files[0].Name), compilerResult.Files[0].Text);
             Debug.Log("Generated file: ".StringBuilderAppend(compilerResult.Files[0].Name));
@@ -442,12 +439,12 @@ namespace Toolset.ProtocolBuffers
         {
             Directory.CreateDirectory(generatedDirectoryPath);
 
-            string[] files = Directory.GetFiles(protoDirectoryPath, c_protoSearchPattern);
+            string[] files = Directory.GetFiles(protoDirectoryPath, ToolsetRuntimeConstants.c_protoSearchPattern);
             
             List<CodeFile> codeFiles = new List<CodeFile>();
             for (int i = 0; i < files.Length; ++i)
             {
-                string protoContents = File.ReadAllText(c_protoFileFormat.StringBuilderFormat(protoDirectoryPath, Path.GetFileNameWithoutExtension(files[i])));
+                string protoContents = File.ReadAllText(ToolsetRuntimeConstants.c_protoFileFormat.StringBuilderFormat(protoDirectoryPath, Path.GetFileNameWithoutExtension(files[i])));
                 codeFiles.Add(new CodeFile(Path.GetFileName(files[i]), protoContents));
             }
             
