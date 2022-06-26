@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using Toolset.Core;
@@ -6,15 +8,24 @@ namespace Toolset.ProtocolBuffers.StaticDataEditor
 {
     public class RecordCategoryListItem
     {
+        public string ClassName { get; }
+        private List<RecordListItem> m_recordListItems = new List<RecordListItem>();
+        private bool m_showContent;
+        
         public RecordCategoryListItem(string className)
         {
             ClassName = className;
+            
+            IEnumerable<string> filePaths =
+                SaveManager.GetSerializedJsonModelFilePaths(ClassName,
+                    ToolsetEditorConstants.s_pathToJsonDataDirectory);
+
+            foreach (string filePath in filePaths)
+            {
+                m_recordListItems.Add(new RecordListItem(filePath));
+            }
         }
-        
-        public string ClassName { get; }
-        
-        private bool m_showContent;
-        
+
         public void OnGui()
         {
             EditorGUI.indentLevel++;
@@ -25,7 +36,10 @@ namespace Toolset.ProtocolBuffers.StaticDataEditor
             {
                 EditorGUI.indentLevel++;
                 
-                // TODO: MANAGE RECORD LIST ITEMS
+                foreach (RecordListItem listItem in m_recordListItems)
+                {
+                    listItem.OnGui();
+                }
 
                 bool dirty = false;
                 
@@ -34,7 +48,8 @@ namespace Toolset.ProtocolBuffers.StaticDataEditor
                 GUILayout.Space(EditorGUI.indentLevel * ToolsetEditorConstants.c_editorSpaceIndentLevel);
                 if (GUILayout.Button("Create new ".StringBuilderAppend(ClassName)))
                 {
-                    SaveManager.SerializeGeneratedModelToJson(ClassName, ToolsetEditorConstants.s_pathToJsonDataDirectory);
+                    m_recordListItems.Add(new RecordListItem(
+                        SaveManager.SerializeGeneratedModelToJson(ClassName, ToolsetEditorConstants.s_pathToJsonDataDirectory)));
                     dirty = true;
                 }
                 EditorGUILayout.EndHorizontal();

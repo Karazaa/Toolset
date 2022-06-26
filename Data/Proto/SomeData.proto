@@ -1,6 +1,0 @@
-syntax = "proto3";
-
-message SomeData {
-  int32 Id = 1;
-  string SomeString = 2;
-}

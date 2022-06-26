@@ -328,22 +328,23 @@ namespace Toolset.ProtocolBuffers
         /// <param name="fileName">The name of the resulting JSON file.</param>
         /// <param name="directoryPath">The path to the directory where the JSON file should be saved.</param>
         /// <param name="objectToSerialized">The object that should be converted to JSON and saved.</param>
-        public static void SerializeObjectAsJsonAndSave(string fileName, string directoryPath, object objectToSerialized)
+        public static string SerializeObjectAsJsonAndSave(string fileName, string directoryPath, object objectToSerialized)
         {
-            SaveContentsToFile(fileName, directoryPath, JsonConvert.SerializeObject(objectToSerialized, Formatting.Indented));
             Debug.Log("Saved new JSON instance: ".StringBuilderAppend(fileName));
+            return SaveContentsToFile(fileName, directoryPath, JsonConvert.SerializeObject(objectToSerialized, Formatting.Indented));
         }
         
         /// <summary>
-        /// Serializes a specific Proto Generated data Model to a JSON file that is then saved.
+        /// TODO: FILL ME OUT JAMES
         /// </summary>
-        /// <param name="className">The name of the Model class to save as JSON.</param>
-        /// <param name="directoryPath">The path to the data directory where the JSON files should be saved.</param>
-        public static void SerializeGeneratedModelToJson(string className, string directoryPath)
+        /// <param name="className"></param>
+        /// <param name="directoryPath"></param>
+        /// <returns></returns>
+        public static string SerializeGeneratedModelToJson(string className, string directoryPath)
         {
             Type generatedType = Type.GetType(className);
             if (generatedType == null)
-                return;
+                return string.Empty;
             
             var instance = Activator.CreateInstance(generatedType);
 
@@ -353,8 +354,24 @@ namespace Toolset.ProtocolBuffers
             IEnumerable<string> filePaths = Directory.EnumerateFiles(directoryPath, ToolsetRuntimeConstants.c_jsonSearchPattern);
 
             string classNameWithSuffix = className.StringBuilderAppend("_", filePaths.Count(), ToolsetRuntimeConstants.c_jsonFileExtension);
+            
+            return SerializeObjectAsJsonAndSave(classNameWithSuffix, directoryPath, instance);;
+        }
 
-            SerializeObjectAsJsonAndSave(classNameWithSuffix, directoryPath, instance);
+        /// <summary>
+        /// TODO: FILL ME OUT JAMES
+        /// </summary>
+        /// <param name="className"></param>
+        /// <param name="directoryPath"></param>
+        /// <returns></returns>
+        public static IEnumerable<string> GetSerializedJsonModelFilePaths(string className, string directoryPath)
+        {
+            directoryPath = directoryPath.StringBuilderAppend("/", className);
+
+            if (!Directory.Exists(directoryPath))
+                return new List<string>();
+            
+            return Directory.EnumerateFiles(directoryPath, ToolsetRuntimeConstants.c_jsonSearchPattern);
         }
 
         /// <summary>
@@ -397,16 +414,17 @@ namespace Toolset.ProtocolBuffers
         }
 
         /// <summary>
-        /// Saves the contents of a file to the specified file path.
+        /// TODO: FILL ME OUT JAMES
         /// </summary>
-        /// <param name="fileName">The file name to save (including extension).</param>
-        /// <param name="directoryPath">The path to the directory the file will be saved in.</param>
-        /// <param name="rawContent">The raw contents of the file.</param>
-        public static void SaveContentsToFile(string fileName, string directoryPath, string rawContent)
+        /// <param name="fileName"></param>
+        /// <param name="directoryPath"></param>
+        /// <param name="rawContent"></param>
+        public static string SaveContentsToFile(string fileName, string directoryPath, string rawContent)
         {
             Directory.CreateDirectory(directoryPath);
             string fullFileName = Path.Combine(directoryPath, fileName);
             File.WriteAllText(fullFileName, rawContent);
+            return fullFileName;
         }
 
 #if UNITY_EDITOR
