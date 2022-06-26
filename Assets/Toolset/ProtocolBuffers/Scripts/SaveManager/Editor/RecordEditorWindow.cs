@@ -1,16 +1,15 @@
 using System.Collections.Generic;
 using Toolset.Core;
+using Toolset.Core.EditorTools;
 using UnityEditor;
-using UnityEngine;
 
 namespace Toolset.ProtocolBuffers.StaticDataEditor
 {
     /// <summary>
     /// Editor window used to show the user controls for the static data flow.
     /// </summary>
-    public class RecordEditorWindow : EditorWindow
+    public class RecordEditorWindow : ToolsetEditorWindow
     {
-        private const float c_spacingValue = 10f;
         private List<RecordCategoryListItem> m_recordCategories = new List<RecordCategoryListItem>();
         
         /// <summary>
@@ -29,16 +28,16 @@ namespace Toolset.ProtocolBuffers.StaticDataEditor
 
         public void OnGUI()
         {
-            GUILayout.Label("Global Controls", EditorStyles.boldLabel);
+            BoldLabel("Global Controls");
 
-            if (GUILayout.Button("Copy JSON Data To Streaming Assets"))
+            if (BaseButton("Copy JSON Data To Streaming Assets", "Copies Data records into configured Streaming Assets data directory for runtime use in builds"))
             {
                 StaticDataControlUtils.CopyDataJsonIntoStreamingAssets();
             }
 
-            GUILayout.Space(c_spacingValue);
+            EditorGUILayout.Space();
             
-            GUILayout.Label("Edit Records", EditorStyles.boldLabel);
+            BoldLabel("Edit Records", "Create and edit records of a specific data model type");
             foreach (RecordCategoryListItem listItem in m_recordCategories)
             {
                 listItem.OnGui();

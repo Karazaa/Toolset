@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Toolset.Core;
+using Toolset.Core.EditorTools;
 using UnityEditor;
 using UnityEngine;
 
@@ -9,7 +10,7 @@ namespace Toolset.ProtocolBuffers.StaticDataEditor
     /// A custom editor that allows developers to define/edit new proto records. This makes it so that
     /// users don't have to memorize Proto3 syntax and can instead have an easier way of making proto records.
     /// </summary>
-    public class ProtoDefinitionEditorWindow : EditorWindow
+    public class ProtoDefinitionEditorWindow : ToolsetEditorWindow
     {
         private const string c_editorOptOutToken = "//PROTO_EDITOR_OPT_OUT";
         private readonly List<ProtoDefinitionListItem> m_protoDefinitionListItems = new List<ProtoDefinitionListItem>();
@@ -31,7 +32,7 @@ namespace Toolset.ProtocolBuffers.StaticDataEditor
         
         public void OnGUI()
         {
-            GUILayout.Label("Proto Definitions", EditorStyles.boldLabel);
+            BoldLabel("Proto Definitions");
 
             m_scrollPosition = EditorGUILayout.BeginScrollView(m_scrollPosition, false, true);
             foreach (ProtoDefinitionListItem listItem in m_protoDefinitionListItems)
@@ -41,12 +42,12 @@ namespace Toolset.ProtocolBuffers.StaticDataEditor
             EditorGUILayout.EndScrollView();
             
             EditorGUILayout.BeginHorizontal();
-            if (GUILayout.Button("Add New Proto Definition"))
+            if (BaseButton("Add New Proto Definition"))
             {
                 m_protoDefinitionListItems.Add(new ProtoDefinitionListItem());
             }
                 
-            if (m_protoDefinitionListItems.Count > 0 && GUILayout.Button("Remove Last Proto Definition"))
+            if (m_protoDefinitionListItems.Count > 0 && BaseButton("Remove Last Proto Definition"))
             {
                 m_protoDefinitionListItems.RemoveAt(m_protoDefinitionListItems.Count - 1);
             }
@@ -54,11 +55,11 @@ namespace Toolset.ProtocolBuffers.StaticDataEditor
             
             EditorGUILayout.Space();
             EditorGUILayout.BeginHorizontal();
-            if (GUILayout.Button("Refresh"))
+            if (BaseButton("Refresh"))
             {
                 PopulateWindow();
             }
-            if (GUILayout.Button("Generate Proto Files"))
+            if (BaseButton("Generate Proto Files"))
             {
                 CreateSaveProtoFiles();
                 StaticDataControlUtils.GenerateProto();

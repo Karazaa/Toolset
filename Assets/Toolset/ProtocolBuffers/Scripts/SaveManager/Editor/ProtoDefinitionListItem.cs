@@ -1,3 +1,4 @@
+using Toolset.Core;
 using UnityEditor;
 using UnityEngine;
 
@@ -37,6 +38,7 @@ namespace Toolset.ProtocolBuffers.StaticDataEditor
                 
                 EditorGUILayout.Space();
                 EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.Space(EditorGUI.indentLevel * ToolsetEditorConstants.c_editorSpaceIndentLevel);
                 if (GUILayout.Button("Add New Field"))
                 {
                     Fields.Add(new ProtoField());
