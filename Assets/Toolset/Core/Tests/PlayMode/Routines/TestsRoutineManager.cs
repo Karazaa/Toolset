@@ -64,7 +64,7 @@ namespace Toolset.Core.Tests
 
                 DateTime finished = DateTime.Now;
 
-                Assert.GreaterOrEqual((finished - started).TotalSeconds, c_expectedWaitSeconds / timeScale);
+                Assert.GreaterOrEqual((finished - started).TotalSeconds, (c_expectedWaitSeconds / timeScale) - 0.01f);
             }
 
             yield return TestForTimeScale(2.0f);
