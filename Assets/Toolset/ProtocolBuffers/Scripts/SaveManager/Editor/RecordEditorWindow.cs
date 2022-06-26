@@ -1,16 +1,14 @@
 using Toolset.Core;
+using Toolset.Core.EditorTools;
 using UnityEditor;
-using UnityEngine;
 
 namespace Toolset.ProtocolBuffers.StaticDataEditor
 {
     /// <summary>
     /// Editor window used to show the user controls for the static data flow.
     /// </summary>
-    public class RecordEditorWindow : EditorWindow
+    public class RecordEditorWindow : ToolsetEditorWindow
     {
-        private const float c_spacingValue = 10f;
-        
         /// <summary>
         /// Opens the Static Data Control Window.
         /// </summary>
@@ -22,28 +20,28 @@ namespace Toolset.ProtocolBuffers.StaticDataEditor
 
         public void OnGUI()
         {
-            GUILayout.Label("Global Controls", EditorStyles.boldLabel);
+            BoldLabel("Global Controls");
 
-            if (GUILayout.Button("Copy JSON Data To Streaming Assets"))
+            if (BaseButton("Copy JSON Data To Streaming Assets", "Copies Data records into configured Streaming Assets data directory for runtime use in builds"))
             {
                 StaticDataControlUtils.CopyDataJsonIntoStreamingAssets();
             }
 
-            GUILayout.Space(c_spacingValue);
+            EditorGUILayout.Space();
             
-            GUILayout.Label("Create JSON Model Instances", EditorStyles.boldLabel);
-            bool dirty = false;
-            for (int i = 0; i < StaticDataControlUtils.CompiledClassNames.Count; ++i)
+            BoldLabel("Create JSON Model Instances", "Creates and saves a new record of a specific data model type");
+            using (var assetScope = new AssetDirtyScope())
             {
-                if (GUILayout.Button("Create new ".StringBuilderAppend(StaticDataControlUtils.CompiledClassNames[i])))
+                for (int i = 0; i < StaticDataControlUtils.CompiledClassNames.Count; ++i)
                 {
-                    SaveManager.SerializeGeneratedModelToJson(StaticDataControlUtils.CompiledClassNames[i], ToolsetEditorConstants.s_pathToJsonDataDirectory);
-                    dirty = true;
+                    if (BaseButton("Create new ".StringBuilderAppend(StaticDataControlUtils.CompiledClassNames[i])))
+                    {
+                        SaveManager.SerializeGeneratedModelToJson(StaticDataControlUtils.CompiledClassNames[i],
+                            ToolsetEditorConstants.s_pathToJsonDataDirectory);
+                        assetScope.SetDirty();
+                    }
                 }
             }
-            
-            if (dirty)
-                AssetDatabase.Refresh();
         }
     }
 }
