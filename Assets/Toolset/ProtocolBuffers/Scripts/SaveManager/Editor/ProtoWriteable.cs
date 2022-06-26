@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System;
 using Toolset.Core;
 
 namespace Toolset.ProtocolBuffers.StaticDataEditor
@@ -15,7 +16,36 @@ namespace Toolset.ProtocolBuffers.StaticDataEditor
         private const string c_protoFileHeader = "syntax = \"proto3\";\n\nmessage {0} {1}";
         private const string c_protoField = "  {0} {1} = {2};\n";
         private const string c_protoFileFooter = "}";
+        private const string c_protoClassWord = "message";
+        private const int c_protoFileLineMinLength = 5;
 
+        protected ProtoWriteable()
+        {
+            
+        }
+        
+        protected ProtoWriteable(string fileContent)
+        {
+            string[] lines = fileContent.Split('\n');
+            
+            if (lines.Length < c_protoFileLineMinLength)
+                throw new InvalidOperationException("[Toolset.ProtoWriteable] Could not parse Proto Definition from file contents, the file contains {0} lines, but there must be at least {1}"
+                    .StringBuilderFormat(lines.Length, c_protoFileLineMinLength));
+            
+            int classNameLine = 0;
+            for (int i = 0; i < lines.Length - 1; ++i)
+            {
+                if (lines[i].StartsWith(c_protoClassWord))
+                {
+                    ClassName = lines[i].Split(' ')[1];
+                    classNameLine = i;
+                }
+                
+                if (classNameLine != 0 && i > classNameLine)
+                    Fields.Add(new ProtoField(lines[i]));
+            }
+        }
+        
         /// <summary>
         /// Gets the file name for the proto definition.
         /// </summary>

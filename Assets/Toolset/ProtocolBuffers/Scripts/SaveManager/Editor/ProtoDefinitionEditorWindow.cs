@@ -9,18 +9,24 @@ namespace Toolset.ProtocolBuffers.StaticDataEditor
     /// A custom editor that allows developers to define/edit new proto records. This makes it so that
     /// users don't have to memorize Proto3 syntax and can instead have an easier way of making proto records.
     /// </summary>
-    public class ProtoDefinitionWindow : EditorWindow
+    public class ProtoDefinitionEditorWindow : EditorWindow
     {
+        private const string c_editorOptOutToken = "//PROTO_EDITOR_OPT_OUT";
         private readonly List<ProtoDefinitionListItem> m_protoDefinitionListItems = new List<ProtoDefinitionListItem>();
         private Vector2 m_scrollPosition = Vector2.zero;
         
         /// <summary>
         /// Opens the Proto Definition Window.
         /// </summary>
-        [MenuItem("Toolset/Data/Open Proto Definition Window")]
+        [MenuItem("Toolset/Static Data/Proto Definition Editor")]
         public static void OpenProtoJsonConverterWindow()
         {
-            GetWindow<ProtoDefinitionWindow>("Proto Definitions");
+            GetWindow<ProtoDefinitionEditorWindow>("Proto Definitions");
+        }
+
+        public void OnEnable()
+        {
+            PopulateWindow();
         }
         
         public void OnGUI()
@@ -47,14 +53,38 @@ namespace Toolset.ProtocolBuffers.StaticDataEditor
             EditorGUILayout.EndHorizontal();
             
             EditorGUILayout.Space();
-            if (GUILayout.Button("Create and Save Proto Files"))
+            EditorGUILayout.BeginHorizontal();
+            if (GUILayout.Button("Refresh"))
             {
-                foreach (ProtoDefinitionListItem listItem in m_protoDefinitionListItems)
-                {
-                    string fileName = listItem.GetProtoFileName();
-                    SaveManager.SaveContentsToFile(fileName, ToolsetEditorConstants.s_pathToProtoDataDirectory, listItem.GetProtoFileContents());
-                    Debug.Log("Saved new Proto Definition: ".StringBuilderAppend(fileName));
-                }
+                PopulateWindow();
+            }
+            if (GUILayout.Button("Generate Proto Files"))
+            {
+                CreateSaveProtoFiles();
+                StaticDataControlUtils.GenerateProto();
+            }
+            EditorGUILayout.EndHorizontal();
+        }
+
+        private void CreateSaveProtoFiles()
+        {
+            foreach (ProtoDefinitionListItem listItem in m_protoDefinitionListItems)
+            {
+                string fileName = listItem.GetProtoFileName();
+                SaveManager.SaveContentsToFile(fileName, ToolsetEditorConstants.s_pathToProtoDataDirectory, listItem.GetProtoFileContents());
+                Debug.Log("Saved new Proto Definition: ".StringBuilderAppend(fileName));
+            }
+        }
+
+        private void PopulateWindow()
+        {
+            m_protoDefinitionListItems.Clear();
+            
+            List<string> fileContents = SaveManager.LoadAllFileContentsFromDirectory(ToolsetEditorConstants.s_pathToProtoDataDirectory, ToolsetEditorConstants.s_protoFileSearchPattern);
+            foreach (string fileContent in fileContents)
+            {
+                if (!fileContent.StartsWith(c_editorOptOutToken))
+                 m_protoDefinitionListItems.Add(new ProtoDefinitionListItem(fileContent));
             }
         }
     }

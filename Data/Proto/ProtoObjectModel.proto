@@ -1,8 +1,9 @@
+//PROTO_EDITOR_OPT_OUT
 syntax = "proto3";
 
 import "google/protobuf/timestamp.proto";
 
-message ProtoObjectModel{
+message ProtoObjectModel {
   string ExampleString = 1;
   int32 ExampleInt = 2;
   google.protobuf.Timestamp LastUpdated = 3;

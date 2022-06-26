@@ -7,34 +7,28 @@ namespace Toolset.ProtocolBuffers.StaticDataEditor
     /// <summary>
     /// Editor window used to show the user controls for the static data flow.
     /// </summary>
-    public class StaticDataControlWindow : EditorWindow
+    public class RecordEditorWindow : EditorWindow
     {
         private const float c_spacingValue = 10f;
         
         /// <summary>
         /// Opens the Static Data Control Window.
         /// </summary>
-        [MenuItem("Toolset/Data/Open Static Data Control Window")]
+        [MenuItem("Toolset/Static Data/Record Editor")]
         public static void OpenProtoJsonConverterWindow()
         {
-            GetWindow<StaticDataControlWindow>("Static Data");
+            GetWindow<RecordEditorWindow>("Records");
         }
 
         public void OnGUI()
         {
             GUILayout.Label("Global Controls", EditorStyles.boldLabel);
-            GUILayout.BeginHorizontal();
-            if (GUILayout.Button("Generate Proto Models"))
-            {
-                StaticDataControlUtils.GenerateProto();
-            }
-            
+
             if (GUILayout.Button("Copy JSON Data To Streaming Assets"))
             {
                 StaticDataControlUtils.CopyDataJsonIntoStreamingAssets();
             }
-            GUILayout.EndHorizontal();
-            
+
             GUILayout.Space(c_spacingValue);
             
             GUILayout.Label("Create JSON Model Instances", EditorStyles.boldLabel);

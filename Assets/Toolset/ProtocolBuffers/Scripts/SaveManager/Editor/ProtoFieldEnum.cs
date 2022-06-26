@@ -1,3 +1,7 @@
+using System;
+using System.Security.Permissions;
+using UnityEngine;
+
 namespace Toolset.ProtocolBuffers.StaticDataEditor
 {
     /// <summary>
@@ -5,6 +9,29 @@ namespace Toolset.ProtocolBuffers.StaticDataEditor
     /// </summary>
     public class ProtoField
     {
+        public ProtoField() { }
+
+        public ProtoField(string lineContent)
+        {
+            string[] tokens = lineContent.Split(' ');
+            
+            for (int i = 0; i < tokens.Length; ++i)
+            {
+                if (tokens[i] != String.Empty)
+                {
+                    FieldType = ProtoFieldExtensions.GetProtoFieldEnumFromString(tokens[i]);
+
+                    if(i + 1 >= tokens.Length)
+                        throw new InvalidOperationException("[Toolset.ProtoWriteable] Could not parse Proto Field from line contents! Proto file has invalid syntax.");
+                    
+                    FieldName = tokens[i + 1];
+                    return;
+                }
+            }
+            
+            throw new InvalidOperationException("[Toolset.ProtoWriteable] Could not parse Proto Field from line contents! Proto file has invalid syntax.");
+        }
+        
         public string FieldName { get; set; } = "NewFieldName";
         public ProtoFieldEnum FieldType { get; set; }
     }
@@ -73,6 +100,45 @@ namespace Toolset.ProtocolBuffers.StaticDataEditor
             }
 
             return null;
+        }
+
+        public static ProtoFieldEnum GetProtoFieldEnumFromString(string value)
+        {
+            switch (value)
+            {
+                case "string":
+                    return ProtoFieldEnum.String;
+                case "bool":
+                    return ProtoFieldEnum.Bool;
+                case "bytes":
+                    return ProtoFieldEnum.Bytes;
+                case "double":
+                    return ProtoFieldEnum.Double;
+                case "float":
+                    return ProtoFieldEnum.Float;
+                case "int32":
+                    return ProtoFieldEnum.Int32;
+                case "int64":
+                    return ProtoFieldEnum.Int64;
+                case "uint32":
+                    return ProtoFieldEnum.UInt32;
+                case "uint64":
+                    return ProtoFieldEnum.UInt64;
+                case "sint32":
+                    return ProtoFieldEnum.SInt32;
+                case "sint64":
+                    return ProtoFieldEnum.SInt64;
+                case "fixed32":
+                    return ProtoFieldEnum.Fixed32;
+                case "fixed64":
+                    return ProtoFieldEnum.Fixed64;
+                case "sfixed32":
+                    return ProtoFieldEnum.SFixed32;
+                case "sfixed64":
+                    return ProtoFieldEnum.SFixed64;
+            }
+
+            return ProtoFieldEnum.Bytes;
         }
     }
 }

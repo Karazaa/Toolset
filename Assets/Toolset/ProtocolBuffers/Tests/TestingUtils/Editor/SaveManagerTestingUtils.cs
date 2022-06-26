@@ -12,15 +12,6 @@ namespace Toolset.ProtocolBuffers.Tests
     public static class SaveManagerTestingUtils
     {
         /// <summary>
-        /// Generates the proto files in the Persistent Proto folder into C# classes.
-        /// </summary>
-        [MenuItem("Toolset/Testing/Generate Persistent Proto")]
-        public static void GeneratePersistentProto()
-        {
-            SaveManager.GenerateCSharpFromProto(ToolsetTestingConstants.s_pathToTestingProtoModelSourceDirectory, ToolsetTestingConstants.s_pathToTestingProtoModelGeneratedDirectory);
-        }
-
-        /// <summary>
         /// Asserts whether exceptions occur in the delegate when passed specific invalid filenames.
         /// </summary>
         /// <param name="callbackToTest">The callback to test.</param>

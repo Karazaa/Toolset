@@ -11,6 +11,10 @@ namespace Toolset.ProtocolBuffers.StaticDataEditor
     {
         private bool m_showContent;
 
+        public ProtoDefinitionListItem() : base() { }
+        
+        public ProtoDefinitionListItem(string fileContents) : base(fileContents) { }
+        
         public void OnGui()
         {
             EditorGUI.indentLevel++;

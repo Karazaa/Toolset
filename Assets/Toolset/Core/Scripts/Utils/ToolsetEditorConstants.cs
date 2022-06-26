@@ -9,6 +9,7 @@ namespace Toolset.Core
         public static readonly string s_pathToProtoModelGeneratedDirectory = UnityEngine.Application.dataPath + "/Toolset/ProtocolBuffers/Scripts/SaveManager/Generated";
         public static readonly string s_pathToProtoDataDirectory = System.IO.Directory.GetCurrentDirectory() + "/Data/Proto";
         public static readonly string s_pathToJsonDataDirectory = System.IO.Directory.GetCurrentDirectory() + "/Data/JSON";
+        public static readonly string s_protoFileSearchPattern = "*.proto";
     }
 }
 #endif
