@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Toolset.Core;
 using UnityEditor.Callbacks;
@@ -43,6 +44,22 @@ namespace Toolset.ProtocolBuffers.StaticDataEditor
             SaveManager.CopyDirectory(ToolsetEditorConstants.s_pathToJsonDataDirectory, ToolsetRuntimeConstants.s_pathToJsonStreamingAssetsDirectory, true);
             Debug.Log("Copied entire contents of JSON Data Directory to StreamingAssets!");
             UnityEditor.AssetDatabase.Refresh();
+        }
+
+        /// <summary>
+        /// TODO FILL ME OUT
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public static Type GetTypeAcrossAllAssemblies(string type)
+        {
+            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                Type returnedType = assembly.GetType(type);
+                if (returnedType != null)
+                    return returnedType;
+            }
+            return null;
         }
 
         private static List<string> GetAllClassNamesForFile(string rawText, List<string> classNames)

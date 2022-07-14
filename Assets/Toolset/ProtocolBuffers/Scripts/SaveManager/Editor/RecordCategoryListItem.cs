@@ -1,4 +1,4 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -8,6 +8,7 @@ namespace Toolset.ProtocolBuffers.StaticDataEditor
 {
     public class RecordCategoryListItem
     {
+        public Type ClassType { get; }
         public string ClassName { get; }
         private List<RecordListItem> m_recordListItems = new List<RecordListItem>();
         private bool m_showContent;
@@ -20,9 +21,11 @@ namespace Toolset.ProtocolBuffers.StaticDataEditor
                 SaveManager.GetSerializedJsonModelFilePaths(ClassName,
                     ToolsetEditorConstants.s_pathToJsonDataDirectory);
 
+            ClassType = StaticDataControlUtils.GetTypeAcrossAllAssemblies(ClassName);
+            
             foreach (string filePath in filePaths)
             {
-                m_recordListItems.Add(new RecordListItem(filePath));
+                m_recordListItems.Add(new RecordListItem(ClassType, filePath));
             }
         }
 
@@ -48,7 +51,7 @@ namespace Toolset.ProtocolBuffers.StaticDataEditor
                 GUILayout.Space(EditorGUI.indentLevel * ToolsetEditorConstants.c_editorSpaceIndentLevel);
                 if (GUILayout.Button("Create new ".StringBuilderAppend(ClassName)))
                 {
-                    m_recordListItems.Add(new RecordListItem(
+                    m_recordListItems.Add(new RecordListItem(ClassType,
                         SaveManager.SerializeGeneratedModelToJson(ClassName, ToolsetEditorConstants.s_pathToJsonDataDirectory)));
                     dirty = true;
                 }
