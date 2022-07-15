@@ -328,10 +328,21 @@ namespace Toolset.ProtocolBuffers
         /// <param name="fileName">The name of the resulting JSON file.</param>
         /// <param name="directoryPath">The path to the directory where the JSON file should be saved.</param>
         /// <param name="objectToSerialized">The object that should be converted to JSON and saved.</param>
-        public static string SerializeObjectAsJsonAndSave(string fileName, string directoryPath, object objectToSerialized)
+        public static string SerializeObjectToJsonAndSave(string fileName, string directoryPath, object objectToSerialized)
         {
             Debug.Log("Saved new JSON instance: ".StringBuilderAppend(fileName));
             return SaveContentsToFile(fileName, directoryPath, JsonConvert.SerializeObject(objectToSerialized, Formatting.Indented));
+        }
+        
+        /// <summary>
+        /// TODO: Fill me out
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <param name="objectToSerialized"></param>
+        /// <returns></returns>
+        public static string SerializeObjectToJsonAndSave(string filePath, object objectToSerialized)
+        {
+            return SerializeObjectToJsonAndSave(Path.GetFileName(filePath), Path.GetDirectoryName(filePath), objectToSerialized);
         }
         
         /// <summary>
@@ -355,7 +366,7 @@ namespace Toolset.ProtocolBuffers
 
             string classNameWithSuffix = className.StringBuilderAppend("_", filePaths.Count(), ToolsetRuntimeConstants.c_jsonFileExtension);
             
-            return SerializeObjectAsJsonAndSave(classNameWithSuffix, directoryPath, instance);;
+            return SerializeObjectToJsonAndSave(classNameWithSuffix, directoryPath, instance);
         }
 
         /// <summary>

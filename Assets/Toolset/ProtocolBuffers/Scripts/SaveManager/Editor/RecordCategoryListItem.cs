@@ -6,6 +6,9 @@ using Toolset.Core;
 
 namespace Toolset.ProtocolBuffers.StaticDataEditor
 {
+    /// <summary>
+    /// TODO: Fill me out
+    /// </summary>
     public class RecordCategoryListItem
     {
         public Type ClassType { get; }
@@ -54,6 +57,13 @@ namespace Toolset.ProtocolBuffers.StaticDataEditor
                     m_recordListItems.Add(new RecordListItem(ClassType,
                         SaveManager.SerializeGeneratedModelToJson(ClassName, ToolsetEditorConstants.s_pathToJsonDataDirectory)));
                     dirty = true;
+                }
+                if (GUILayout.Button("Save all ".StringBuilderAppend(ClassName)))
+                {
+                    foreach (RecordListItem recordListItem in m_recordListItems)
+                    {
+                        recordListItem.Save();
+                    }
                 }
                 EditorGUILayout.EndHorizontal();
                 EditorGUI.indentLevel--;
