@@ -40,7 +40,8 @@ namespace Toolset.ProtocolBuffers.StaticDataEditor
             else
             {
                 string newValue = EditorGUILayout.TextField(PropertyInfo.Name, (string) Value);
-                Value = JsonConvert.DeserializeObject(newValue, PropertyInfo.PropertyType);
+                if (newValue != null)
+                    Value = JsonConvert.DeserializeObject(newValue, PropertyInfo.PropertyType);
             }
         }
     }
