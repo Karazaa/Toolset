@@ -1,0 +1,7 @@
+syntax = "proto3";
+
+message TestingRecordEditor {
+  string guid = 1;
+  float someFloatThreshold = 2;
+  int32 someInt = 3;
+}
