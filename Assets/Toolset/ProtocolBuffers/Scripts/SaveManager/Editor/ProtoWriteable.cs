@@ -1,13 +1,16 @@
 using System.Collections.Generic;
 using System;
+using System.IO;
 using Toolset.Core;
+using Toolset.Core.EditorTools;
+using UnityEngine;
 
 namespace Toolset.ProtocolBuffers.StaticDataEditor
 {
     /// <summary>
     /// An abstract class representing some proto definition file. Implemented by proto definition editors.
     /// </summary>
-    public abstract class ProtoWriteable
+    public abstract class ProtoWriteable : ToolsetEditorGUI
     {
         protected string ClassName { get; set; } = "NewProtoDefinition";
         protected List<ProtoField> Fields { get; set; } = new List<ProtoField>();
@@ -47,15 +50,6 @@ namespace Toolset.ProtocolBuffers.StaticDataEditor
         }
         
         /// <summary>
-        /// Gets the file name for the proto definition.
-        /// </summary>
-        /// <returns>The .proto file name.</returns>
-        public virtual string GetProtoFileName()
-        {
-            return c_protoFileName.StringBuilderFormat(ClassName);
-        }
-        
-        /// <summary>
         /// Gets all of the contents of the proto file as a single string for writing to disk.
         /// </summary>
         /// <returns>All of the contents of a single proto file.</returns>
@@ -74,6 +68,26 @@ namespace Toolset.ProtocolBuffers.StaticDataEditor
             }
 
             return contents.StringBuilderAppend(c_protoFileFooter);
+        }
+        
+        /// <summary>
+        /// TODO: Fill me out
+        /// </summary>
+        /// <returns></returns>
+        public virtual void Save()
+        {
+            string fileName = c_protoFileName.StringBuilderFormat(ClassName);
+            SaveManager.SaveContentsToFile(fileName, ToolsetEditorConstants.s_pathToProtoDataDirectory, GetProtoFileContents());
+            Debug.Log("Saved new Proto Definition: ".StringBuilderAppend(fileName));
+        }
+
+        /// <summary>
+        /// TODO: Fill me out
+        /// </summary>
+        public virtual void Delete()
+        {
+            SaveManager.DeleteFileAndMeta(Path.Combine(ToolsetEditorConstants.s_pathToProtoDataDirectory,
+                c_protoFileName.StringBuilderFormat(ClassName)));
         }
     }
 }

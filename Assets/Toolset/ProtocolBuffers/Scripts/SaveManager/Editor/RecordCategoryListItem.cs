@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using Toolset.Core;
+using Toolset.Core.EditorTools;
 
 namespace Toolset.ProtocolBuffers.StaticDataEditor
 {
     /// <summary>
     /// TODO: Fill me out
     /// </summary>
-    public class RecordCategoryListItem
+    public class RecordCategoryListItem : ToolsetEditorGUI
     {
         public Type ClassType { get; }
         public string ClassName { get; }
@@ -52,18 +53,26 @@ namespace Toolset.ProtocolBuffers.StaticDataEditor
                 EditorGUI.indentLevel++;
                 EditorGUILayout.BeginHorizontal();
                 GUILayout.Space(EditorGUI.indentLevel * ToolsetEditorConstants.c_editorSpaceIndentLevel);
-                if (GUILayout.Button("Create new ".StringBuilderAppend(ClassName)))
+                if (BaseButton("Create New ".StringBuilderAppend(ClassName)))
                 {
                     m_recordListItems.Add(new RecordListItem(ClassType,
                         SaveManager.SerializeGeneratedModelToJson(ClassName, ToolsetEditorConstants.s_pathToJsonDataDirectory)));
                     dirty = true;
                 }
-                if (GUILayout.Button("Save all ".StringBuilderAppend(ClassName)))
+                
+                if (m_recordListItems.Count > 0 && BaseButton("Save All ".StringBuilderAppend(ClassName.StringBuilderAppend("s"))))
                 {
                     foreach (RecordListItem recordListItem in m_recordListItems)
                     {
                         recordListItem.Save();
                     }
+                }
+                
+                if (m_recordListItems.Count > 0 && BaseButton("Delete Last ".StringBuilderAppend(ClassName)))
+                {
+                    int lastItemIndex = m_recordListItems.Count - 1;
+                    m_recordListItems[lastItemIndex].Delete();
+                    m_recordListItems.RemoveAt(lastItemIndex);
                 }
                 EditorGUILayout.EndHorizontal();
                 EditorGUI.indentLevel--;

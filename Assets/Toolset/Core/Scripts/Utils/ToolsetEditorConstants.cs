@@ -1,3 +1,5 @@
+using System.IO;
+
 #if UNITY_EDITOR
 namespace Toolset.Core
 {
@@ -7,9 +9,10 @@ namespace Toolset.Core
     public static class ToolsetEditorConstants
     {
         public const int c_editorSpaceIndentLevel = 15;
-        public static readonly string s_pathToProtoModelGeneratedDirectory = UnityEngine.Application.dataPath + "/Toolset/ProtocolBuffers/Scripts/SaveManager/Generated";
-        public static readonly string s_pathToProtoDataDirectory = System.IO.Directory.GetCurrentDirectory() + "/Data/Proto";
-        public static readonly string s_pathToJsonDataDirectory = System.IO.Directory.GetCurrentDirectory() + "/Data/JSON";
+        public const string c_protoEditorOptOutToken = "//PROTO_EDITOR_OPT_OUT";
+        public static readonly string s_pathToProtoModelGeneratedDirectory = Path.Combine(UnityEngine.Application.dataPath, "Toolset", "ProtocolBuffers", "Scripts", "SaveManager", "Generated");
+        public static readonly string s_pathToProtoDataDirectory = Path.Combine(Directory.GetCurrentDirectory(), "Data", "Proto");
+        public static readonly string s_pathToJsonDataDirectory = Path.Combine(Directory.GetCurrentDirectory(), "Data", "JSON");
     }
 }
 #endif

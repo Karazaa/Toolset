@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using Newtonsoft.Json;
+using Toolset.Core.EditorTools;
 using UnityEditor;
 
 namespace Toolset.ProtocolBuffers.StaticDataEditor
@@ -49,7 +50,7 @@ namespace Toolset.ProtocolBuffers.StaticDataEditor
     /// <summary>
     /// TODO: Fill me out
     /// </summary>
-    public abstract class JsonWriteable
+    public abstract class JsonWriteable : ToolsetEditorGUI
     {
         protected string RecordName { get; }
         protected List<PropertyInfoValue> ExistingProperties { get; } = new List<PropertyInfoValue>();
@@ -77,7 +78,7 @@ namespace Toolset.ProtocolBuffers.StaticDataEditor
         /// <summary>
         /// TODO: Fill me out
         /// </summary>
-        public void Save()
+        public virtual void Save()
         {
             foreach (PropertyInfoValue propertyInfoValue in ExistingProperties)
             {
@@ -85,6 +86,14 @@ namespace Toolset.ProtocolBuffers.StaticDataEditor
             }
 
             SaveManager.SerializeObjectToJsonAndSave(m_filePath, m_result);
+        }
+
+        /// <summary>
+        /// TODO: Fill me out
+        /// </summary>
+        public virtual void Delete()
+        {
+            SaveManager.DeleteFileAndMeta(m_filePath);
         }
     }
 }

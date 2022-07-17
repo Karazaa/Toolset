@@ -12,7 +12,6 @@ namespace Toolset.ProtocolBuffers.StaticDataEditor
     /// </summary>
     public class ProtoDefinitionEditorWindow : ToolsetEditorWindow
     {
-        private const string c_editorOptOutToken = "//PROTO_EDITOR_OPT_OUT";
         private readonly List<ProtoDefinitionListItem> m_protoDefinitionListItems = new List<ProtoDefinitionListItem>();
         private Vector2 m_scrollPosition = Vector2.zero;
         
@@ -49,7 +48,7 @@ namespace Toolset.ProtocolBuffers.StaticDataEditor
                 
             if (m_protoDefinitionListItems.Count > 0 && BaseButton("Remove Last Proto Definition"))
             {
-                m_protoDefinitionListItems.RemoveAt(m_protoDefinitionListItems.Count - 1);
+                DeleteProtoFileAtIndex(m_protoDefinitionListItems.Count - 1);
             }
             EditorGUILayout.EndHorizontal();
             
@@ -59,22 +58,26 @@ namespace Toolset.ProtocolBuffers.StaticDataEditor
             {
                 PopulateWindow();
             }
-            if (BaseButton("Generate Proto Files"))
+            if (BaseButton("Save and Generate Proto Files"))
             {
-                CreateSaveProtoFiles();
+                SaveProtoFiles();
                 StaticDataControlUtils.GenerateProto();
             }
             EditorGUILayout.EndHorizontal();
         }
 
-        private void CreateSaveProtoFiles()
+        private void SaveProtoFiles()
         {
             foreach (ProtoDefinitionListItem listItem in m_protoDefinitionListItems)
             {
-                string fileName = listItem.GetProtoFileName();
-                SaveManager.SaveContentsToFile(fileName, ToolsetEditorConstants.s_pathToProtoDataDirectory, listItem.GetProtoFileContents());
-                Debug.Log("Saved new Proto Definition: ".StringBuilderAppend(fileName));
+                listItem.Save();
             }
+        }
+
+        private void DeleteProtoFileAtIndex(int index)
+        {
+            m_protoDefinitionListItems[index].Delete();
+            m_protoDefinitionListItems.RemoveAt(index);
         }
 
         private void PopulateWindow()
@@ -84,7 +87,7 @@ namespace Toolset.ProtocolBuffers.StaticDataEditor
             List<string> fileContents = SaveManager.LoadAllFileContentsFromDirectory(ToolsetEditorConstants.s_pathToProtoDataDirectory, ToolsetRuntimeConstants.c_protoSearchPattern);
             foreach (string fileContent in fileContents)
             {
-                if (!fileContent.StartsWith(c_editorOptOutToken))
+                if (!fileContent.StartsWith(ToolsetEditorConstants.c_protoEditorOptOutToken))
                  m_protoDefinitionListItems.Add(new ProtoDefinitionListItem(fileContent));
             }
         }
