@@ -1,6 +1,0 @@
-syntax = "proto3";
-
-message ItemDefinition {
-  string IdString = 1;
-  int32 Count = 2;
-}

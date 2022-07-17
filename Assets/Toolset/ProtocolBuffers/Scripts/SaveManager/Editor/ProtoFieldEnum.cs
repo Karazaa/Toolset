@@ -1,5 +1,6 @@
 using System;
 using System.Security.Permissions;
+using Toolset.Core;
 using UnityEngine;
 
 namespace Toolset.ProtocolBuffers.StaticDataEditor
@@ -9,7 +10,16 @@ namespace Toolset.ProtocolBuffers.StaticDataEditor
     /// </summary>
     public class ProtoField
     {
+        public ProtoFieldEnum FieldType { get; set; }
+        public string FieldName { get; set; } = "NewFieldName";
+
         public ProtoField() { }
+
+        public ProtoField(ProtoFieldEnum fieldType, string fieldName)
+        {
+            FieldType = fieldType;
+            FieldName = fieldName;
+        }
 
         public ProtoField(string lineContent)
         {
@@ -31,9 +41,11 @@ namespace Toolset.ProtocolBuffers.StaticDataEditor
             
             throw new InvalidOperationException("[Toolset.ProtoWriteable] Could not parse Proto Field from line contents! Proto file has invalid syntax.");
         }
-        
-        public string FieldName { get; set; } = "NewFieldName";
-        public ProtoFieldEnum FieldType { get; set; }
+
+        public bool IsGuid()
+        {
+            return FieldType == ProtoFieldEnum.String && FieldName == ToolsetEditorConstants.c_protoGuidFieldName;
+        }
     }
     
     /// <summary>

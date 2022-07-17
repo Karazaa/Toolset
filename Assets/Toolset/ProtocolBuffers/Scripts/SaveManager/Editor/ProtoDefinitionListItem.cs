@@ -31,20 +31,31 @@ namespace Toolset.ProtocolBuffers.StaticDataEditor
                 foreach (ProtoField field in Fields)
                 {
                     EditorGUILayout.Space();
-                    field.FieldName = EditorGUILayout.TextField("Field Name", field.FieldName);
-                    field.FieldType = (ProtoFieldEnum) EditorGUILayout.EnumPopup("Field Type", field.FieldType);
+
+                    if (field.IsGuid())
+                    {
+                        EditorGUILayout.BeginHorizontal();
+                        GUILayout.Space(EditorGUI.indentLevel * ToolsetEditorConstants.c_editorSpaceIndentLevel);
+                        BaseLabel(field.FieldName);
+                        EditorGUILayout.EndHorizontal();
+                    }
+                    else
+                    {
+                        field.FieldName = EditorGUILayout.TextField("Field Name", field.FieldName);
+                        field.FieldType = (ProtoFieldEnum) EditorGUILayout.EnumPopup("Field Type", field.FieldType);
+                    }
                 }
                 EditorGUI.indentLevel--;
                 
                 EditorGUILayout.Space();
                 EditorGUILayout.BeginHorizontal();
-                EditorGUILayout.Space(EditorGUI.indentLevel * ToolsetEditorConstants.c_editorSpaceIndentLevel);
+                GUILayout.Space(EditorGUI.indentLevel * ToolsetEditorConstants.c_editorSpaceIndentLevel);
                 if (GUILayout.Button("Add New Field"))
                 {
                     Fields.Add(new ProtoField());
                 }
                 
-                if (Fields.Count > 0 && GUILayout.Button("Remove Last Field"))
+                if (Fields.Count > 1 && GUILayout.Button("Remove Last Field"))
                 {
                     Fields.RemoveAt(Fields.Count - 1);
                 }

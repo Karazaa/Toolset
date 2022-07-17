@@ -5,6 +5,7 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Toolset.Core;
 using UnityEngine;
@@ -357,8 +358,14 @@ namespace Toolset.ProtocolBuffers
             if (generatedType == null)
                 return string.Empty;
             
-            var instance = Activator.CreateInstance(generatedType);
+            object instance = Activator.CreateInstance(generatedType);
 
+            foreach (PropertyInfo property in generatedType.GetProperties())
+            {
+                if (property.Name == ToolsetEditorConstants.c_protoGuidFieldName)
+                    property.SetValue(instance, Guid.NewGuid().ToString());
+            }
+            
             directoryPath = directoryPath.StringBuilderAppend("/", className);
 
             Directory.CreateDirectory(directoryPath);

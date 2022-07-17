@@ -2,51 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using Newtonsoft.Json;
 using Toolset.Core.EditorTools;
-using UnityEditor;
 
 namespace Toolset.ProtocolBuffers.StaticDataEditor
 {
-    /// <summary>
-    /// TODO: Fill me out
-    /// </summary>
-    public class PropertyInfoValue
-    {
-        public PropertyInfo PropertyInfo;
-        public object Value;
-
-        public void DoEditorGuiLayout()
-        {
-            if (PropertyInfo.PropertyType == typeof(int))
-            {
-                Value = EditorGUILayout.IntField(PropertyInfo.Name, (int) Value);
-            }
-            else if (PropertyInfo.PropertyType == typeof(string))
-            {
-                Value = EditorGUILayout.TextField(PropertyInfo.Name, (string) Value);
-            }
-            else if (PropertyInfo.PropertyType == typeof(float))
-            {
-                Value = EditorGUILayout.FloatField(PropertyInfo.Name, (float) Value);
-            }
-            else if (PropertyInfo.PropertyType == typeof(long))
-            {
-                Value = EditorGUILayout.LongField(PropertyInfo.Name, (long) Value);
-            }
-            else if (PropertyInfo.PropertyType == typeof(double))
-            {
-                Value = EditorGUILayout.DoubleField(PropertyInfo.Name, (double) Value);
-            }
-            else
-            {
-                string newValue = EditorGUILayout.TextField(PropertyInfo.Name, (string) Value);
-                if (newValue != null)
-                    Value = JsonConvert.DeserializeObject(newValue, PropertyInfo.PropertyType);
-            }
-        }
-    }
-    
     /// <summary>
     /// TODO: Fill me out
     /// </summary>
