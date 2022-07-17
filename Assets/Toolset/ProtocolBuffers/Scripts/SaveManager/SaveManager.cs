@@ -359,19 +359,18 @@ namespace Toolset.ProtocolBuffers
                 return string.Empty;
             
             object instance = Activator.CreateInstance(generatedType);
-
+            string guid = Guid.NewGuid().ToString();
             foreach (PropertyInfo property in generatedType.GetProperties())
             {
                 if (property.Name == ToolsetEditorConstants.c_protoGuidFieldName)
-                    property.SetValue(instance, Guid.NewGuid().ToString());
+                    property.SetValue(instance,guid);
             }
             
             directoryPath = directoryPath.StringBuilderAppend("/", className);
 
             Directory.CreateDirectory(directoryPath);
-            IEnumerable<string> filePaths = Directory.EnumerateFiles(directoryPath, ToolsetRuntimeConstants.c_jsonSearchPattern);
 
-            string classNameWithSuffix = className.StringBuilderAppend("_", filePaths.Count(), ToolsetRuntimeConstants.c_jsonFileExtension);
+            string classNameWithSuffix = className.StringBuilderAppend("_", guid, ToolsetRuntimeConstants.c_jsonFileExtension);
             
             return SerializeObjectToJsonAndSave(classNameWithSuffix, directoryPath, instance);
         }
