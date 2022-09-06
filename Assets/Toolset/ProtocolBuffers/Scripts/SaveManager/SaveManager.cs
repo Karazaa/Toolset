@@ -359,7 +359,7 @@ namespace Toolset.ProtocolBuffers
                 return string.Empty;
             
             object instance = Activator.CreateInstance(generatedType);
-            string guid = Guid.NewGuid().ToString();
+            string guid = System.Guid.NewGuid().ToString();
             foreach (PropertyInfo property in generatedType.GetProperties())
             {
                 if (property.Name == ToolsetEditorConstants.c_protoGuidFieldName)

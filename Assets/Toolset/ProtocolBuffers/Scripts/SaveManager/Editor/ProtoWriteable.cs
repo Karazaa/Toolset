@@ -16,7 +16,7 @@ namespace Toolset.ProtocolBuffers.StaticDataEditor
         protected List<ProtoField> Fields { get; set; } = new List<ProtoField>();
 
         private const string c_protoFileName = "{0}.proto";
-        private const string c_protoFileHeader = "syntax = \"proto3\";\n\nmessage {0} {1}";
+        private const string c_protoFileHeader = "syntax = \"proto3\";\nimport \"ToolsetGuid.proto\";\n\nmessage {0} {1}";
         private const string c_protoField = "  {0} {1} = {2};\n";
         private const string c_protoFileFooter = "}";
         private const string c_protoClassWord = "message";

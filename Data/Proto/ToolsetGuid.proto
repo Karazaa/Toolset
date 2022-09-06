@@ -1,0 +1,6 @@
+//PROTO_EDITOR_OPT_OUT
+syntax = "proto3";
+
+message ToolsetGuid {
+  string Guid = 1;
+}

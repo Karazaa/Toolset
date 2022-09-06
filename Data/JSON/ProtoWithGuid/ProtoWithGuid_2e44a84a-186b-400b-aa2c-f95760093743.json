@@ -1,6 +1,6 @@
 {
   "Guid": "2e44a84a-186b-400b-aa2c-f95760093743",
-  "SomeInt": 0,
-  "SomeFloat": 0.0,
-  "SomeString": ""
+  "SomeInt": 15,
+  "SomeFloat": 0.75,
+  "SomeString": "ThisIsExampleData"
 }

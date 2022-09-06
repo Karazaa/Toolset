@@ -1,4 +1,5 @@
 syntax = "proto3";
+import "ToolsetGuid.proto";
 
 message ProtoWithGuid {
   string Guid = 1;

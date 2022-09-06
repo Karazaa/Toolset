@@ -68,6 +68,7 @@ namespace Toolset.ProtocolBuffers.StaticDataEditor
         Fixed64,
         SFixed32,
         SFixed64,
+        Guid,
     }
 
     /// <summary>
@@ -109,11 +110,13 @@ namespace Toolset.ProtocolBuffers.StaticDataEditor
                     return "sfixed32";
                 case ProtoFieldEnum.SFixed64:
                     return "sfixed64";
+                case ProtoFieldEnum.Guid:
+                    return "ToolsetGuid";
+                default:
+                    return string.Empty;
             }
-
-            return null;
         }
-
+        
         public static ProtoFieldEnum GetProtoFieldEnumFromString(string value)
         {
             switch (value)
@@ -148,9 +151,11 @@ namespace Toolset.ProtocolBuffers.StaticDataEditor
                     return ProtoFieldEnum.SFixed32;
                 case "sfixed64":
                     return ProtoFieldEnum.SFixed64;
+                case "ToolsetGuid":
+                    return ProtoFieldEnum.Guid;
+                default:
+                    return ProtoFieldEnum.Bytes;
             }
-
-            return ProtoFieldEnum.Bytes;
         }
     }
 }
