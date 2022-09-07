@@ -11,7 +11,7 @@ namespace Toolset.Core
     {
         private static T s_instance;
 
-        private void Awake()
+        protected virtual void Awake()
         {
             if (s_instance == null)
                 s_instance = gameObject.GetComponent<T>();

@@ -2,6 +2,6 @@ syntax = "proto3";
 import "ToolsetGuid.proto";
 
 message UXSample {
-  string Guid = 1;
+  ToolsetGuid Guid = 1;
   ToolsetGuid OtherGuid = 2;
 }

@@ -14,8 +14,7 @@ public partial class ProtoWithGuid : global::ProtoBuf.IExtensible
         => global::ProtoBuf.Extensible.GetExtensionObject(ref __pbn__extensionData, createIfMissing);
 
     [global::ProtoBuf.ProtoMember(1)]
-    [global::System.ComponentModel.DefaultValue("")]
-    public string Guid { get; set; } = "";
+    public ToolsetGuid Guid { get; set; }
 
     [global::ProtoBuf.ProtoMember(2)]
     public int SomeInt { get; set; }

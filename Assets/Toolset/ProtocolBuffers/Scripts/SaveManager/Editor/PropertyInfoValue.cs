@@ -12,8 +12,8 @@ namespace Toolset.ProtocolBuffers.StaticDataEditor
     /// </summary>
     public class PropertyInfoValue : ToolsetEditorGUI
     {
-        public PropertyInfo PropertyInfo;
-        public object Value;
+        public PropertyInfo PropertyInfo { get; set; }
+        public object Value { get; set; }
 
         public void DoEditorGuiLayout()
         {
@@ -21,18 +21,25 @@ namespace Toolset.ProtocolBuffers.StaticDataEditor
             {
                 Value = EditorGUILayout.IntField(PropertyInfo.Name, (int) Value);
             }
-            else if (PropertyInfo.PropertyType == typeof(string))
+            else if (PropertyInfo.PropertyType == typeof(ToolsetGuid))
             {
+                Value ??= new ToolsetGuid();
+
+                ToolsetGuid valueAsGuid = (ToolsetGuid) Value;
                 if (PropertyInfo.Name == ToolsetEditorConstants.c_protoGuidFieldName)
                 {
                     EditorGUI.BeginDisabledGroup(PropertyInfo.Name == ToolsetEditorConstants.c_protoGuidFieldName);
-                    EditorGUILayout.TextField(PropertyInfo.Name, (string) Value);
+                    EditorGUILayout.TextField(PropertyInfo.Name, valueAsGuid.Guid);
                     EditorGUI.EndDisabledGroup();
                 }
                 else
                 {
-                    Value = EditorGUILayout.TextField(PropertyInfo.Name, (string) Value);
+                    valueAsGuid.Guid = EditorGUILayout.TextField(PropertyInfo.Name, valueAsGuid.Guid);
                 }
+            }
+            else if (PropertyInfo.PropertyType == typeof(string))
+            {
+                Value = EditorGUILayout.TextField(PropertyInfo.Name, (string) Value);
             }
             else if (PropertyInfo.PropertyType == typeof(float))
             {

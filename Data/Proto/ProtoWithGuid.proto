@@ -2,7 +2,7 @@ syntax = "proto3";
 import "ToolsetGuid.proto";
 
 message ProtoWithGuid {
-  string Guid = 1;
+  ToolsetGuid Guid = 1;
   int32 SomeInt = 2;
   float SomeFloat = 3;
   string SomeString = 4;

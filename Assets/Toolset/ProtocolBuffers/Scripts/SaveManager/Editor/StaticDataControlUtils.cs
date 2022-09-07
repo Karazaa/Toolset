@@ -72,7 +72,9 @@ namespace Toolset.ProtocolBuffers.StaticDataEditor
             rawText = rawText.Remove(0, index + c_classIdentifier.Length).TrimStart();
 
             int spaceIndex = rawText.IndexOf(' ');
-            classNames.Add(rawText.Substring(0, spaceIndex));
+            string className = rawText.Substring(0, spaceIndex);
+            if (className != ToolsetEditorConstants.c_toolsetGuidClassName)
+                classNames.Add(className);
 
             rawText = rawText.Remove(0, spaceIndex);
 

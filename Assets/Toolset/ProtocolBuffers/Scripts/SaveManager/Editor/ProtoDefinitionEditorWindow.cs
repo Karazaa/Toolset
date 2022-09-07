@@ -87,8 +87,8 @@ namespace Toolset.ProtocolBuffers.StaticDataEditor
             List<string> fileContents = SaveManager.LoadAllFileContentsFromDirectory(ToolsetEditorConstants.s_pathToProtoDataDirectory, ToolsetRuntimeConstants.c_protoSearchPattern);
             foreach (string fileContent in fileContents)
             {
-                if (!fileContent.StartsWith(ToolsetEditorConstants.c_protoEditorOptOutToken))
-                 m_protoDefinitionListItems.Add(new ProtoDefinitionListItem(fileContent));
+                if (!fileContent.StartsWith(ToolsetEditorConstants.c_protoEditorOptOutToken)) 
+                    m_protoDefinitionListItems.Add(new ProtoDefinitionListItem(fileContent));
             }
         }
     }
