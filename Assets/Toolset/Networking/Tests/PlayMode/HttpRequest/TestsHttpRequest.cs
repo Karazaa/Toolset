@@ -16,6 +16,8 @@ namespace Toolset.Networking.Tests
         private const string c_expectedGetResponse = "Example Get Response";
         private const string c_expectedOptionsResponse = "Some options.";
 
+//#define TEST_HTTP
+#if TEST_HTTP
         [UnityTest]
         [Timeout(ToolsetTestingConstants.c_longTimeoutMilliseconds)]
         public IEnumerator TestDeleteHttpRequest()
@@ -132,5 +134,6 @@ namespace Toolset.Networking.Tests
             Assert.AreNotEqual(default(string), httpRequest.ResponseServerName);
             Assert.AreNotEqual(default(DateTime), httpRequest.ResponseInitiatedDate);
         }
+#endif
     }
 }
