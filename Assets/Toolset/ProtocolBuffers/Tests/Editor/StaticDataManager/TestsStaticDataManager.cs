@@ -14,8 +14,7 @@ namespace Toolset.ProtocolBuffers.Tests
         public void OneTimeSetUp()
         {
             StaticDataManager.Initialize();
-            s_toolsetGuid = new ToolsetGuid();
-            s_toolsetGuid.Guid = c_guid;
+            s_toolsetGuid = new ToolsetGuid() { Guid = c_guid};
         }
         
         [Test]
