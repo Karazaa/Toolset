@@ -42,24 +42,24 @@ namespace Toolset.ProtocolBuffers.StaticDataEditor
         public static void CopyDataJsonIntoStreamingAssets()
         {
             SaveManager.CopyDirectory(ToolsetEditorConstants.s_pathToJsonDataDirectory, ToolsetRuntimeConstants.s_pathToJsonStreamingAssetsDirectory, true);
+
+            string manifestContent = string.Empty;
+            for (int i = 0; i < CompiledClassNames.Count; ++i)
+            {
+                if (i == 0)
+                {
+                    manifestContent = CompiledClassNames[i];
+                }
+                else
+                {
+                    manifestContent = manifestContent.StringBuilderAppend("\n", CompiledClassNames[i]);
+                }
+            }
+
+            SaveManager.SaveContentsToFile(ToolsetRuntimeConstants.s_staticDataManifestFileName, ToolsetRuntimeConstants.s_pathToStreamingAssetsDirectory, manifestContent);
+
             Debug.Log("Copied entire contents of JSON Data Directory to StreamingAssets!");
             UnityEditor.AssetDatabase.Refresh();
-        }
-
-        /// <summary>
-        /// TODO FILL ME OUT
-        /// </summary>
-        /// <param name="type"></param>
-        /// <returns></returns>
-        public static Type GetTypeAcrossAllAssemblies(string type)
-        {
-            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
-            {
-                Type returnedType = assembly.GetType(type);
-                if (returnedType != null)
-                    return returnedType;
-            }
-            return null;
         }
 
         private static List<string> GetAllClassNamesForFile(string rawText, List<string> classNames)

@@ -12,6 +12,8 @@ namespace Toolset.Core
         public const string c_jsonSearchPattern = "*.json";
         public const string c_jsonFileExtension = ".json";
         
-        public static readonly string s_pathToJsonStreamingAssetsDirectory = UnityEngine.Application.dataPath + "/StreamingAssets/JSON";
+        public static readonly string s_pathToStreamingAssetsDirectory = UnityEngine.Application.dataPath + "/StreamingAssets";
+        public static readonly string s_pathToJsonStreamingAssetsDirectory = s_pathToStreamingAssetsDirectory + "/JSON";
+        public static readonly string s_staticDataManifestFileName = "StaticDataManifest.manifest";
     }
 }

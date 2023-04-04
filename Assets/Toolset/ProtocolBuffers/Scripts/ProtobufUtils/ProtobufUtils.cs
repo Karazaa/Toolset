@@ -58,6 +58,8 @@ namespace Toolset.ProtocolBuffers
                 return Serializer.Deserialize<T>(memoryStream);
             }
         }
+        
+        
     }
 }
 

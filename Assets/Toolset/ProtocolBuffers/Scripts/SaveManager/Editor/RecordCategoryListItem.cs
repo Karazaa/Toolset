@@ -25,7 +25,7 @@ namespace Toolset.ProtocolBuffers.StaticDataEditor
                 SaveManager.GetSerializedJsonModelFilePaths(ClassName,
                     ToolsetEditorConstants.s_pathToJsonDataDirectory);
 
-            ClassType = StaticDataControlUtils.GetTypeAcrossAllAssemblies(ClassName);
+            ClassType = ToolsetGlobalUtils.GetTypeAcrossAllAssemblies(ClassName);
             
             foreach (string filePath in filePaths)
             {

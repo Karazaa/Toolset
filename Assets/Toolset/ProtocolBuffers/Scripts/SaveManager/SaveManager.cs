@@ -4,7 +4,6 @@ using ProtoBuf.Reflection;
 using System;
 using System.IO;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Toolset.Core;
@@ -362,7 +361,7 @@ namespace Toolset.ProtocolBuffers
             string guidString = Guid.NewGuid().ToString();
             foreach (PropertyInfo property in generatedType.GetProperties())
             {
-                if (property.Name == ToolsetEditorConstants.c_protoGuidFieldName)
+                if (property.Name == ToolsetGlobalConstants.c_protoGuidFieldName)
                 {
                     ToolsetGuid guidInstance = new ToolsetGuid();
                     guidInstance.Guid = guidString;
@@ -410,6 +409,20 @@ namespace Toolset.ProtocolBuffers
         }
         
         /// <summary>
+        /// Deserializes a JSON file into an object based on a runtime C# class type.
+        /// </summary>
+        /// <param name="fileName">The file name to deserialize.</param>
+        /// <param name="runtimeType">The type of object to deserialize the JSON into.</param>
+        /// <returns>An object populated with data from the JSON file.</returns>
+        public static object DeserializeObjectFromJsonRuntime(string fileName, Type runtimeType)
+        {
+            if (!File.Exists(fileName))
+                return default;
+            
+            return JsonConvert.DeserializeObject(File.ReadAllText(fileName), runtimeType);
+        }
+        
+        /// <summary>
         /// Deserializes a directory of data Models saved as JSON files into a List of instances of TType containing
         /// the deserialized data.
         /// </summary>
@@ -429,6 +442,31 @@ namespace Toolset.ProtocolBuffers
             foreach (string filePath in filePaths)
             {
                 output.Add(DeserializeObjectFromJson<TType>(filePath));
+            }
+
+            return output;
+        }
+        
+        /// <summary>
+        /// Deserializes a directory of data Models saved as JSON files into a List of instances of objects containing
+        /// the deserialized data.
+        /// </summary>
+        /// <param name="directoryPath">The path to the data Model JSON instances directory.</param>
+        /// <param name="type">The type of object to deserialize the JSON into.</param>
+        /// <returns>A list of objects populated with data from the directory of JSON files.</returns>
+        public static List<object> DeserializeJsonModelsOfType(string directoryPath, Type type)
+        {
+            directoryPath = directoryPath.StringBuilderAppend("/", type.Name);
+
+            if (!Directory.Exists(directoryPath))
+                return null;
+            
+            IEnumerable<string> filePaths = Directory.EnumerateFiles(directoryPath, "*.json");
+
+            List<object> output = new List<object>();
+            foreach (string filePath in filePaths)
+            {
+                output.Add(DeserializeObjectFromJsonRuntime(filePath, type));
             }
 
             return output;

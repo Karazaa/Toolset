@@ -10,7 +10,6 @@ namespace Toolset.Core
     {
         public const int c_editorSpaceIndentLevel = 15;
         public const string c_protoEditorOptOutToken = "//PROTO_EDITOR_OPT_OUT";
-        public const string c_protoGuidFieldName = "Guid";
         public const string c_toolsetGuidClassName = "ToolsetGuid";
         public static readonly string s_pathToProtoModelGeneratedDirectory = Path.Combine(UnityEngine.Application.dataPath, "Toolset", "ProtocolBuffers", "Scripts", "SaveManager", "Generated");
         public static readonly string s_pathToProtoDataDirectory = Path.Combine(Directory.GetCurrentDirectory(), "Data", "Proto");

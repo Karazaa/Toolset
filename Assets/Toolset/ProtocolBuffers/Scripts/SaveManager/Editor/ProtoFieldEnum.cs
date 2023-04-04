@@ -44,7 +44,7 @@ namespace Toolset.ProtocolBuffers.StaticDataEditor
 
         public bool IsGuid()
         {
-            return FieldType == ProtoFieldEnum.Guid && FieldName == ToolsetEditorConstants.c_protoGuidFieldName;
+            return FieldType == ProtoFieldEnum.Guid && FieldName == ToolsetGlobalConstants.c_protoGuidFieldName;
         }
     }
     

@@ -26,9 +26,9 @@ namespace Toolset.ProtocolBuffers.StaticDataEditor
                 Value ??= new ToolsetGuid();
 
                 ToolsetGuid valueAsGuid = (ToolsetGuid) Value;
-                if (PropertyInfo.Name == ToolsetEditorConstants.c_protoGuidFieldName)
+                if (PropertyInfo.Name == ToolsetGlobalConstants.c_protoGuidFieldName)
                 {
-                    EditorGUI.BeginDisabledGroup(PropertyInfo.Name == ToolsetEditorConstants.c_protoGuidFieldName);
+                    EditorGUI.BeginDisabledGroup(PropertyInfo.Name == ToolsetGlobalConstants.c_protoGuidFieldName);
                     EditorGUILayout.TextField(PropertyInfo.Name, valueAsGuid.Guid);
                     EditorGUI.EndDisabledGroup();
                 }

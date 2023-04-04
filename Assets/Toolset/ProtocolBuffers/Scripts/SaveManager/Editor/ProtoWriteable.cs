@@ -24,7 +24,7 @@ namespace Toolset.ProtocolBuffers.StaticDataEditor
 
         protected ProtoWriteable()
         {
-            Fields.Add(new ProtoField(ProtoFieldEnum.Guid, ToolsetEditorConstants.c_protoGuidFieldName));
+            Fields.Add(new ProtoField(ProtoFieldEnum.Guid, ToolsetGlobalConstants.c_protoGuidFieldName));
         }
         
         protected ProtoWriteable(string fileContent)
