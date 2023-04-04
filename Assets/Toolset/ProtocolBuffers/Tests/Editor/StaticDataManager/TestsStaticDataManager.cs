@@ -7,14 +7,14 @@ namespace Toolset.ProtocolBuffers.Tests
     /// </summary>
     public class TestsStaticDataManager
     {
-        private const string c_guid = "a56c2391-052a-4947-b393-7f1ccd7ee3c4";
+        private const string c_guid = "ee4eba5d-4d82-4f4c-ad3d-88c08c830658";
         private static ToolsetGuid s_toolsetGuid;
         
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
             StaticDataManager.Initialize();
-            s_toolsetGuid = new ToolsetGuid() { Guid = c_guid};
+            s_toolsetGuid = ToolsetGuid.ConstructForType<ProtoWithGuid>(c_guid);
         }
         
         [Test]

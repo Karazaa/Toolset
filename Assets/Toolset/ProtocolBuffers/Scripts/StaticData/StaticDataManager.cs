@@ -10,7 +10,7 @@ namespace Toolset.ProtocolBuffers
     /// </summary>
     public static class StaticDataManager
     {
-        private static readonly Dictionary<string, object> s_data = new Dictionary<string, object>();
+        private static readonly Dictionary<string, Dictionary<string, object>> s_data = new ();
         private static bool s_isInitialized = false;
 
         /// <summary>
@@ -25,6 +25,7 @@ namespace Toolset.ProtocolBuffers
             
             foreach (string className in classNames)
             {
+                s_data.Add(className, new Dictionary<string, object>());
                 Type type = ToolsetGlobalUtils.GetTypeAcrossAllAssemblies(className); 
                 List<object> records = SaveManager.DeserializeJsonModelsOfType(ToolsetRuntimeConstants.s_pathToJsonStreamingAssetsDirectory, type);
                 
@@ -32,7 +33,7 @@ namespace Toolset.ProtocolBuffers
                 {
                     ToolsetGuid guid = type?.GetProperty(ToolsetGlobalConstants.c_protoGuidFieldName)?.GetValue(record) as ToolsetGuid;
                     if (guid != null)
-                        s_data.Add(guid.Guid, record);
+                        s_data[className].Add(guid.Guid, record);
                 }
             }
 
@@ -55,9 +56,15 @@ namespace Toolset.ProtocolBuffers
         /// <param name="output">The record to output.</param>
         /// <typeparam name="TType">The type of the record to retrieve.</typeparam>
         /// <returns>Whether or not the operation was successful.</returns>
-        public static bool TryGet<TType>(ToolsetGuid guid, out TType output)
+        public static bool TryGet<TType>(ToolsetGuid guid, out TType output) where TType : class
         {
-            bool result = s_data.TryGetValue(guid.Guid, out object record);
+            output = null;
+            guid.CheckTypeMatch<TType>();
+
+            if (!s_data.ContainsKey(guid.Type))
+                return false;
+            
+            bool result = s_data[guid.Type].TryGetValue(guid.Guid, out object record);
             output = (TType) record;
             return result;
         }

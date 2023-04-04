@@ -1,0 +1,9 @@
+{
+  "Guid": {
+    "Guid": "ee4eba5d-4d82-4f4c-ad3d-88c08c830658",
+    "Type": "ProtoWithGuid"
+  },
+  "SomeInt": 1234,
+  "SomeFloat": 0.4321,
+  "SomeString": "This is a test string"
+}

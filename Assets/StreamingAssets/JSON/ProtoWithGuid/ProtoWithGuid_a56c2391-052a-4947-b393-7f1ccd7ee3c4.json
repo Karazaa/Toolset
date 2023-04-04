@@ -1,8 +1,0 @@
-{
-  "Guid": {
-    "Guid": "a56c2391-052a-4947-b393-7f1ccd7ee3c4"
-  },
-  "SomeInt": 1234,
-  "SomeFloat": 0.1234,
-  "SomeString": "OneTwoThreeFour"
-}

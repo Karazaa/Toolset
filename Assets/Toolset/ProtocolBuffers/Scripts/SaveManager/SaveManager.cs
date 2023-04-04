@@ -346,10 +346,10 @@ namespace Toolset.ProtocolBuffers
         }
         
         /// <summary>
-        /// TODO: FILL ME OUT JAMES
+        /// Creates a serialized JSON instance of the model class and saves it to the specified directory.
         /// </summary>
-        /// <param name="className"></param>
-        /// <param name="directoryPath"></param>
+        /// <param name="className">The name of the data model class.</param>
+        /// <param name="directoryPath">The path of the directory the new JSON file should be saved to.</param>
         /// <returns></returns>
         public static string SerializeGeneratedModelToJson(string className, string directoryPath)
         {
@@ -363,8 +363,7 @@ namespace Toolset.ProtocolBuffers
             {
                 if (property.Name == ToolsetGlobalConstants.c_protoGuidFieldName)
                 {
-                    ToolsetGuid guidInstance = new ToolsetGuid();
-                    guidInstance.Guid = guidString;
+                    ToolsetGuid guidInstance = new ToolsetGuid() { Guid = guidString, Type = className };
                     property.SetValue(instance,guidInstance);
                 }
             }

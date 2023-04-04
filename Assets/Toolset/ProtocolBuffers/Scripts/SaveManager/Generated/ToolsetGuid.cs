@@ -17,6 +17,10 @@ public partial class ToolsetGuid : global::ProtoBuf.IExtensible
     [global::System.ComponentModel.DefaultValue("")]
     public string Guid { get; set; } = "";
 
+    [global::ProtoBuf.ProtoMember(2)]
+    [global::System.ComponentModel.DefaultValue("")]
+    public string Type { get; set; } = "";
+
 }
 
 #pragma warning restore CS0612, CS0618, CS1591, CS3021, IDE0079, IDE1006, RCS1036, RCS1057, RCS1085, RCS1192
